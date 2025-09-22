@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -61,6 +62,7 @@ import com.hm.viscosityauto.ui.page.ItemDurationView
 import com.hm.viscosityauto.ui.theme.TestCardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue1
 import com.hm.viscosityauto.ui.theme.cardBgGreen
+import com.hm.viscosityauto.ui.theme.inputBgWhite
 import com.hm.viscosityauto.ui.theme.keyBoardBg
 import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
@@ -85,6 +87,7 @@ fun PassageCard(
     timekeeping: String,
     keepTCount: String,
     dataOptShow: Boolean,
+    onConfig: () -> Unit,
     onStart: () -> Unit,
     onFinish: () -> Unit,
     onConfirm: () -> Unit,
@@ -134,20 +137,20 @@ fun PassageCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 16.dp, horizontal = 8.dp),
+                .padding(vertical = 16.dp, horizontal = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Row (modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceAround){
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        color = textColorBlue.copy(alpha = 0.05f),
-                        fontSize = 82.sp,
-                        lineHeight = 70.sp ,// 尝试减小此值
-                        platformStyle = PlatformTextStyle(includeFontPadding = false) // 关键设置
-                    ),
-                    modifier = Modifier.alignByBaseline().background(Color.Red)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Image(
+                    painter = painterResource(id = if (name == "A") R.mipmap.a_icon else R.mipmap.b_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(60.dp),
+                    contentScale = ContentScale.Inside
                 )
                 Text(
                     text = when (model.state) {
@@ -161,20 +164,21 @@ fun PassageCard(
                         else -> stringResource(id = R.string.empty)
                     },
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.alignByBaseline()
                 )
 
                 Text(
                     text = stringResource(id = R.string.config),
                     style = MaterialTheme.typography.bodyLarge.copy(color = textColorBlue),
-                    modifier = Modifier.alignByBaseline()
+                    modifier = Modifier.clickable {
+                        onConfig()
+                    }
                 )
 
             }
 
 
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             ItemData(
                 name = stringResource(id = R.string.number),
@@ -191,7 +195,7 @@ fun PassageCard(
 
 
             ItemData(
-                name = stringResource(id = R.string.viscosity_constant)+"(mm²/S²)",
+                name = stringResource(id = R.string.viscosity_constant) + "(mm²/S²)",
                 value = model.constant,
                 isEdit = model.state == Empty,
                 overflow = TextOverflow.Visible,
@@ -281,7 +285,7 @@ fun PassageCard(
                     Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                ItemData(stringResource(id = R.string.motor_speed)+"(Kpa)",
+                ItemData(stringResource(id = R.string.motor_speed) + "(Kpa)",
                     model.motorSpeed,
                     isEdit = model.state == Empty,
                     onInput = {
@@ -356,7 +360,7 @@ fun PassageCard(
 
         }
 
-        if (dataOptShow){
+        if (dataOptShow) {
             durationShow.value = false
             Column(
                 modifier = Modifier
@@ -394,7 +398,7 @@ fun PassageCard(
                         ToastUtil.show(context, context.getString(R.string.valid_data_is_less))
                         return@BaseButton
                     }
-                    model.durationArray.forEachIndexed{index,item->
+                    model.durationArray.forEachIndexed { index, item ->
                         item.derelict = !selList.contains(index)
                     }
                     onCompute(model.durationArray)
@@ -423,7 +427,8 @@ fun PassageCard(
                     itemsIndexed(model.durationArray) { index, items ->
                         ItemDurationView(
                             index,
-                            items,)
+                            items,
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -451,7 +456,7 @@ fun ItemData(
     val focusManager = LocalFocusManager.current
 
     Row(
-        modifier = if (isEdit || !isClick) Modifier.height(32.dp) else Modifier
+        modifier = if (isEdit || !isClick) Modifier.height(26.dp) else Modifier
             .height(26.dp)
             .clickable {
                 onClick()
@@ -462,8 +467,9 @@ fun ItemData(
             text = "$name: ",
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
-            textAlign = TextAlign.End
+            textAlign = TextAlign.Start
         )
+        Spacer(modifier = Modifier.width(16.dp))
         if (isEdit) {
             BasicTextField(
                 value = value,
@@ -482,10 +488,10 @@ fun ItemData(
 
                 modifier = Modifier
                     .weight(1f)
-                    .height(24.dp)
-                    .background(color = keyBoardBg)
+                    .height(26.dp)
+                    .background(color = inputBgWhite)
                     .wrapContentSize(Alignment.Center)
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .padding(horizontal = 8.dp)
                     .onFocusChanged {
                     },
             )

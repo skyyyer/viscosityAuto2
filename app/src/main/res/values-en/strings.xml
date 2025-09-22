@@ -176,7 +176,7 @@
     <string name="date">Date</string>
     <string name="date_pick">Select Date</string>
 
-    <string name="wifi">Wlan</string>
+    <string name="wifi">WIFI</string>
     <string name="upload_setting">Upload Settings</string>
     <string name="upload_path">Server URL</string>
     <string name="upload_user">Account</string>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,6 +77,7 @@ import com.hm.viscosityauto.model.PassageModel
 import com.hm.viscosityauto.model.PointTModel
 import com.hm.viscosityauto.ui.theme.GrayBg
 import com.hm.viscosityauto.ui.theme.TestCardBg
+import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.cardBgBlue1
 import com.hm.viscosityauto.ui.theme.cardBgGray
@@ -88,6 +90,7 @@ import com.hm.viscosityauto.ui.view.BaseButton
 import com.hm.viscosityauto.ui.view.BaseDialog
 import com.hm.viscosityauto.ui.view.BasePage
 import com.hm.viscosityauto.ui.view.BaseTitle
+import com.hm.viscosityauto.ui.view.CustomWidthSwitch
 import com.hm.viscosityauto.ui.view.ItemData
 import com.hm.viscosityauto.ui.view.PassageCard
 import com.hm.viscosityauto.ui.view.click.doubleClick
@@ -168,7 +171,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                 )
             }
 
-        }else{
+        } else {
             vm.stopKeepTTimer(1)
             vm.stopKeepTTimer(2)
         }
@@ -180,6 +183,12 @@ fun TestPage(vm: TestVM = viewModel()) {
         //标题
 
         BaseTitle(title = stringResource(id = R.string.test), onBack = {
+            if (configDialog.value){
+                configDialog.value = false
+                return@BaseTitle
+            }
+
+
             if (vm.passageModelA.state != Empty || vm.passageModelB.state != Empty) {
                 ToastUtil.show(context, context.getString(R.string.exit_tip))
                 return@BaseTitle
@@ -210,6 +219,10 @@ fun TestPage(vm: TestVM = viewModel()) {
                                     )
                                 )
                         },
+                        onConfig = {
+                            selChannel = vm.passageModelA.id
+                            configDialog.value = true
+                        },
                         onPrint = {
                             vm.printData(context, vm.passageModelA)
                         },
@@ -234,30 +247,37 @@ fun TestPage(vm: TestVM = viewModel()) {
                         },
                         onCompute = {
                             vm.showDataOptA = false
-                            vm.passageModelA = vm.passageModelA.copy(durationArray = ArrayList(it), time = TimeUtils.timestampToString(), temperature = vm.setTemperature)
+                            vm.passageModelA = vm.passageModelA.copy(
+                                durationArray = ArrayList(it),
+                                time = TimeUtils.timestampToString(),
+                                temperature = vm.setTemperature
+                            )
                             vm.passageModelA.computeViscosity()
                             vm.saveDate(vm.passageModelA)
 
                         })
-                    Spacer(modifier = Modifier.width(8.dp))
+//                    Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = if (selConfigA == -1) stringResource(id = R.string.sel_config) else stringResource(
-                            id = R.string.config
-                        ) + (selConfigA + 1), modifier = Modifier.clickable {
-                            selChannel = vm.passageModelA.id
-                            configDialog.value = true
-                        }
-                    )
+//                    Text(
+//                        text = if (selConfigA == -1) stringResource(id = R.string.sel_config) else stringResource(
+//                            id = R.string.config
+//                        ) + (selConfigA + 1), modifier = Modifier.clickable {
+//                            selChannel = vm.passageModelA.id
+//                            configDialog.value = true
+//                        }
+//                    )
                 }
 
                 //温度控制
                 Column(
-                    modifier = Modifier.width(280.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                    modifier = Modifier
+                        .width(332.dp).padding(horizontal = 16.dp)
+                        .background(TestCardBg, shape = RoundedCornerShape(5.dp)),
+                    horizontalAlignment = Alignment.CenterHorizontally,
 
-                    Spacer(modifier = Modifier.height(40.dp))
+                    ) {
+
+                    Spacer(modifier = Modifier.height(74.dp))
 
 //                    Image(
 //                        painter = painterResource(id = if (vm.lightState.value) R.mipmap.light_icon else R.mipmap.light_close_icon),
@@ -293,7 +313,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 //                    )
 
 
-                    Spacer(modifier = Modifier.height(60.dp))
+                    Spacer(modifier = Modifier.height(48.dp))
 
 
 
@@ -304,18 +324,6 @@ fun TestPage(vm: TestVM = viewModel()) {
                             style = MaterialTheme.typography.displaySmall,
                             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                         )
-//
-//                        Spacer(modifier = Modifier.width(20.dp))
-//
-//                        if (vm.heatingState != 0) {
-//                            Image(
-//                                painter = painterResource(id = if (vm.heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .size(30.dp)
-//                            )
-//
-//                        }
 
                     }
 
@@ -360,8 +368,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                             singleLine = true,
                             enabled = vm.passageModelA.state == 0 && vm.passageModelB.state == 0,
                             modifier = Modifier
-                                .size(120.dp, 40.dp)
-                                .background(color = keyBoardBg)
+                                .size(100.dp, 30.dp)
+                                .background(color = inputBgWhite)
                                 .wrapContentSize(Alignment.Center)
                                 .padding(horizontal = 8.dp, vertical = 4.dp),
                             onValueChange = {
@@ -371,7 +379,119 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                     }
 
-                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    //自动设置
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.auto_empty),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CustomWidthSwitch(
+                                checked = vm.autoEmpty.value,
+//                                colors = SwitchDefaults.colors(
+//                                    checkedTrackColor = cardBgBlue,
+//                                    uncheckedThumbColor = Color.White,
+//                                    uncheckedBorderColor = cardBgGray,
+//                                    uncheckedTrackColor = cardBgGray
+//                                ),
+                                onCheckedChange = {
+                                    if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.testing_tip),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@CustomWidthSwitch
+                                    }
+                                    vm.setAutoEmpty(it)
+                                })
+
+
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.auto_clean),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CustomWidthSwitch(
+                                checked = vm.autoClean.value,
+                                onCheckedChange = {
+                                    if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.testing_tip),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@CustomWidthSwitch
+                                    }
+                                    vm.setAutoClean(it)
+                                })
+
+
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.auto_print),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CustomWidthSwitch(
+                                checked = vm.autoPrint.value,
+                                onCheckedChange = {
+                                    if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.testing_tip),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@CustomWidthSwitch
+                                    }
+                                    vm.setAutoPrint(it)
+                                })
+
+
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.data_optimization),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            CustomWidthSwitch(
+                                checked = vm.dataOpt.value,
+                                onCheckedChange = {
+                                    if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.testing_tip),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@CustomWidthSwitch
+                                    }
+                                    vm.setDataOpt(it)
+                                })
+
+
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     if (vm.heatingState != 0) {
                         Spacer(modifier = Modifier.width(8.dp))
@@ -408,162 +528,23 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    //自动设置
-                    Row {
-
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.auto_empty),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Switch(modifier = Modifier
-                                    .height(24.dp),
-                                    checked = vm.autoEmpty.value,
-                                    colors = SwitchDefaults.colors(
-                                        checkedTrackColor = cardBgBlue,
-                                        uncheckedThumbColor = Color.White,
-                                        uncheckedBorderColor = cardBgGray,
-                                        uncheckedTrackColor = cardBgGray
-                                    ),
-                                    onCheckedChange = {
-                                        if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.testing_tip),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            return@Switch
-                                        }
-                                        vm.setAutoEmpty(it)
-                                    })
-
-
-                            }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.auto_clean),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Switch(modifier = Modifier
-                                    .height(24.dp),
-                                    checked = vm.autoClean.value,
-                                    colors = SwitchDefaults.colors(
-                                        checkedTrackColor = cardBgBlue,
-                                        uncheckedThumbColor = Color.White,
-                                        uncheckedBorderColor = cardBgGray,
-                                        uncheckedTrackColor = cardBgGray
-                                    ),
-                                    onCheckedChange = {
-                                        if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.testing_tip),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            return@Switch
-                                        }
-                                        vm.setAutoClean(it)
-                                    })
-
-
-                            }
-
-                        }
-
-                        Spacer(modifier = Modifier.width(20.dp))
-
-
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.auto_print),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Switch(modifier = Modifier
-                                    .height(24.dp),
-                                    checked = vm.autoPrint.value,
-                                    colors = SwitchDefaults.colors(
-                                        checkedTrackColor = cardBgBlue,
-                                        uncheckedThumbColor = Color.White,
-                                        uncheckedBorderColor = cardBgGray,
-                                        uncheckedTrackColor = cardBgGray
-                                    ),
-                                    onCheckedChange = {
-                                        if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.testing_tip),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            return@Switch
-                                        }
-                                        vm.setAutoPrint(it)
-                                    })
-
-
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
-
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.data_optimization),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Switch(modifier = Modifier
-                                    .height(24.dp),
-                                    checked = vm.dataOpt.value,
-                                    colors = SwitchDefaults.colors(
-                                        checkedTrackColor = cardBgBlue,
-                                        uncheckedThumbColor = Color.White,
-                                        uncheckedBorderColor = cardBgGray,
-                                        uncheckedTrackColor = cardBgGray
-                                    ),
-                                    onCheckedChange = {
-                                        if (vm.passageModelA.state != HeatState.Empty || vm.passageModelB.state != HeatState.Empty) {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.testing_tip),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            return@Switch
-                                        }
-                                        vm.setDataOpt(it)
-                                    })
-
-
-                            }
-                        }
-
-
-                    }
 
                 }
 
 
                 //配置
                 Row(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = if (selConfigB == -1) stringResource(id = R.string.sel_config) else stringResource(
-                            id = R.string.config
-                        ) + (selConfigB + 1), modifier = Modifier.clickable {
-                            selChannel = vm.passageModelB.id
-                            configDialog.value = true
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+//                    Text(
+//                        text = if (selConfigB == -1) stringResource(id = R.string.sel_config) else stringResource(
+//                            id = R.string.config
+//                        ) + (selConfigB + 1), modifier = Modifier.clickable {
+//                            selChannel = vm.passageModelB.id
+//                            configDialog.value = true
+//                        }
+//                    )
+//                    Spacer(modifier = Modifier.width(8.dp))
                     PassageCard(name = "B",
                         model = vm.passageModelB,
                         "%.2f".format(vm.BTimekeeping),
@@ -579,6 +560,10 @@ fun TestPage(vm: TestVM = viewModel()) {
                                         vm.passageModelB
                                     )
                                 )
+                        },
+                        onConfig = {
+                            selChannel = vm.passageModelB.id
+                            configDialog.value = true
                         },
                         onPrint = {
                             vm.printData(context, vm.passageModelB)
@@ -603,7 +588,11 @@ fun TestPage(vm: TestVM = viewModel()) {
                         },
                         onCompute = {
                             vm.showDataOptB = false
-                            vm.passageModelB = vm.passageModelB.copy(durationArray = ArrayList(it), time = TimeUtils.timestampToString(), temperature = vm.setTemperature)
+                            vm.passageModelB = vm.passageModelB.copy(
+                                durationArray = ArrayList(it),
+                                time = TimeUtils.timestampToString(),
+                                temperature = vm.setTemperature
+                            )
                             vm.passageModelB.computeViscosity()
                             vm.saveDate(vm.passageModelB)
                         })
@@ -615,13 +604,12 @@ fun TestPage(vm: TestVM = viewModel()) {
     }
 
     //配置列表
-    BaseDialog(contentView = {
+    if (configDialog.value){
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 50.dp)
-                .background(color = cardBgGray, shape = RoundedCornerShape(5.dp))
-                .padding(30.dp),
+                .fillMaxSize()
+                .padding(top = 76.dp, start = 20.dp, end = 20.dp, bottom = 16.dp)
+                .background(color = cardBgWhite),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -691,8 +679,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
 
         }
-
-    }, dialogState = configDialog)
+    }
 
 }
 
@@ -728,7 +715,7 @@ fun ItemDurationView(
 
 
         Text(
-            text = stringResource(id = R.string.number_start) + (index + 1) + stringResource(id = R.string.number_end)+":  ",
+            text = stringResource(id = R.string.number_start) + (index + 1) + stringResource(id = R.string.number_end) + ":  ",
             style = if (item.enable) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyLarge.copy(
                 color = GrayBg,
                 textDecoration = if (item.derelict) TextDecoration.LineThrough else null
@@ -781,12 +768,12 @@ private fun ConfigItemView(
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
-            .size(340.dp, 550.dp)
+            .width(280.dp).fillMaxHeight()
             .background(
-                color = if (isSel) cardBgBlue1 else cardBgWhite,
+                color = cardBg,
                 shape = RoundedCornerShape(5.dp)
             )
-            .padding(horizontal = 10.dp, vertical = 20.dp),
+            .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
@@ -800,7 +787,7 @@ private fun ConfigItemView(
 
         if (passageModel.testCount != "0") {
             ItemData(
-                name = stringResource(id = R.string.viscosity_constant)+"(mm²/S²)",
+                name = stringResource(id = R.string.viscosity_constant) + "(mm²/S²)",
                 value = passageModel.constant,
                 isEdit = isEdit,
                 overflow = TextOverflow.Visible,
@@ -882,7 +869,7 @@ private fun ConfigItemView(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ItemData(stringResource(id = R.string.motor_speed)+"(Kpa)",
+            ItemData(stringResource(id = R.string.motor_speed) + "(Kpa)",
                 passageModel.motorSpeed,
                 isEdit = isEdit,
                 onInput = {
@@ -933,17 +920,17 @@ private fun ConfigItemView(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                BaseButton("A") {
+                BaseButton("A", modifier = Modifier.width(84.dp)) {
                     passageModel = modelA
                     isEdit = true
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                BaseButton("B") {
+                BaseButton("B", modifier = Modifier.width(84.dp)) {
                     passageModel = modelB
                     isEdit = true
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                BaseButton(stringResource(id = R.string.custom)) {
+                BaseButton(stringResource(id = R.string.custom), modifier = Modifier.width(84.dp)) {
                     passageModel = PassageModel()
                     isEdit = true
                 }

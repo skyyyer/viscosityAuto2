@@ -54,3 +54,5 @@ val errorColor = Color(0xFFE8EFF7)
 val underLine = Color(0xFF52A9F8)
 
 val shadowColor = Color(0XFF1C4673).copy(alpha = 0.4f)
+
+val dividerColor = Color(0xFFEBEBEB)
