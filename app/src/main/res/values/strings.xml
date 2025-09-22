@@ -1,0 +1,311 @@
+<resources>
+    <string name="app_name">自动运动粘度仪</string>
+
+    <string name="test">测试</string>
+    <string name="setting">设置</string>
+    <string name="test_records">记录</string>
+    <string name="help">帮助</string>
+
+    <string name="back">返回</string>
+    <string name="tip">提示</string>
+    <string name="exit">退出</string>
+    <string name="finish">完成</string>
+    <string name="data_error">数据错误</string>
+    <string name="net_error">网络出错</string>
+    <string name="data_null">检测数据为空</string>
+    <string name="name_or_pwd_error">账号或密码错误</string>
+
+
+    <string name="set_temperature">设置温度</string>
+    <string name="stop_heating">停止控温</string>
+    <string name="start_heating">开始控温</string>
+    <string name="keep_t_not_finish">恒温未完成</string>
+
+    <string name="raw_temperature">原始温度</string>
+    <string name="cur_temperature">当前温度</string>
+    <string name="temperature_tip">温度未达到预设值 确认要开始测试吗？</string>
+    <string name="exit_tip">请先结束所有测试再退出</string>
+
+    <string name="number">编号</string>
+    <string name="duration">时长</string>
+
+    <string name="temperature">恒温</string>
+    <string name="temperature_simple">恒温</string>
+
+    <string name="clean_times">清洗次数</string>
+    <string name="clean_duration">清洗时间</string>
+    <string name="add_liquid_duration">加清洗液时间</string>
+    <string name="extract_duration">抽提时间</string>
+    <string name="extract_interval">抽提间隔</string>
+    <string name="motor_speed">吸引力</string>
+    <string name="keep_t_duration">恒温时间</string>
+
+    <string name="timekeeping">计时</string>
+
+    <string name="viscosity">粘度</string>
+    <!--    <string name="viscosity_constant">粘度管常数（mm²/S²）</string>-->
+    <string name="viscosity_constant">常数</string>
+    <string name="duration_list">时长列表</string>
+    <string name="input_error">输入数据错误</string>
+    <string name="over_max_value">超过最大值</string>
+    <string name="max_value_tip">最大次数为10次</string>
+    <string name="over_limit">超出限制区域</string>
+
+    <string name="start">开始</string>
+    <string name="start_tip">请先配置通道</string>
+
+    <string name="sel_config">配置</string>
+    <string name="config">配置</string>
+    <string name="select">选择</string>
+    <string name="custom">自定义</string>
+
+
+    <string name="empty">空闲</string>
+    <string name="keepingT">恒温中</string>
+    <string name="testing">测试中</string>
+    <string name="cleaning">清洗中</string>
+    <string name="keepedT">恒温完成</string>
+    <string name="controllingT">控温中</string>
+
+
+    <string name="end">结束</string>
+    <string name="print">打印</string>
+
+    <string name="test_count">测量次数</string>
+    <string name="test_time">实验时间</string>
+    <string name="tester">测试人</string>
+
+
+    <string name="passage_setting">通道设置</string>
+
+    <string name="ok">确认</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="del">删除</string>
+    <string name="debugging">调试</string>
+    <string name="close">关闭</string>
+    <string name="compute">计算</string>
+
+
+    <string name="test_detail">实验详情</string>
+    <string name="test_result">实验结果</string>
+    <string name="del_tip">确定删除选中条数据吗？</string>
+    <string name="del_all_tip">确定删除全部数据吗？</string>
+    <string name="export">导出</string>
+    <string name="exporting">导出中</string>
+    <string name="export_tip">确定导出选中条数据吗？</string>
+    <string name="export_all_tip">确定导出全部数据吗？</string>
+    <string name="export_success">导出成功</string>
+    <string name="export_fail">导出失败</string>
+    <string name="export_fail_no_path">导出失败,未找到U盘</string>
+    <string name="u_in">U盘插入</string>
+    <string name="u_out">U盘拔出</string>
+    <string name="export_file_name">运动粘度仪测试数据</string>
+    <string name="uploading">上传中…</string>
+    <string name="upload_success">上传成功</string>
+    <string name="upload_fail">上传失败</string>
+
+
+
+    <string name="language">语言</string>
+    <string name="english">英文</string>
+    <string name="chinese">中文</string>
+
+    <string name="medium">介质</string>
+    <string name="medium_add">介质添加</string>
+    <string name="medium_name">介质名称</string>
+    <string name="medium_pid">介质系数</string>
+    <string name="medium_water">水</string>
+    <string name="medium_glycerol">甘油</string>
+    <string name="medium_silicone_oil">硅油</string>
+
+    <string name="button_switch">物理按键开关</string>
+
+    <string name="temperature_edit">温度校准</string>
+    <string name="temperature_edit_1">单点校准</string>
+    <string name="temperature_edit_2">整体系数</string>
+    <string name="temperature_edit_3">多点校准</string>
+
+    <string name="test_temperature">测试温度</string>
+    <string name="real_temperature">校准温度</string>
+
+    <string name="edit_t_tip">测试进行中，不能更改温度</string>
+
+    <string name="testing_tip">测试进行中，不能更改</string>
+
+
+    <string name="test_data_shortage">至少填写两组数据</string>
+    <string name="have_duplicate_data">存在重复数据</string>
+    <string name="click_often_tip">请勿频发点击</string>
+
+    <string name="file_no_found">没有找到视频文件</string>
+
+
+    <string name="version">版本号</string>
+    <string name="update">升级</string>
+
+
+    <string name="Sunday">星期日</string>
+    <string name="Monday">星期一</string>
+    <string name="Tuesday">星期二</string>
+    <string name="Wednesday">星期三</string>
+    <string name="Thursday">星期四</string>
+    <string name="Friday">星期五</string>
+    <string name="Saturday">星期六</string>
+
+    <string name="number_start">第</string>
+    <string name="number_end">次</string>
+
+
+    <string name="no_video">没有找到视频文件</string>
+
+    <string name="time">时间</string>
+
+    <string name="time_edit">时间修改</string>
+
+    <string name="cant_del_tip">默认配置不能删除</string>
+
+    <string name="input_completely">请填写完整</string>
+
+
+    <string name="valid_data_is_less">有效数据小于3次</string>
+    <string name="min_number_is_4">次数最小为4次</string>
+
+
+
+    <string name="usr_last_load_time">上次加载：</string>
+    <string name="usr_last_refresh_time">上次刷新：</string>
+    <string name="usr_load_completed">加载完成</string>
+    <string name="usr_loading">正在加载…</string>
+    <string name="usr_pull_down_to_refresh">下拉可以刷新</string>
+    <string name="usr_pull_up_to_load">上拉可以加载</string>
+    <string name="usr_refresh_completed">刷新完成</string>
+    <string name="usr_refreshing">正在刷新…</string>
+    <string name="usr_release_to_load">释放立即加载</string>
+    <string name="usr_release_to_refresh">释放立即刷新</string>
+
+
+
+    <string name="wlan">网络</string>
+    <string name="wlan_connected">已连接WLAN</string>
+    <string name="wlan_enable">可用WLAN</string>
+    <string name="wlan_pwd">wifi 密码</string>
+    <string name="wlan_no_connect">未连接</string>
+    <string name="wlan_no_connect_tip">未连接网络</string>
+    <string name="scan">扫描</string>
+    <string name="scanning">扫描中</string>
+    <string name="connecting">连接中</string>
+    <string name="connect_error">连接失败</string>
+
+
+    <string name="new_version">新版本更新</string>
+    <string name="token_edit">token修改</string>
+
+    <string name="success">成功</string>
+
+    <string name="system">系统</string>
+    <string name="admin">用户</string>
+    <string name="upload">上传</string>
+
+    <string name="del_all">删除全部</string>
+    <string name="save">保存</string>
+    <string name="reset">重置</string>
+    <string name="all">全部</string>
+    <string name="save_success">保存成功</string>
+    <string name="date">日期</string>
+    <string name="date_pick">日期选择</string>
+
+
+    <string name="wifi">WIFI</string>
+    <string name="upload_setting">上传设置</string>
+    <string name="upload_path">上传路径</string>
+    <string name="upload_user">上传账户</string>
+    <string name="upload_pwd">上传密码</string>
+
+
+    <string name="cur_admin">当前用户</string>
+
+    <string name="role">身份</string>
+    <string name="role_admin">管理员</string>
+    <string name="role_user">用户</string>
+    <string name="admin_list">用户列表</string>
+    <string name="name">用户名</string>
+    <string name="pwd">密码</string>
+    <string name="function">操作</string>
+    <string name="logout">退出登录</string>
+    <string name="edit">修改</string>
+    <string name="add_admin">添加用户</string>
+    <string name="user_already_exists">用户已存在</string>
+    <string name="input_name">请输入用户名</string>
+    <string name="input_pwd">请输入密码</string>
+    <string name="confirm_del_admin">确认删除该用户吗？</string>
+    <string name="del_admin">删除用户</string>
+    <string name="edit_admin">修改用户信息</string>
+
+
+    <string name="edit_upload_info">修改上传配置</string>
+    <string name="change_language">切换语言</string>
+    <string name="del_test_data">删除实验数据</string>
+
+
+    <string name="user_login">用户登录</string>
+    <string name="login">登录</string>
+    <string name="auto_login">自动登录</string>
+    <string name="admin_not_find">用户不存在</string>
+    <string name="pwd_error">密码错误</string>
+
+
+    <string name="audit_history">审计追踪</string>
+    <string name="content">操作内容</string>
+    <string name="del_audit">删除审计记录</string>
+
+
+    <string name="device_param">设备参数</string>
+    <string name="up">上</string>
+    <string name="down">下</string>
+    <string name="detected_value">检测值</string>
+    <string name="set_value">设定值</string>
+    <string name="sensitivity">光强度</string>
+
+    <string name="debug_mode">测试模式</string>
+    <string name="motor_test">电机测试</string>
+    <string name="speed">速度</string>
+    <string name="direction">方向</string>
+    <string name="forward">正向</string>
+    <string name="reverse">反向</string>
+    <string name="solenoid_valve_test">电磁阀测试</string>
+    <string name="clean_empty">排空</string>
+    <string name="clean_drying">烘干</string>
+
+    <string name="state">状态</string>
+    <string name="clean">清洗</string>
+
+    <string name="device_running">设备运行中，请稍后再操作</string>
+
+
+    <string name="manager_pwd">管理员密码</string>
+    <string name="auto_print">自动打印</string>
+    <string name="auto_clean">自动清洗</string>
+    <string name="auto_upload">自动上传</string>
+    <string name="auto_empty">自动排空</string>
+
+    <string name="advanced_param">高级参数</string>
+    <string name="manual_clean">手动清洗</string>
+
+    <string name="clean_empty_setting">排空设置</string>
+    <string name="drying_duration">烘干时间</string>
+
+    <string name="clean_setting">清洗设置</string>
+
+    <string name="decomp">泄压</string>
+    <string name="decomp_setting">泄压设置</string>
+    <string name="decomp_duration">泄压时间</string>
+
+    <string name="drying_setting">烘干设置</string>
+
+    <string name="wait_drying_tip">请等待其他通道烘干完成</string>
+
+    <string name="data_optimization">数据优化</string>
+
+
+</resources>

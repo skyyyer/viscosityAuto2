@@ -1,0 +1,283 @@
+<resources>
+    <string name="app_name">Automatic Viscometer</string>
+
+    <string name="test">Test</string>
+    <string name="setting">Settings</string>
+    <string name="test_records">Records</string>
+    <string name="help">Help</string>
+
+    <string name="back">Back</string>
+    <string name="tip">Prompt</string>
+    <string name="exit">Exit</string>
+    <string name="finish">Complete</string>
+    <string name="data_error">Data Error</string>
+    <string name="net_error">Network Error</string>
+    <string name="data_null">No Test Data</string>
+    <string name="name_or_pwd_error">Invalid Credentials</string>
+
+    <string name="set_temperature">Set Temperature</string>
+    <string name="stop_heating">Stop Heating</string>
+    <string name="start_heating">Start Heating</string>
+    <string name="keep_t_not_finish">keep temperature is not complete</string>
+
+    <string name="raw_temperature">Raw Temperature</string>
+    <string name="cur_temperature">Current Temp</string>
+    <string name="temperature_tip">Temperature not reached. Start test anyway?</string>
+    <string name="exit_tip">Please end all tests before exiting</string>
+
+    <string name="number">ID</string>
+    <string name="duration">Duration</string>
+    <string name="temperature">Temperature</string>
+    <string name="temperature_simple">Temp</string>
+
+    <string name="clean_times">Clean Times</string>
+    <string name="clean_duration">Clean Dur</string>
+
+    <string name="add_liquid_duration">Liquid Dur</string>
+    <string name="extract_duration">Ext Times</string>
+    <string name="extract_interval">Ext Intvl</string>
+    <string name="timekeeping">Timekeeping</string>
+    <string name="motor_speed">Attraction</string>
+    <string name="keep_t_duration">KeepT Dur</string>
+
+    <string name="viscosity">Viscosity</string>
+    <string name="viscosity_constant">Const</string>
+    <string name="duration_list">Duration List</string>
+    <string name="input_error">Input Data Error</string>
+    <string name="over_max_value">Exceeds Maximum</string>
+    <string name="max_value_tip">Max 10 cycles</string>
+    <string name="over_limit">Out of Range</string>
+
+    <string name="start">Start</string>
+    <string name="start_tip">Configure channel first</string>
+    <string name="sel_config">Config</string>
+    <string name="config">config</string>
+    <string name="select">Select</string>
+    <string name="custom">Custom</string>
+
+    <string name="empty">Empty</string>
+    <string name="keepingT">Keeping</string>
+    <string name="testing">Testing</string>
+    <string name="cleaning">Cleaning</string>
+    <string name="keepedT">OK</string>
+    <string name="controllingT">Controlling</string>
+
+    <string name="end">End</string>
+    <string name="print">Print</string>
+    <string name="test_count">Cycles</string>
+    <string name="test_time">Time</string>
+
+    <string name="passage_setting">Channel Settings</string>
+
+    <string name="ok">OK</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="del">Delete</string>
+    <string name="debugging">Debug</string>
+    <string name="close">Close</string>
+    <string name="compute">Compute</string>
+
+
+
+    <string name="test_detail">Test Detail</string>
+    <string name="test_result">Test Result</string>
+    <string name="del_tip">Delete selected data?</string>
+    <string name="del_all_tip">Delete all data?</string>
+    <string name="export">Export</string>
+    <string name="exporting">Exporting</string>
+
+    <string name="export_tip">Export selected data?</string>
+    <string name="export_all_tip">Export all data?</string>
+    <string name="export_success">Export Success</string>
+    <string name="export_fail">Export Failed</string>
+    <string name="export_fail_no_path">No USB Detected</string>
+    <string name="u_in">USB Inserted</string>
+    <string name="u_out">USB Removed</string>
+    <string name="export_file_name">Viscometer_Test_Data</string>
+    <string name="uploading">Uploading…</string>
+    <string name="upload_success">Upload Success</string>
+    <string name="upload_fail">Upload Failed</string>
+
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="chinese">Chinese</string>
+
+    <string name="medium">Medium</string>
+    <string name="medium_add">Add Medium</string>
+    <string name="medium_name">Medium Name</string>
+    <string name="medium_pid">Medium Coefficient</string>
+    <string name="medium_water">Water</string>
+    <string name="medium_glycerol">Glycerol</string>
+    <string name="medium_silicone_oil">Silicone oil</string>
+
+    <string name="button_switch">Physical Button</string>
+
+    <string name="temperature_edit">Calibration</string>
+    <string name="temperature_edit_1">Single-point</string>
+    <string name="temperature_edit_2">Coefficient</string>
+    <string name="temperature_edit_3">Multi-point</string>
+
+    <string name="test_temperature">Test Temp</string>
+    <string name="real_temperature">Calibrated Temp</string>
+    <string name="edit_t_tip">Cannot modify during test</string>
+
+    <string name="test_data_shortage">Minimum 2 datasets</string>
+    <string name="have_duplicate_data">Duplicate data</string>
+    <string name="click_often_tip">Frequent clicks blocked</string>
+
+    <string name="file_no_found">File Not Found</string>
+    <string name="version">Version</string>
+    <string name="update">Update</string>
+
+    <!-- Weekdays -->
+    <string name="Sunday">Sunday</string>
+    <string name="Monday">Monday</string>
+    <string name="Tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="Thursday">Thursday</string>
+    <string name="Friday">Friday</string>
+    <string name="Saturday">Saturday</string>
+
+    <string name="number_start">No.</string>
+    <string name="number_end"> </string>
+    <string name="no_video">Video Not Found</string>
+    <string name="time">Time</string>
+    <string name="time_edit">Set Time</string>
+    <string name="cant_del_tip">Default config protected</string>
+    <string name="input_completely">Complete All Fields</string>
+    <string name="valid_data_is_less">Valid data less than 3 cycles</string>
+    <string name="min_number_is_4">Minimum 4 cycles</string>
+
+
+    <!-- Network -->
+    <string name="wlan">Network</string>
+    <string name="wlan_connected">Connected</string>
+    <string name="wlan_enable">Available Networks</string>
+    <string name="wlan_pwd">Wi-Fi Password</string>
+    <string name="wlan_no_connect">Disconnected</string>
+    <string name="wlan_no_connect_tip">No Network</string>
+    <string name="scan">Scan</string>
+    <string name="scanning">Scanning…</string>
+    <string name="connecting">Connecting…</string>
+    <string name="connect_error">Connection Failed</string>
+
+    <string name="new_version">New Version</string>
+    <string name="token_edit">Edit Token</string>
+    <string name="success">Success</string>
+    <string name="system">System</string>
+    <string name="admin">User</string>
+    <string name="upload">Upload</string>
+
+    <string name="del_all">Delete All</string>
+    <string name="save">Save</string>
+    <string name="reset">Reset</string>
+    <string name="all">All</string>
+    <string name="save_success">Save Success</string>
+    <string name="date">Date</string>
+    <string name="date_pick">Select Date</string>
+
+    <string name="wifi">Wlan</string>
+    <string name="upload_setting">Upload Settings</string>
+    <string name="upload_path">Server URL</string>
+    <string name="upload_user">Account</string>
+    <string name="upload_pwd">Password</string>
+
+    <string name="cur_admin">Current User</string>
+    <string name="role">Role</string>
+    <string name="role_admin">Admin</string>
+    <string name="role_user">Operator</string>
+    <string name="admin_list">User List</string>
+    <string name="name">Username</string>
+    <string name="pwd">Password</string>
+    <string name="function">Actions</string>
+    <string name="logout">Logout</string>
+    <string name="edit">Edit</string>
+    <string name="add_admin">Add User</string>
+    <string name="user_already_exists">User Exists</string>
+    <string name="input_name">Enter Username</string>
+    <string name="input_pwd">Enter Password</string>
+    <string name="confirm_del_admin">Delete User?</string>
+    <string name="del_admin">Delete User</string>
+    <string name="edit_admin">Edit User</string>
+
+    <string name="edit_upload_info">Edit Upload Config</string>
+    <string name="change_language">Language</string>
+    <string name="del_test_data">Delete Test Data</string>
+
+    <string name="user_login">User Login</string>
+    <string name="login">Login</string>
+    <string name="auto_login">Auto Login</string>
+    <string name="admin_not_find">User Not Found</string>
+    <string name="pwd_error">Wrong Password</string>
+
+    <string name="audit_history">Audit Trail</string>
+    <string name="content">Action</string>
+    <string name="del_audit">Delete Audit</string>
+
+
+    <!-- Refresh -->
+    <string name="usr_last_load_time">Last Load: </string>
+    <string name="usr_last_refresh_time">Last Refresh: </string>
+    <string name="usr_load_completed">Loaded</string>
+    <string name="usr_loading">Loading…</string>
+    <string name="usr_pull_down_to_refresh">Pull to Refresh</string>
+    <string name="usr_pull_up_to_load">Pull to Load More</string>
+    <string name="usr_refresh_completed">Refreshed</string>
+    <string name="usr_refreshing">Refreshing…</string>
+    <string name="usr_release_to_load">Release to Load</string>
+    <string name="usr_release_to_refresh">Release to Refresh</string>
+
+
+    <string name="device_param">Param</string>
+    <string name="up">up</string>
+    <string name="down">down</string>
+    <string name="detected_value">detected value</string>
+    <string name="set_value">set value</string>
+    <string name="sensitivity">light intensity</string>
+
+    <string name="debug_mode">Debug Mode</string>
+    <string name="motor_test">Motor Test</string>
+    <string name="speed">Speed</string>
+    <string name="direction">Direction</string>
+    <string name="forward">forward</string>
+    <string name="reverse">reverse</string>
+    <string name="solenoid_valve_test">solenoid valve test</string>
+    <string name="clean_empty">Emptying</string>
+    <string name="clean_drying">Drying</string>
+
+    <string name="state">state</string>
+    <string name="clean">Clean</string>
+    <string name="device_running">The device is running, please operate it later</string>
+
+
+    <string name="auto_print">Print</string>
+    <string name="auto_upload">Upload</string>
+    <string name="auto_clean">Clean</string>
+    <string name="manager_pwd">Admin password</string>
+    <string name="auto_empty">Empty</string>
+
+
+    <string name="advanced_param">Adv. Param</string>
+    <string name="manual_clean">Manual Clean</string>
+
+    <string name="clean_empty_setting">Empty Settings</string>
+
+    <string name="drying_duration">Drying duration</string>
+
+    <string name="clean_setting">Clean Settings</string>
+
+    <string name="testing_tip">Testing is ongoing and cannot be changed</string>
+
+
+    <string name="decomp">decomp</string>
+    <string name="decomp_setting">decomp setting</string>
+    <string name="decomp_duration">decomp duration</string>
+
+    <string name="drying_setting">drying setting</string>
+    <string name="wait_drying_tip">Please wait for the drying process to complete on another channel</string>
+
+    <string name="data_optimization">Data Opt</string>
+
+    <string name="tester">Tester</string>
+
+</resources>
