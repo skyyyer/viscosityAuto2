@@ -21,12 +21,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableIntState
@@ -38,48 +41,41 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
 import com.hm.viscosity.model.MediumModel
+import com.hm.viscosityauto.AdminPageRoute
+import com.hm.viscosityauto.AvdParamPageRoute
+import com.hm.viscosityauto.CleanPageRoute
+import com.hm.viscosityauto.DeviceParamPageRoute
+import com.hm.viscosityauto.ManagerPageRoute
 import com.hm.viscosityauto.R
-import com.hm.viscosityauto.ui.page.Menu.System
-import com.hm.viscosityauto.ui.page.Menu.Admin
-import com.hm.viscosityauto.ui.page.Menu.AdvParam
-import com.hm.viscosityauto.ui.page.Menu.Calibration
-import com.hm.viscosityauto.ui.page.Menu.Clean
-import com.hm.viscosityauto.ui.page.Menu.Medium
-import com.hm.viscosityauto.ui.page.Menu.Param
-import com.hm.viscosityauto.ui.page.Menu.Upload
-import com.hm.viscosityauto.ui.page.Menu.Wlan
-import com.hm.viscosityauto.ui.theme.TestCardBg
 import com.hm.viscosityauto.ui.theme.cardBg
+import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.dividerColor
 import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.textColorGray
-import com.hm.viscosityauto.ui.theme.underLine
 import com.hm.viscosityauto.ui.view.AddMediumView
-import com.hm.viscosityauto.ui.view.AdvParamView
 import com.hm.viscosityauto.ui.view.BaseButton
 import com.hm.viscosityauto.ui.view.BaseDialog
 import com.hm.viscosityauto.ui.view.BaseTitle
-import com.hm.viscosityauto.ui.view.CalibrationView
-import com.hm.viscosityauto.ui.view.CleanView
-import com.hm.viscosityauto.ui.view.MediumView
-import com.hm.viscosityauto.ui.view.ParamView
-import com.hm.viscosityauto.ui.view.SystemView
-import com.hm.viscosityauto.ui.view.UploadView
+import com.hm.viscosityauto.ui.view.CalibrationMulView
+import com.hm.viscosityauto.ui.view.CalibrationSingleView
 import com.hm.viscosityauto.ui.view.WlanView
 
-import com.hm.viscosityauto.ui.view.AdminView
 import com.hm.viscosityauto.ui.view.CustomWidthSwitch
 import com.hm.viscosityauto.ui.view.ItemLab
+import com.hm.viscosityauto.ui.view.PwdDialogView
+import com.hm.viscosityauto.ui.view.TimerPickerView
 import com.hm.viscosityauto.ui.view.click.doubleClick
 import com.hm.viscosityauto.utils.FileUtil
 import com.hm.viscosityauto.utils.SPUtils
@@ -92,19 +88,6 @@ import com.hm.viscosityauto.vm.SettingVM
 import com.hm.viscosityauto.vm.TestState
 import com.iwdael.wifimanager.Wifi
 import java.io.File
-
-
-object Menu {
-    const val System = 0
-    const val Admin = 1
-    const val Wlan = 2
-    const val Upload = 3
-    const val Medium = 4
-    const val Calibration = 5
-    const val Param = 6
-    const val Clean = 7
-    const val AdvParam = 8
-}
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -144,6 +127,17 @@ fun SettingPage(vm: MainVM) {
     }
     var selMediumIndex by remember {
         mutableIntStateOf(0)
+    }
+
+
+    //单点校准
+    val calibrationSingleDialog = remember {
+        mutableStateOf(false)
+    }
+
+    //多点校准
+    val calibrationMulDialog = remember {
+        mutableStateOf(false)
     }
 
 
@@ -192,7 +186,9 @@ fun SettingPage(vm: MainVM) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LazyColumn(modifier = Modifier.padding(horizontal = 40.dp), content = {
+            LazyColumn(modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 40.dp), content = {
                 item {
                     //系统设置
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -240,10 +236,13 @@ fun SettingPage(vm: MainVM) {
                             )
                         }
                         Spacer(modifier = Modifier.width(80.dp))
-                        Row( verticalAlignment = Alignment.CenterVertically,modifier = Modifier.NoPressStateClick(onClick = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.NoPressStateClick(onClick = {
 
-                            vm.setLanguage(LANGUAGE_EN)
-                        })) {
+                                vm.setLanguage(LANGUAGE_EN)
+                            })
+                        ) {
                             Image(
                                 painter = painterResource(id = if (vm.language.value == LANGUAGE_EN) R.mipmap.selected_icon2 else R.mipmap.select_icon2),
                                 contentDescription = null,
@@ -299,7 +298,6 @@ fun SettingPage(vm: MainVM) {
                             }
                         )
                         Spacer(modifier = Modifier.width(20.dp))
-
                         if (vm.newApkPath.value.isNotEmpty()) {
                             if (File(vm.newApkPath.value).exists() && FileUtil.extractVersionCodeFromApk(
                                     context,
@@ -343,11 +341,18 @@ fun SettingPage(vm: MainVM) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 30.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 30.dp)
+                    ) {
                         Text(
                             text = stringResource(id = R.string.temperature_edit_1),
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.width(120.dp)
+                            modifier = Modifier
+                                .width(120.dp)
+                                .clickable {
+                                    calibrationSingleDialog.value = true
+                                }
                         )
 
                         CustomWidthSwitch(
@@ -368,7 +373,11 @@ fun SettingPage(vm: MainVM) {
                         Text(
                             text = stringResource(id = R.string.temperature_edit_3),
                             style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.width(120.dp)
+                            modifier = Modifier
+                                .width(120.dp)
+                                .clickable {
+                                    calibrationMulDialog.value = true
+                                }
                         )
 
                         CustomWidthSwitch(
@@ -418,7 +427,7 @@ fun SettingPage(vm: MainVM) {
                     FlowRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(80.dp)
+                            .height(200.dp)
                             .padding(8.dp)
                             .background(Color.Transparent),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -454,97 +463,83 @@ fun SettingPage(vm: MainVM) {
                         }
                     }
 
-
                 }
             })
 
+        }
 
-//            Row(
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//
-//                MenuView(tabSel, vm.language.value) {
-//                    tabSel.intValue = it
-//                }
-//
-//                Box(modifier = Modifier.padding(vertical = 20.dp, horizontal = 40.dp)) {
-//                    when (tabSel.intValue) {
-//
-//                        Admin -> {
-//                            AdminView(vm.adminInfo.value, vm.adminList, addAdmin = {
-//                                vm.addAdmin(it)
-//                            }, delAdmin = {
-//                                vm.delAdmin(it)
-//                            }, editAdmin = {
-//                                vm.editAdmin(it)
-//                            }, logout = {
-//                                vm.logout()
-//                            })
-//                        }
-//
-//                        Wlan -> {
-//                            WlanView(
-//                                vm.wifiState.value,
-//                                vm.wifiScanState.intValue,
-//                                vm.wifiConnectedList,
-//                                vm.wifiList,
-//                                onStateChange = {
-//                                    vm.wifiState.value = it
-//                                    if (it) {
-//                                        vm.openWifi()
-//                                    } else {
-//                                        vm.closeWIFI()
-//                                    }
-//                                },
-//                                onConnect = {
-//                                    if (it.isSaved) {
-//                                        vm.connectWIFI(context, it)
-//                                    } else if (it.isEncrypt) {
-//                                        selWifi = it as Wifi
-//                                        pwdDialogState.value = true
-//                                    } else {
-//                                        vm.connectWIFI(context, it)
-//                                    }
-////                                    vm.connectWIFI(it)
-//
-//                                }, onScan = {
-//                                    vm.scanWIFI()
-//                                })
-//                        }
-//
-//                        Upload -> {
-//                            UploadView(
-//                                vm.uploadPath.value,
-//                                vm.uploadUser.value,
-//                                vm.uploadPwd.value
-//                            ) { path, name, pwd ->
-//                                vm.editUploadInfo(path, name, pwd)
-//                            }
-//                        }
-//
-//                        Medium -> {
-//                            MediumView(settingVm)
-//                        }
-//
-//                        Calibration -> {
-//                            CalibrationView(settingVm)
-//                        }
-//
-//                        Param -> {
-//                            ParamView(settingVm)
-//                        }
-//
-//                        Clean -> {
-//                            CleanView(settingVm)
-//                        }
-//
-//                        AdvParam -> {
-//                            AdvParamView(settingVm)
-//                        }
-//                    }
-//                }
-//
-//            }
+        //底部菜单
+        Row(
+            modifier = Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .background(color = cardBg)
+                .align(Alignment.BottomCenter),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .clickable {
+                        Nav.to(AdminPageRoute.route)
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.admin_manager),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+            VerticalDivider(
+                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .clickable {
+                        Nav.to(AvdParamPageRoute.route)
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.advanced_param),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+            VerticalDivider(
+                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .clickable {
+                        Nav.to(DeviceParamPageRoute.route)
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.device_param),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+            VerticalDivider(
+                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .clickable {
+                        Nav.to(CleanPageRoute.route)
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.manual_clean),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+            }
+
         }
 
 
@@ -560,37 +555,61 @@ fun SettingPage(vm: MainVM) {
 
 
         //添加介质
-        BaseDialog(dialogState = addMediumDialog, onDismissRequest = {
-            val index = settingVm.mediumList.indexOfFirst {
-                it.isSel
+        if (addMediumDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+                AddMediumView(
+                    settingVm.curTemperature,
+                    settingVm.heatingState,
+                    onConfirm = { name, p ->
+                        if (name.isEmpty() || p.isEmpty()) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.input_completely),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            addMediumDialog.value = false
+
+                            settingVm.mediumList.add(
+                                MediumModel(
+                                    p,
+                                    name,
+                                    isSel = false,
+                                    isCanDel = true
+                                )
+                            )
+                            SPUtils.getInstance()
+                                .put("mediumInfo", Gson().toJson(settingVm.mediumList))
+                        }
+
+                    },
+                    onDebug = {
+                        settingVm.setMedium(it.toInt())
+                    },
+                    onCancel = {
+                        addMediumDialog.value = false
+                        val index = settingVm.mediumList.indexOfFirst {
+                            it.isSel
+                        }
+                        settingVm.setMedium(settingVm.mediumList[index].p.toInt())
+
+                    },
+                    setT = {
+                        settingVm.setTemperature(it)
+                    },
+                    stopTemperature = {
+                        settingVm.stopTemperature()
+                    })
             }
-            settingVm.setMedium(settingVm.mediumList[index].p.toInt())
 
-        }) {
-            AddMediumView(settingVm.curTemperature, settingVm.heatingState, onConfirm = { name, p ->
-                if (name.isEmpty() || p.isEmpty()) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.input_completely),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    addMediumDialog.value = false
-
-                    settingVm.mediumList.add(MediumModel(p, name, isSel = false, isCanDel = true))
-                    SPUtils.getInstance().put("mediumInfo", Gson().toJson(settingVm.mediumList))
-                }
-
-            }, onDebug = {
-                settingVm.setMedium(it.toInt())
-            }, onCancel = {
-                addMediumDialog.value = false
-
-            }, setT = {
-                settingVm.setTemperature(it)
-            }, stopTemperature = {
-                settingVm.stopTemperature()
-            })
         }
 
 
@@ -622,7 +641,10 @@ fun SettingPage(vm: MainVM) {
                 Spacer(modifier = Modifier.height(26.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    BaseButton(title = stringResource(id = R.string.cancel), isNegativeStyle = true) {
+                    BaseButton(
+                        title = stringResource(id = R.string.cancel),
+                        isNegativeStyle = true
+                    ) {
                         delMediumDialog.value = false
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -647,6 +669,168 @@ fun SettingPage(vm: MainVM) {
         }, dialogState = delMediumDialog)
 
 
+        //时间选择
+        if (timePickerDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+                TimerPickerView(onConfirm = { year, month, day, hour, minute, second ->
+                    vm.editTime(year, month, day, hour, minute, second)
+                    timePickerDialog.value = false
+                }) {
+                    timePickerDialog.value = false
+                }
+            }
+
+        }
+
+        //管理员弹窗
+
+        BaseDialog(dialogState = managerDialog) {
+            PwdDialogView(stringResource(id = R.string.manager_pwd), onCancel = {
+                managerDialog.value = false
+            }, onConfirm = {
+                managerDialog.value = false
+                if (it == "0523") {
+                    Nav.to(ManagerPageRoute.route)
+                }
+            })
+        }
+
+
+        //wifi弹窗
+        if (wifiDialogState.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+                WlanView(
+                    vm.wifiState.value,
+                    vm.wifiScanState.intValue,
+                    vm.wifiConnectedList,
+                    vm.wifiList,
+                    onStateChange = {
+                        vm.wifiState.value = it
+                        if (it) {
+                            vm.openWifi()
+                        } else {
+                            vm.closeWIFI()
+                        }
+                    },
+                    onConnect = {
+                        if (it.isSaved) {
+                            vm.connectWIFI(context, it)
+                        } else if (it.isEncrypt) {
+                            selWifi = it as Wifi
+                            pwdDialogState.value = true
+                        } else {
+                            vm.connectWIFI(context, it)
+                        }
+//                                    vm.connectWIFI(it)
+
+                    }, onScan = {
+                        vm.scanWIFI()
+                    }, onClose = {
+                        wifiDialogState.value = false
+                    })
+            }
+        }
+
+
+        //单点弹窗
+        if (calibrationSingleDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(600.dp, 320.dp)
+                        .shadow(
+                            elevation = 16.dp, shape = RoundedCornerShape(10.dp),
+                        )
+                        .background(color = cardBgWhite)
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.mipmap.close_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 6.dp, top = 6.dp)
+                            .size(26.dp)
+                            .align(Alignment.TopEnd)
+                            .clip(shape = RoundedCornerShape(13.dp))
+                            .clickable {
+                                calibrationSingleDialog.value = false
+                            }
+                    )
+
+                    CalibrationSingleView(settingVm)
+
+
+                }
+            }
+        }
+
+
+        //多点弹窗
+        if (calibrationMulDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .width(600.dp)
+                        .shadow(
+                            elevation = 16.dp, shape = RoundedCornerShape(10.dp),
+                        )
+                        .background(color = cardBgWhite)
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.mipmap.close_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 6.dp, top = 6.dp)
+                            .size(26.dp)
+                            .align(Alignment.TopEnd)
+                            .clip(shape = RoundedCornerShape(13.dp))
+                            .clickable {
+                                calibrationMulDialog.value = false
+                            }
+                    )
+
+                    CalibrationMulView(settingVm)
+
+                }
+            }
+
+
+        }
     }
 
 }
@@ -671,15 +855,13 @@ fun WifiPwdDialogView(
     ) {
         Text(
             text = stringResource(id = R.string.wlan_pwd),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        TextField(value = pwd.value, onValueChange = {
-            pwd.value = it
-        })
 
+        InputView(value = pwd.value, width = 300.dp, height = 50.dp, onValueChange = {  pwd.value = it})
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -703,102 +885,5 @@ fun WifiPwdDialogView(
 
     }
 }
-
-
-@Composable
-fun MenuView(tabSel: MutableIntState, language: String, onSel: (Int) -> Unit) {
-    LazyColumn(
-        modifier = Modifier
-            .background(TestCardBg)
-            .fillMaxHeight()
-            .width(160.dp)
-    ) {
-
-        Log.e("MenuView", language)
-
-        item {
-            MenuItemView(stringResource(id = R.string.system), tabSel.intValue == System) {
-                onSel(System)
-            }
-        }
-        item {
-            MenuItemView(stringResource(id = R.string.admin), tabSel.intValue == Admin) {
-                onSel(Admin)
-            }
-        }
-
-        item {
-            MenuItemView(stringResource(id = R.string.wlan), tabSel.intValue == Wlan) {
-                onSel(Wlan)
-            }
-
-        }
-        item {
-            MenuItemView(stringResource(id = R.string.upload), tabSel.intValue == Upload) {
-                onSel(Upload)
-            }
-        }
-
-        item {
-            MenuItemView(stringResource(id = R.string.medium), tabSel.intValue == Medium) {
-                onSel(Medium)
-            }
-        }
-        item {
-            MenuItemView(
-                stringResource(id = R.string.temperature_edit),
-                tabSel.intValue == Calibration
-            ) {
-                onSel(Calibration)
-            }
-
-        }
-
-        item {
-            MenuItemView(stringResource(id = R.string.device_param), tabSel.intValue == Param) {
-                onSel(Param)
-            }
-
-        }
-        item {
-            MenuItemView(stringResource(id = R.string.manual_clean), tabSel.intValue == Clean) {
-                onSel(Clean)
-            }
-
-        }
-
-        item {
-            MenuItemView(
-                stringResource(id = R.string.advanced_param),
-                tabSel.intValue == AdvParam
-            ) {
-                onSel(AdvParam)
-            }
-
-        }
-
-
-    }
-
-}
-
-@Composable
-fun MenuItemView(title: String, isSel: Boolean, onSel: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .width(160.dp)
-            .height(80.dp)
-            .background(if (isSel) Color.White else Color.Transparent)
-            .clickable {
-                onSel()
-            }, contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge.copy(color = if (isSel) textColorBlue else textColor)
-        )
-    }
-}
-
 
 

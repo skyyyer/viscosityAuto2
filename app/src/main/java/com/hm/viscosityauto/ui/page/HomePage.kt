@@ -65,7 +65,9 @@ fun HomePage(vm: MainVM = viewModel()) {
         Image(
             painter = painterResource(id = R.mipmap.home_bg),
             contentDescription = null,
-            modifier = Modifier.size(446.dp,290.dp).align(Alignment.TopEnd)
+            modifier = Modifier
+                .size(446.dp, 290.dp)
+                .align(Alignment.TopEnd)
         )
 
 
@@ -80,18 +82,24 @@ fun HomePage(vm: MainVM = viewModel()) {
             TimeView(vm.week, vm.date, vm.time, vm.adminInfo.value.name)
 
             //标题
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            Image(
-                painter = painterResource(id = R.mipmap.app_title_icon),
-                contentDescription = null,
+            Text(
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.displayLarge.copy(
+                    brush = Brush.verticalGradient(
+                        colors = arrayListOf(
+                            textStart, textEnd
+                        )
+                    )
+                ),
                 modifier = Modifier
-                    .height(68.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentScale = ContentScale.Inside
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+
+            Spacer(modifier = Modifier.height(40.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 ItemCard(stringResource(id = R.string.test), R.mipmap.test_icon, bg = cardBgGray1.copy(alpha = 0.25f)) {
@@ -154,8 +162,7 @@ fun TimeView(week: String, date: String, time: String, admin: String) {
                             Color(0XFF0074F5),
                             Color(0XFF71B7F4),
                         )
-                    )
-                    , shape = RoundedCornerShape(20.dp)
+                    ), shape = RoundedCornerShape(20.dp)
                 ), contentAlignment = Alignment.Center
         ){
             Image(
@@ -192,7 +199,7 @@ fun TimeView(week: String, date: String, time: String, admin: String) {
 private fun ItemCard(title: String, res: Int,bg:Color =cardBg.copy(alpha = 0.8f),  onClick: (() -> Unit) = {}) {
     Box(modifier = Modifier
         .size(212.dp, 312.dp)
-        .background(bg,shape = RoundedCornerShape(15.dp))
+        .background(bg, shape = RoundedCornerShape(15.dp))
         .clip(shape = RoundedCornerShape(15.dp))
         .clickable {
             onClick()

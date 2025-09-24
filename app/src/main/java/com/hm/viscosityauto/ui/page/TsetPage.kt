@@ -271,7 +271,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                 //温度控制
                 Column(
                     modifier = Modifier
-                        .width(332.dp).padding(horizontal = 16.dp)
+                        .width(320.dp).padding(horizontal = 16.dp)
                         .background(TestCardBg, shape = RoundedCornerShape(5.dp)),
                     horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -387,7 +387,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(id = R.string.auto_empty),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.width(100.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             CustomWidthSwitch(
@@ -419,7 +420,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(id = R.string.auto_clean),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.width(100.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             CustomWidthSwitch(
@@ -444,7 +446,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(id = R.string.auto_print),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.width(100.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             CustomWidthSwitch(
@@ -469,7 +472,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = stringResource(id = R.string.data_optimization),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.width(100.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             CustomWidthSwitch(
@@ -608,8 +612,9 @@ fun TestPage(vm: TestVM = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 76.dp, start = 20.dp, end = 20.dp, bottom = 16.dp)
-                .background(color = cardBgWhite),
+                .padding(top = 76.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
+                .background(color = cardBgWhite)
+                .padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -668,6 +673,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                                         )
                                     )
                             }
+                            configDialog.value = false
                         }, onSave = {
                             vm.configList[index] = it
                             SPUtils.getInstance().put("configInfo", Gson().toJson(vm.configList))
@@ -768,7 +774,7 @@ private fun ConfigItemView(
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
-            .width(280.dp).fillMaxHeight()
+            .width(300.dp).fillMaxHeight()
             .background(
                 color = cardBg,
                 shape = RoundedCornerShape(5.dp)
@@ -779,7 +785,7 @@ private fun ConfigItemView(
 
         Text(
             text = stringResource(id = R.string.config) + (index + 1),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
         )
         Spacer(modifier = Modifier.height(16.dp))
 

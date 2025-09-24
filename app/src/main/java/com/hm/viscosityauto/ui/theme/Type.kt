@@ -20,7 +20,7 @@ val Typography = Typography(
     ),
 
     displayLarge = TextStyle(
-        fontFamily = FontFamily( Font(R.font.source_han_serif_cn_bold)),
+        fontFamily = FontFamily( Font(R.font.source_han_serif_cn_heavy)),
         fontSize = 70.sp,
         brush = Brush.verticalGradient(colors = listOf(buttonStart, buttonEnd)),
         platformStyle = PlatformTextStyle(includeFontPadding = false)

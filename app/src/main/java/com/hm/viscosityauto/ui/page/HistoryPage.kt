@@ -1,5 +1,6 @@
 package com.hm.viscosityauto.ui.page
 
+import NoPressStateClick
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,11 +23,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,25 +44,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.DurationModel
-import com.hm.viscosityauto.room.admin.AdminRecords
 import com.hm.viscosityauto.room.test.TestRecords
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.keyBoardBg
-import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.textColorGray
-import com.hm.viscosityauto.ui.view.AdminRole
 import com.hm.viscosityauto.ui.view.BaseButton
 import com.hm.viscosityauto.ui.view.BaseDialog
 import com.hm.viscosityauto.ui.view.BaseTitle
@@ -71,9 +64,7 @@ import com.hm.viscosityauto.ui.view.obtainFooterTipContent
 import com.hm.viscosityauto.ui.view.obtainHeaderTipContent
 import com.hm.viscosityauto.ui.view.obtainLastLoadTime
 import com.hm.viscosityauto.ui.view.obtainLastRefreshTime
-import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.vm.HistoryVM
-import com.hm.viscosityauto.vm.MainVM
 import com.king.ultraswiperefresh.NestedScrollMode.*
 import com.king.ultraswiperefresh.UltraSwipeRefresh
 import com.king.ultraswiperefresh.indicator.classic.ClassicRefreshFooter
@@ -287,8 +278,125 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
             }
 
 
-            //时长列表
-            BaseDialog(contentView = {
+
+
+        }
+
+
+        //确认弹框
+        BaseDialog(contentView = {
+            Column(
+                modifier = Modifier
+                    .width(440.dp)
+                    .background(color = Color.White, shape = RoundedCornerShape(5.dp))
+                    .padding(30.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = stringResource(id = R.string.tip),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(id = if (selList.isEmpty()) R.string.del_all_tip else R.string.del_tip),
+                    style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
+                )
+
+                Spacer(modifier = Modifier.height(26.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    BaseButton(
+                        title = stringResource(id = R.string.cancel),
+                        isNegativeStyle = true
+                    ) {
+                        delDialog.value = false
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    BaseButton(title = stringResource(id = R.string.confirm)) {
+                        delDialog.value = false
+                        if (selList.isEmpty()) {
+                            vm.delAllTestData()
+                        } else {
+                            vm.delTestDatas(selList)
+                            selList.clear()
+                        }
+                    }
+
+                }
+
+            }
+
+
+        }, dialogState = delDialog)
+
+
+        //导出确认弹框
+        BaseDialog(contentView = {
+            Column(
+                modifier = Modifier
+                    .width(440.dp)
+                    .background(color = Color.White, shape = RoundedCornerShape(5.dp))
+                    .padding(30.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = stringResource(id = R.string.tip),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(id = if (selList.isEmpty()) R.string.export_all_tip else R.string.export_tip),
+                    style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
+                )
+
+                Spacer(modifier = Modifier.height(26.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    BaseButton(
+                        title = stringResource(id = R.string.cancel),
+                        isNegativeStyle = true
+                    ) {
+                        exportDialog.value = false
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    BaseButton(title = stringResource(id = R.string.confirm)) {
+                        exportDialog.value = false
+
+                        if (selList.isEmpty()) {
+                            vm.exportDataAll(context)
+                        } else {
+                            vm.exportData(context, selList)
+                        }
+                    }
+
+                }
+
+            }
+
+        }, dialogState = exportDialog)
+
+
+        //时长列表
+        if (openDurationDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
                 Box(
                     modifier = Modifier
                         .requiredHeightIn(max = 600.dp)
@@ -370,13 +478,14 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                             )
                             ItemDataView(
                                 stringResource(id = R.string.test_time),
-                                selData.value.date + " " + selData.value.time, Modifier.weight(1f)
+                                selData.value.date + " " + selData.value.time,
+                                Modifier.weight(1f)
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = stringResource(id = R.string.duration_list),
-                            style = MaterialTheme.typography.titleSmall.copy(color = textColorBlue),
+                            style = MaterialTheme.typography.bodyLarge.copy(color = textColorBlue),
                             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -395,112 +504,8 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                     }
                 }
 
-            }, dialogState = openDurationDialog)
-
-
-            //确认弹框
-            BaseDialog(contentView = {
-                Column(
-                    modifier = Modifier
-                        .width(440.dp)
-                        .background(color = Color.White, shape = RoundedCornerShape(5.dp))
-                        .padding(30.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.tip),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = stringResource(id = if (selList.isEmpty()) R.string.del_all_tip else R.string.del_tip),
-                        style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
-                    )
-
-                    Spacer(modifier = Modifier.height(26.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        BaseButton(
-                            title = stringResource(id = R.string.cancel),
-                            isNegativeStyle = true
-                        ) {
-                            delDialog.value = false
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        BaseButton(title = stringResource(id = R.string.confirm)) {
-                            delDialog.value = false
-                            if (selList.isEmpty()) {
-                                vm.delAllTestData()
-                            } else {
-                                vm.delTestDatas(selList)
-                                selList.clear()
-                            }
-                        }
-
-                    }
-
-                }
-
-
-            }, dialogState = delDialog)
-
-
-            //导出确认弹框
-            BaseDialog(contentView = {
-                Column(
-                    modifier = Modifier
-                        .width(440.dp)
-                        .background(color = Color.White, shape = RoundedCornerShape(5.dp))
-                        .padding(30.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.tip),
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = stringResource(id = if (selList.isEmpty()) R.string.export_all_tip else R.string.export_tip),
-                        style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
-                    )
-
-                    Spacer(modifier = Modifier.height(26.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        BaseButton(
-                            title = stringResource(id = R.string.cancel),
-                            isNegativeStyle = true
-                        ) {
-                            exportDialog.value = false
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        BaseButton(title = stringResource(id = R.string.confirm)) {
-                            exportDialog.value = false
-
-                            if (selList.isEmpty()) {
-                                vm.exportDataAll(context)
-                            } else {
-                                vm.exportData(context, selList)
-                            }
-                        }
-
-                    }
-
-                }
-
-            }, dialogState = exportDialog)
+            }
         }
-
     }
 }
 
@@ -516,9 +521,9 @@ fun ItemDataView(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "$title:  ",
-            style = MaterialTheme.typography.titleSmall.copy(color = textColorBlue)
+            style = MaterialTheme.typography.bodyLarge.copy(color = textColorBlue)
         )
-        Text(text = value, style = MaterialTheme.typography.titleSmall)
+        Text(text = value, style = MaterialTheme.typography.bodyLarge)
 
     }
 
@@ -552,7 +557,10 @@ fun ItemRecordView(
                 onCheckedChange = {
                     onSel(it)
                 },
-                colors = CheckboxDefaults.colors(checkedColor = cardBgBlue),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = cardBgBlue,
+                    uncheckedColor = cardBgBlue
+                ),
                 modifier = Modifier.size(50.dp)
             )
         } else {

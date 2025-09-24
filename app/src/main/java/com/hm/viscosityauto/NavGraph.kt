@@ -16,13 +16,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.asi.nav.Destination
 import com.asi.nav.NavigationEffect
+import com.hm.viscosityauto.ui.page.AdminPage
+import com.hm.viscosityauto.ui.page.AdvParamPage
 import com.hm.viscosityauto.ui.page.AuditPage
+import com.hm.viscosityauto.ui.page.CleanPage
 import com.hm.viscosityauto.ui.page.DebugPage
 import com.hm.viscosityauto.ui.page.HelpPage
 import com.hm.viscosityauto.ui.page.HistoryPage
 import com.hm.viscosityauto.ui.page.HomePage
 import com.hm.viscosityauto.ui.page.LoginPage
 import com.hm.viscosityauto.ui.page.ManagerPage
+import com.hm.viscosityauto.ui.page.ParamPage
 import com.hm.viscosityauto.ui.page.SettingPage
 import com.hm.viscosityauto.ui.page.SplashPage
 import com.hm.viscosityauto.ui.page.TestPage
@@ -45,6 +49,16 @@ object TestPageRoute : Destination("testPage")
 object ManagerPageRoute : Destination("managerPage")
 
 object DebugPageRoute : Destination("DebugPage")
+
+
+object AdminPageRoute : Destination("admin")
+object DeviceParamPageRoute : Destination("deviceParam")
+
+object AvdParamPageRoute : Destination("avdParamPage")
+
+object CleanPageRoute : Destination("cleanPage")
+
+
 
 @Composable
 fun NavGraph(vm: MainVM = viewModel()) {
@@ -106,6 +120,26 @@ fun NavGraph(vm: MainVM = viewModel()) {
         composable(DebugPageRoute.route) {
             DebugPage()
         }
+
+
+        composable(AdminPageRoute.route) {
+            AdminPage(vm)
+        }
+
+        composable(DeviceParamPageRoute.route) {
+            ParamPage()
+        }
+
+        composable(AvdParamPageRoute.route) {
+            AdvParamPage()
+        }
+        // Add more destinations similarly.
+
+        composable(CleanPageRoute.route) {
+            CleanPage()
+        }
+
+
     }
 
 }

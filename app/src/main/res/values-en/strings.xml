@@ -15,13 +15,13 @@
     <string name="data_null">No Test Data</string>
     <string name="name_or_pwd_error">Invalid Credentials</string>
 
-    <string name="set_temperature">Set Temperature</string>
+    <string name="set_temperature">Set Temp</string>
     <string name="stop_heating">Stop Heating</string>
     <string name="start_heating">Start Heating</string>
     <string name="keep_t_not_finish">keep temperature is not complete</string>
 
     <string name="raw_temperature">Raw Temperature</string>
-    <string name="cur_temperature">Current Temp</string>
+    <string name="cur_temperature">Cur Temp</string>
     <string name="temperature_tip">Temperature not reached. Start test anyway?</string>
     <string name="exit_tip">Please end all tests before exiting</string>
 
@@ -37,7 +37,7 @@
     <string name="extract_duration">Ext Times</string>
     <string name="extract_interval">Ext Intvl</string>
     <string name="timekeeping">Timekeeping</string>
-    <string name="motor_speed">Attraction</string>
+    <string name="motor_speed">Pull</string>
     <string name="keep_t_duration">KeepT Dur</string>
 
     <string name="viscosity">Viscosity</string>
@@ -104,8 +104,8 @@
 
     <string name="medium">Medium</string>
     <string name="medium_add">Add Medium</string>
-    <string name="medium_name">Medium Name</string>
-    <string name="medium_pid">Medium Coefficient</string>
+    <string name="medium_name">Name</string>
+    <string name="medium_pid">Pid</string>
     <string name="medium_water">Water</string>
     <string name="medium_glycerol">Glycerol</string>
     <string name="medium_silicone_oil">Silicone oil</string>
@@ -167,6 +167,7 @@
     <string name="system">System</string>
     <string name="admin">User</string>
     <string name="upload">Upload</string>
+    <string name="admin_manager">User management</string>
 
     <string name="del_all">Delete All</string>
     <string name="save">Save</string>
@@ -199,6 +200,7 @@
     <string name="confirm_del_admin">Delete User?</string>
     <string name="del_admin">Delete User</string>
     <string name="edit_admin">Edit User</string>
+    <string name="unselect_user_tip">Please select the user first</string>
 
     <string name="edit_upload_info">Edit Upload Config</string>
     <string name="change_language">Language</string>
@@ -262,7 +264,7 @@
 
     <string name="clean_empty_setting">Empty Settings</string>
 
-    <string name="drying_duration">Drying duration</string>
+    <string name="drying_duration">Drying dur</string>
 
     <string name="clean_setting">Clean Settings</string>
 
@@ -271,7 +273,7 @@
 
     <string name="decomp">decomp</string>
     <string name="decomp_setting">decomp setting</string>
-    <string name="decomp_duration">decomp duration</string>
+    <string name="decomp_duration">decomp dur</string>
 
     <string name="drying_setting">drying setting</string>
     <string name="wait_drying_tip">Please wait for the drying process to complete on another channel</string>

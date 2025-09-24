@@ -2,6 +2,7 @@ package com.hm.viscosityauto.ui.view
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -24,7 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.cardBgGray
+import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.utils.NetworkUtil
@@ -50,99 +55,119 @@ fun WlanView(
     onStateChange: (Boolean) -> Unit,
     onConnect: (IWifi) -> Unit,
     onScan: () -> Unit,
+    onClose:()->Unit,
 ) {
 
     val context = LocalContext.current
 
-    Column {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.width(1.dp))
 
-
-            Text(
-                text = stringResource(id = R.string.wifi),
-                style = MaterialTheme.typography.titleSmall
+    Box(
+        modifier = Modifier
+            .size(733.dp, 442.dp)
+            .shadow(
+                elevation = 16.dp, shape = RoundedCornerShape(10.dp),
             )
+            .background(color = cardBgWhite)
+    ) {
 
-
-            Switch(modifier = Modifier
-                .height(20.dp),
-                checked = state,
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = cardBgBlue,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedBorderColor = cardBgGray,
-                    uncheckedTrackColor = cardBgGray
-                ),
-                onCheckedChange = {
-                    onStateChange(it)
-                })
-
-
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-        HorizontalDivider(
-            color = Color.Gray.copy(alpha = 0.5f),
-            thickness = 1.dp,
-        )
-
-        if (state) {
-
-            if (connectedWifis.isNotEmpty()){
-                WifiItemView(connectedWifis[0], isConnected = true) {
-
+        Image(
+            painter = painterResource(id = R.mipmap.close_icon),
+            contentDescription = null,
+            modifier = Modifier.padding(end = 6.dp, top = 6.dp)
+                .size(26.dp)
+                .align(Alignment.TopEnd)
+                .clip(shape = RoundedCornerShape(13.dp))
+                .clickable {
+                    onClose()
                 }
+        )
+        Column {
+            Row(   modifier = Modifier.fillMaxWidth().padding(top = 20.dp, start = 100.dp, end = 100.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(1.dp))
+
+
+                Text(
+                    text = stringResource(id = R.string.wifi),
+                    style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
+                )
+
+
+                Switch(modifier = Modifier
+                    .height(20.dp),
+                    checked = state,
+                    colors = SwitchDefaults.colors(
+                        checkedTrackColor = cardBgBlue,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedBorderColor = cardBgGray,
+                        uncheckedTrackColor = cardBgGray
+                    ),
+                    onCheckedChange = {
+                        onStateChange(it)
+                    })
+
 
             }
 
-            LazyColumn(modifier = Modifier.weight(1f), content = {
-                itemsIndexed(wifis) { index, bean ->
-                    WifiItemView(bean) {
-                        onConnect(bean)
-                    }
-                }
-            })
+            Spacer(modifier = Modifier.height(24.dp))
+
 
             HorizontalDivider(
                 color = Color.Gray.copy(alpha = 0.5f),
                 thickness = 1.dp,
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            if (state) {
 
-            Box(
-                Modifier
-                    .fillMaxWidth(), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    if (scanState == 0) stringResource(id = R.string.scan) else stringResource(
-                        id = R.string.scanning
-                    ),
-                    style = MaterialTheme.typography.titleSmall.copy(color = textColorBlue),
-                    modifier = Modifier.clickable {
-                        if (scanState == 0) {
-                            onScan()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.scanning),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                if (connectedWifis.isNotEmpty()) {
+                    WifiItemView(connectedWifis[0], isConnected = true) {
+
+                    }
+
+                }
+
+                LazyColumn(modifier = Modifier.weight(1f), content = {
+                    itemsIndexed(wifis) { index, bean ->
+                        WifiItemView(bean) {
+                            onConnect(bean)
                         }
                     }
+                })
+
+                HorizontalDivider(
+                    color = Color.Gray.copy(alpha = 0.5f),
+                    thickness = 1.dp,
                 )
+
+                Box(
+                    Modifier
+                        .fillMaxWidth().height(60.dp), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        if (scanState == 0) stringResource(id = R.string.scan) else stringResource(
+                            id = R.string.scanning
+                        ),
+                        style = MaterialTheme.typography.titleSmall.copy(color = textColorBlue),
+                        modifier = Modifier.clickable {
+                            if (scanState == 0) {
+                                onScan()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.scanning),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    )
+                }
+
             }
 
+
         }
-
-
     }
 }
 
@@ -159,13 +184,13 @@ fun WifiItemView(model: IWifi, isConnected: Boolean = false, onClick: () -> Unit
                 // 绘制下划线（带 16dp 左右边距）
                 drawLine(
                     color = cardBgGray.copy(alpha = 0.5f),
-                    start = Offset(60.dp.toPx(), size.height - strokeWidth / 2),
+                    start = Offset(0f, size.height - strokeWidth / 2),
                     end = Offset(size.width, size.height - strokeWidth / 2),
                     strokeWidth = strokeWidth
                 )
 
 
-            }, verticalAlignment = Alignment.CenterVertically
+            }.padding(horizontal = 65.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         if (isConnected) {
             Box(
@@ -175,7 +200,7 @@ fun WifiItemView(model: IWifi, isConnected: Boolean = false, onClick: () -> Unit
                 Image(
                     painter = painterResource(id = R.mipmap.selected_icon_blue),
                     contentDescription = null,
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(18.dp),
                     colorFilter = ColorFilter.tint(textColorBlue)
                 )
             }

@@ -74,7 +74,7 @@ fun TimerPickerView(
     ) {
         Text(
             text = stringResource(id = R.string.time_edit),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
         )
 
         Spacer(modifier = Modifier.height(32.dp))

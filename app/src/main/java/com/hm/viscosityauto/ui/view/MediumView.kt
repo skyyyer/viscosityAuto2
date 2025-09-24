@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,13 +47,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.gson.Gson
 import com.hm.viscosity.model.MediumModel
 import com.hm.viscosityauto.R
+import com.hm.viscosityauto.ui.page.InputView
+import com.hm.viscosityauto.ui.theme.buttonEnd
+import com.hm.viscosityauto.ui.theme.buttonStart
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.cardBgGray
 import com.hm.viscosityauto.ui.theme.keyBoardBg
 import com.hm.viscosityauto.ui.theme.textColor
+import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.view.click.longClick
+import com.hm.viscosityauto.ui.view.click.noMulClick
+import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.vm.SettingVM
 
@@ -317,7 +324,7 @@ fun AddMediumView(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .width(500.dp)
+                .width(600.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(5.dp))
                 .padding(vertical = 28.dp)
                 .align(Alignment.Center),
@@ -325,46 +332,84 @@ fun AddMediumView(
         ) {
             Text(
                 text = stringResource(id = R.string.medium_add),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(textColorBlue),
 
                 )
             Spacer(modifier = Modifier.height(32.dp))
 
             //温度
-            Row(modifier = Modifier.width(440.dp), verticalAlignment = Alignment.Bottom) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp), verticalAlignment = Alignment.Bottom) {
 
                 Text(
                     text = stringResource(id = R.string.set_temperature) + ":  ",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                BasicTextField(
-                    value = setTemperature,
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier
-                        .size(70.dp, 30.dp)
-                        .background(color = keyBoardBg)
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    onValueChange = {
-                        setTemperature = it
-                    })
-
+                InputView(value = setTemperature, onValueChange = { setTemperature = it})
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 if (heatingState != 0) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    BaseButton(title = stringResource(id = R.string.end)) {
-                        stopTemperature()
+
+                    Row(
+                        modifier = Modifier
+                            .size(82.dp, 32.dp)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        buttonStart,
+                                        buttonEnd,
+                                    )
+                                ), shape = RoundedCornerShape(5.dp)
+                            )
+                            .noMulClick {
+                                stopTemperature()
+                            }
+                        ,
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            maxLines = 1,
+                            text = stringResource(id = R.string.end),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.White,
+                            ),
+                        )
                     }
                 } else {
                     Spacer(modifier = Modifier.width(8.dp))
-                    BaseButton(title = stringResource(id = R.string.start)) {
-                        setT(setTemperature)
+                    Row(
+                        modifier = Modifier
+                            .size(82.dp, 32.dp)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        buttonStart,
+                                        buttonEnd,
+                                    )
+                                ), shape = RoundedCornerShape(5.dp)
+                            )
+                            .noMulClick {
+                                if (LimitUtil.isOverLimit(context, setTemperature)) {
+                                    return@noMulClick
+                                }
+
+                                setT(setTemperature)
+                            }
+                        ,
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            maxLines = 1,
+                            text = stringResource(id = R.string.start),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.White,
+                            ),
+                        )
                     }
                 }
-
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -398,22 +443,13 @@ fun AddMediumView(
                     modifier = Modifier.width(80.dp)
                 )
 
-
-                BasicTextField(
-                    value = name,
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    singleLine = true,
-                    modifier = Modifier
-                        .background(color = keyBoardBg)
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    onValueChange = {
-                        name = if (it.length > 5) {
-                            it.substring(0, 5)
-                        } else {
-                            it
-                        }
-
-                    })
+                InputView(value = name, width = 200.dp, onValueChange = {
+                    name = if (it.length > 5) {
+                        it.substring(0, 5)
+                    } else {
+                        it
+                    }
+                })
 
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -425,17 +461,10 @@ fun AddMediumView(
                     modifier = Modifier.width(80.dp)
                 )
 
-                BasicTextField(
-                    value = p,
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier
-                        .background(color = keyBoardBg)
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    onValueChange = {
-                        p = it
-                    })
+                InputView(value =  p, width = 200.dp, onValueChange = {
+                    p = it
+                })
+
             }
 
 

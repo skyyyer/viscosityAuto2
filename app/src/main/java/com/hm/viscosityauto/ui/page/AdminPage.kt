@@ -1,5 +1,6 @@
-package com.hm.viscosityauto.ui.view
+package com.hm.viscosityauto.ui.page
 
+import NoPressStateClick
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,6 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.asi.nav.Nav
+import com.hm.viscosityauto.AdminPageRoute
+import com.hm.viscosityauto.AvdParamPageRoute
+import com.hm.viscosityauto.CleanPageRoute
+import com.hm.viscosityauto.DeviceParamPageRoute
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.room.admin.AdminRecords
 import com.hm.viscosityauto.ui.theme.cardBg
@@ -48,7 +55,15 @@ import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.cardBgGray
 import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.textColorBlue
-import com.hm.viscosityauto.ui.view.AdminRole.admin
+import com.hm.viscosityauto.ui.page.AdminRole.admin
+import com.hm.viscosityauto.ui.theme.dividerColor
+import com.hm.viscosityauto.ui.view.BaseButton
+import com.hm.viscosityauto.ui.view.BaseDialog
+import com.hm.viscosityauto.ui.view.BaseDialogContent
+import com.hm.viscosityauto.ui.view.BaseTitle
+import com.hm.viscosityauto.utils.ToastUtil
+import com.hm.viscosityauto.vm.MainVM
+import com.hm.viscosityauto.vm.TestState
 
 object AdminRole {
     const val admin = 1
@@ -56,14 +71,7 @@ object AdminRole {
 }
 
 @Composable
-fun AdminView(
-    adminModel: AdminRecords,
-    adminList: List<AdminRecords>,
-    addAdmin: (AdminRecords) -> Unit,
-    delAdmin: (AdminRecords) -> Unit,
-    editAdmin: (AdminRecords) -> Unit,
-    logout: () -> Unit,
-) {
+fun AdminPage(vm: MainVM) {
 
     val context = LocalContext.current
 
@@ -77,22 +85,37 @@ fun AdminView(
         mutableStateOf(false)
     }
 
-    var selAdmin = AdminRecords()
+    var selAdminIndex by remember {
+        mutableIntStateOf(-1)
+    }
 
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 24.dp)
+    ) {
+        Box(modifier = Modifier.padding(horizontal = 28.dp)) {
+            BaseTitle(title = stringResource(id = R.string.admin_manager), onBack = {
+                Nav.back()
+            })
+        }
+
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         Row(
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(start = 70.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.cur_admin) + ": ",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = adminModel.name,
+                text = vm.adminInfo.value.name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.width(200.dp)
             )
@@ -101,147 +124,249 @@ fun AdminView(
 
             Text(
                 text = stringResource(id = R.string.role) + ": ",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = stringResource(id = if (adminModel.role == admin) R.string.role_admin else R.string.role_user),
+                text = stringResource(id = if (vm.adminInfo.value.role == admin) R.string.role_admin else R.string.role_user),
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            BaseButton(
-                stringResource(id = R.string.logout),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    color = Color.White,
-                    fontSize = 20.sp
-                ),
-                isError = true
-            ) {
-                logout()
-            }
-
         }
 
-        if (adminModel.role == admin) {
-            Spacer(modifier = Modifier.height(24.dp))
+        if (vm.adminInfo.value.role == admin) {
+            Spacer(modifier = Modifier.height(8.dp))
 //
 //            Text(
 //                text = stringResource(id = R.string.admin_list),
 //                style = MaterialTheme.typography.bodySmall
 //            )
 //            Spacer(modifier = Modifier.height(24.dp))
+
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .padding(horizontal = 16.dp)
                     .background(cardBg, RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+
+                Box(modifier = Modifier.weight(0.5f)) {
+
+                }
+
                 Text(
                     text = stringResource(id = R.string.name),
-                    style = MaterialTheme.typography.bodyMedium.copy(textColorBlue),
+                    style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = stringResource(id = R.string.pwd),
-                    style = MaterialTheme.typography.bodyMedium.copy(textColorBlue),
+                    style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = stringResource(id = R.string.role),
-                    style = MaterialTheme.typography.bodyMedium.copy(textColorBlue),
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = stringResource(id = R.string.function),
-                    style = MaterialTheme.typography.bodyMedium.copy(textColorBlue),
+                    style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
             }
 
-            LazyColumn(content = {
-                itemsIndexed(adminList) { index, bean ->
-                    AdminItemView(bean, onDel = {
-                        delAdminDialog.value = true
-                        selAdmin = bean
-                    }, onEdit = {
-                        selAdmin = bean
-                        editAdminDialog.value = true
-                    })
+            LazyColumn(modifier = Modifier.weight(1f), content = {
+                itemsIndexed(vm.adminList) { index, bean ->
+                    AdminItemView(bean, selAdminIndex == index, onSel = {
+                        selAdminIndex = if (it) {
+                            index
+                        } else {
+                            -1
+                        }
+
+                    }
+
+//                        onDel = {
+//                        delAdminDialog.value = true
+//                        selAdmin = bean
+//                    }, onEdit = {
+//                        selAdmin = bean
+//                        editAdminDialog.value = true
+//                    }
+                    )
                 }
-            }, modifier = Modifier.weight(1f))
+            })
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            BaseButton(
-                stringResource(id = R.string.add_admin),
-                style = MaterialTheme.typography.titleSmall
-            ) {
-                addAdminDialog.value = true
-            }
 
+            //底部菜单
+            Row(
+                modifier = Modifier
+                    .height(64.dp)
+                    .fillMaxWidth()
+                    .background(color = cardBg),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickable {
+                            addAdminDialog.value = true
+                        }, contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.add_admin),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+                VerticalDivider(
+                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickable {
+                            if (selAdminIndex==-1){
+                                ToastUtil.show(context,context.getString(R.string.unselect_user_tip))
+                                return@clickable
+                            }
+                            editAdminDialog.value = true
+                        }, contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.edit),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+                VerticalDivider(
+                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickable {
+                            if (selAdminIndex==-1){
+                                ToastUtil.show(context,context.getString(R.string.unselect_user_tip))
+                                return@clickable
+                            }
+                            delAdminDialog.value = true
+                        }, contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.del),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+                VerticalDivider(
+                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .clickable {
+                            vm.logout()
+                        }, contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.logout),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+
+            }
         }
     }
 
 
     //添加用户
-    BaseDialog(dialogState = addAdminDialog) {
-        AdminAddView { name, pwd, role ->
-            val filters = adminList.filter { it.name == name }
-            if (filters.isNotEmpty()) {
-                Toast.makeText(
-                    context,
-                    context.getText(R.string.user_already_exists),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                addAdmin(AdminRecords(name = name, pwd = pwd, role = role))
-                addAdminDialog.value = false
-            }
+    if (addAdminDialog.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.1f)).NoPressStateClick(onClick = {
+                    addAdminDialog.value = false
+                }),
+            contentAlignment = Alignment.Center
+        ) {
+            AdminAddView { name, pwd, role ->
+                val filters = vm.adminList.filter { it.name == name }
+                if (filters.isNotEmpty()) {
+                    Toast.makeText(
+                        context,
+                        context.getText(R.string.user_already_exists),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    vm.addAdmin(AdminRecords(name = name, pwd = pwd, role = role))
+                    addAdminDialog.value = false
+                }
 
+            }
         }
     }
 
 
     //删除用户
-    BaseDialog(dialogState = delAdminDialog) {
-        BaseDialogContent(
-            stringResource(id = R.string.tip),
-            stringResource(id = R.string.confirm_del_admin),
-            onConfirm = {
-                delAdminDialog.value = false
-                delAdmin(selAdmin)
-            },
-            onCancel = {
-                delAdminDialog.value = false
-            })
+    if (delAdminDialog.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            BaseDialogContent(
+                stringResource(id = R.string.tip),
+                stringResource(id = R.string.confirm_del_admin),
+                onConfirm = {
+                    delAdminDialog.value = false
+                    vm.delAdmin(vm.adminList[selAdminIndex])
+                    selAdminIndex = -1
+                },
+                onCancel = {
+                    delAdminDialog.value = false
+                })
+        }
     }
 
-
     //修改用户
-    BaseDialog(dialogState = editAdminDialog) {
-        AdminAddView(selAdmin.name, selAdmin.pwd, selAdmin.role) { name, pwd, role ->
-            editAdmin(selAdmin.copy(name = name, pwd = pwd, role = role))
-            editAdminDialog.value = false
+    if (editAdminDialog.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black.copy(alpha = 0.1f)).NoPressStateClick(onClick = {
+                    editAdminDialog.value = false
+                }),
+            contentAlignment = Alignment.Center
+        ) {
+            AdminAddView(
+                vm.adminList[selAdminIndex].name,
+                vm.adminList[selAdminIndex].pwd,
+                vm.adminList[selAdminIndex].role
+            ) { name, pwd, role ->
+                vm.editAdmin(vm.adminList[selAdminIndex].copy(name = name, pwd = pwd, role = role))
+                editAdminDialog.value = false
+            }
         }
     }
 
 }
 
 @Composable
-fun AdminItemView(model: AdminRecords, onDel: () -> Unit, onEdit: () -> Unit) {
+fun AdminItemView(
+    model: AdminRecords,
+    isSel: Boolean = false,
+    onSel: (Boolean) -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,50 +374,46 @@ fun AdminItemView(model: AdminRecords, onDel: () -> Unit, onEdit: () -> Unit) {
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+
+        Box(modifier = Modifier.weight(0.5f), contentAlignment = Alignment.Center) {
+            Checkbox(
+                checked = isSel,
+                onCheckedChange = {
+                    onSel(it)
+                },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = cardBgBlue,
+                    uncheckedColor = cardBgBlue
+                ),
+                modifier = Modifier.size(50.dp)
+            )
+
+        }
+
+
+
+
         Text(
             text = model.name,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
 
         Text(
             text = model.pwd,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f), textAlign = TextAlign.Center
 
         )
 
         Text(
             text = stringResource(id = if (model.role == admin) R.string.role_admin else R.string.role_user),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
 
-
-        Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
-            BaseButton(
-                stringResource(id = R.string.edit),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    color = Color.White,
-                    fontSize = 14.sp
-                ),
-            ){
-                onEdit()
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            BaseButton(
-                stringResource(id = R.string.del),
-                style = MaterialTheme.typography.titleSmall.copy(
-                    color = Color.White,
-                    fontSize = 14.sp
-                ),
-                isError = true
-            ) {
-                onDel()
-            }
-        }
     }
 
 }
@@ -337,7 +458,7 @@ fun AdminAddView(
 
             Text(
                 text = stringResource(id = if (adminName.isEmpty()) R.string.add_admin else R.string.edit),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
             )
 
             Spacer(modifier = Modifier.height(28.dp))

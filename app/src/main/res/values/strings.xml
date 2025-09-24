@@ -189,7 +189,7 @@
     <string name="wlan">网络</string>
     <string name="wlan_connected">已连接WLAN</string>
     <string name="wlan_enable">可用WLAN</string>
-    <string name="wlan_pwd">wifi 密码</string>
+    <string name="wlan_pwd">Wifi 密码</string>
     <string name="wlan_no_connect">未连接</string>
     <string name="wlan_no_connect_tip">未连接网络</string>
     <string name="scan">扫描</string>
@@ -206,6 +206,7 @@
     <string name="system">系统设置</string>
     <string name="admin">用户</string>
     <string name="upload">上传</string>
+    <string name="admin_manager">用户管理</string>
 
     <string name="del_all">删除全部</string>
     <string name="save">保存</string>
@@ -241,6 +242,7 @@
     <string name="confirm_del_admin">确认删除该用户吗？</string>
     <string name="del_admin">删除用户</string>
     <string name="edit_admin">修改用户信息</string>
+    <string name="unselect_user_tip">请先选择用户</string>
 
 
     <string name="edit_upload_info">修改上传配置</string>

@@ -85,31 +85,23 @@ fun LoginPage(vm: MainVM = viewModel()) {
 
         Column(modifier = Modifier.fillMaxSize()) {
             //标题
-            Spacer(modifier = Modifier.height(96.dp))
+            Spacer(modifier = Modifier.height(66.dp))
 
-            Image(
-                painter = painterResource(id = R.mipmap.app_title_icon),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(68.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentScale = ContentScale.Inside
+
+            Text(
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.displayLarge.copy(
+                    brush = Brush.verticalGradient(
+                        colors = arrayListOf(
+                            textStart, textEnd
+                        )
+                    ), fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
 
-//            Text(
-//                text = stringResource(id = R.string.app_name),
-//                style = MaterialTheme.typography.displayLarge.copy(
-//                    brush = Brush.verticalGradient(
-//                        colors = arrayListOf(
-//                            textStart, textEnd
-//                        )
-//                    ), fontWeight = FontWeight.Bold
-//                ),
-//                modifier = Modifier.fillMaxWidth(),
-//                textAlign = TextAlign.Center
-//            )
-
-            Spacer(modifier = Modifier.height(44.dp))
+            Spacer(modifier = Modifier.height(34.dp))
 
             Box(
                 modifier = Modifier

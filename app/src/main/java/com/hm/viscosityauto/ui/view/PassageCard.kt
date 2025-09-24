@@ -466,7 +466,7 @@ fun ItemData(
         Text(
             text = "$name: ",
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1.2f),
             textAlign = TextAlign.Start
         )
         Spacer(modifier = Modifier.width(16.dp))
