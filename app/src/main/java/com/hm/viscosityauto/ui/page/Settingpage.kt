@@ -161,10 +161,6 @@ fun SettingPage(vm: MainVM) {
                     .padding(horizontal = 28.dp)
             ) {
                 BaseTitle(title = stringResource(id = R.string.setting), onBack = {
-                    if (settingVm.stateA != TestState.Empty || settingVm.stateB != TestState.Empty) {
-                        ToastUtil.show(context, context.getString(R.string.exit_tip))
-                        return@BaseTitle
-                    }
                     Nav.back()
                 })
 
