@@ -48,6 +48,7 @@ import com.hm.viscosityauto.ui.theme.cardBgGray1
 import com.hm.viscosityauto.ui.theme.textEnd
 import com.hm.viscosityauto.ui.theme.textStart
 import com.hm.viscosityauto.utils.FileUtil
+import com.hm.viscosityauto.vm.LANGUAGE_ZH
 
 @Composable
 fun HomePage(vm: MainVM = viewModel()) {
@@ -117,16 +118,25 @@ fun HomePage(vm: MainVM = viewModel()) {
                 }
                 Spacer(modifier = Modifier.width(18.dp))
                 ItemCard(stringResource(id = R.string.help), R.mipmap.help_icon) {
-                    if (FileUtil.FilePath2Uri(vm.helpVideoPath) == Uri.EMPTY) {
-                        Toast.makeText(
-                            context, context.getString(R.string.file_no_found),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                    } else {
-                        Nav.to(HelpPageRoute.route)
+                    if (vm.language.value== LANGUAGE_ZH){
+                        if (FileUtil.FilePath2Uri(vm.helpVideoPath) == Uri.EMPTY) {
+                            Toast.makeText(
+                                context, context.getString(R.string.no_video),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Nav.to(HelpPageRoute.route)
+                        }
+                    }else{
+                        if (FileUtil.FilePath2Uri(vm.helpVideoENPath) == Uri.EMPTY) {
+                            Toast.makeText(
+                                context, context.getString(R.string.no_video),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Nav.to(HelpPageRoute.route)
+                        }
                     }
-
 
                 }
 

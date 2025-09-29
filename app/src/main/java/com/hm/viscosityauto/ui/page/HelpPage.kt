@@ -33,7 +33,7 @@ import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
 import io.sanghun.compose.video.uri.VideoPlayerMediaItem
 
 @Composable
-fun HelpPage() {
+fun HelpPage(videoPath: String) {
 
 
     Box {
@@ -56,7 +56,7 @@ fun HelpPage() {
                 VideoPlayer(
                     mediaItems = listOf(
                         VideoPlayerMediaItem.StorageMediaItem(
-                            storageUri = FileUtil.FilePath2Uri("/sdcard/DCIM/1.mp4")
+                            storageUri = FileUtil.FilePath2Uri(videoPath)
                         ),
                     ),
                     handleLifecycle = true,

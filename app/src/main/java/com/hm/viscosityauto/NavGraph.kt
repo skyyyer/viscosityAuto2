@@ -30,6 +30,7 @@ import com.hm.viscosityauto.ui.page.ParamPage
 import com.hm.viscosityauto.ui.page.SettingPage
 import com.hm.viscosityauto.ui.page.SplashPage
 import com.hm.viscosityauto.ui.page.TestPage
+import com.hm.viscosityauto.vm.LANGUAGE_ZH
 import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.TestVM
 import java.util.Locale
@@ -99,7 +100,11 @@ fun NavGraph(vm: MainVM = viewModel()) {
         }
 
         composable(HelpPageRoute.route) {
-            HelpPage()
+            if (vm.language.value== LANGUAGE_ZH){
+                HelpPage(vm.helpVideoPath)
+            }else{
+                HelpPage(vm.helpVideoENPath)
+            }
         }
 
         composable(LoginPageRoute.route) {

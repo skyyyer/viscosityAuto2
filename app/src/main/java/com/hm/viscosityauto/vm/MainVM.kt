@@ -86,6 +86,7 @@ class MainVM : ViewModel() {
 
     var newApkPath = mutableStateOf("")
     var helpVideoPath: String = "/sdcard/DCIM/1.mp4"
+    var helpVideoENPath: String = "/sdcard/DCIM/1_en.mp4"
 
     //登录信息
     var loginInfo by mutableStateOf(AdminRecords())
