@@ -99,9 +99,7 @@ fun NavGraph(vm: MainVM = viewModel()) {
         }
 
         composable(HelpPageRoute.route) {
-            HelpPage("") {
-
-            }
+            HelpPage()
         }
 
         composable(LoginPageRoute.route) {

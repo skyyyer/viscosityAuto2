@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import com.asi.nav.Nav
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.view.BaseTitle
 import com.hm.viscosityauto.utils.FileUtil
@@ -32,7 +33,7 @@ import io.sanghun.compose.video.controller.VideoPlayerControllerConfig
 import io.sanghun.compose.video.uri.VideoPlayerMediaItem
 
 @Composable
-fun HelpPage(videoPath: String, onBack: () -> Unit) {
+fun HelpPage() {
 
 
     Box {
@@ -44,7 +45,7 @@ fun HelpPage(videoPath: String, onBack: () -> Unit) {
 
 
             BaseTitle(title = stringResource(id = R.string.help), onBack = {
-                onBack()
+              Nav.back()
             })
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -55,7 +56,7 @@ fun HelpPage(videoPath: String, onBack: () -> Unit) {
                 VideoPlayer(
                     mediaItems = listOf(
                         VideoPlayerMediaItem.StorageMediaItem(
-                            storageUri = FileUtil.FilePath2Uri(videoPath)
+                            storageUri = FileUtil.FilePath2Uri("/sdcard/DCIM/1.mp4")
                         ),
                     ),
                     handleLifecycle = true,

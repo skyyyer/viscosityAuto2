@@ -18,7 +18,7 @@ data class PassageModel(
     var number: String = "0",
     var duration: String = "0.00",
     var temperature: String = "0.0",
-    var viscosity: String = "0.000",
+    var viscosity: String = "0.00000",
     var constant: String = "0.0",
     var testCount: String = "4",
     var curNum: Int = 0,//当前是第几次
@@ -84,7 +84,7 @@ data class PassageModel(
 
         } else {
             duration = format.format(enableDurationArray.average()).toString()
-            val formatViscosity = DecimalFormat("#.000")
+            val formatViscosity = DecimalFormat("#.00000")
             viscosity = formatViscosity.format((duration.toFloat() * constant.toFloat()))
         }
 

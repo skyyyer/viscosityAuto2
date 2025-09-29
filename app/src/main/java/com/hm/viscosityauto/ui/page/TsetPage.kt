@@ -237,7 +237,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                             vm.passageModelA =
                                 vm.passageModelA.copy(
                                     state = Empty,
-                                    viscosity = "0.000",
+                                    viscosity = "0.00000",
                                     curNum = 0,
                                     duration = "0.00",
                                     curCleanNum = 0,
@@ -582,7 +582,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                             vm.passageModelB =
                                 vm.passageModelB.copy(
                                     state = Empty,
-                                    viscosity = "0.000",
+                                    viscosity = "0.00000",
                                     curNum = 0,
                                     duration = "0.00",
                                     curCleanNum = 0,

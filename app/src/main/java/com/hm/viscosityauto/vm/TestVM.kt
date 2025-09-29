@@ -688,7 +688,7 @@ class TestVM : ViewModel() {
             passageModelA = passageModelA.copy(
                 state = TestState.Empty,
                 curNum = 0, duration = "0.00",
-                curCleanNum = 0, viscosity = "0.000",
+                curCleanNum = 0, viscosity = "0.00000",
                 durationArray = ArrayList()
             )
 
@@ -696,7 +696,7 @@ class TestVM : ViewModel() {
             passageModelB = passageModelB.copy(
                 state = TestState.Empty,
                 curNum = 0, duration = "0.00",
-                curCleanNum = 0, viscosity = "0.000",
+                curCleanNum = 0, viscosity = "0.00000",
                 durationArray = ArrayList()
             )
         }
