@@ -102,7 +102,7 @@ data class PassageModel(
 data class DurationModel(
     val duration: Float,
     var enable: Boolean = true,
-    var derelict: Boolean = false,
+    var derelict: Boolean = false,//是否遗弃
     var temperature: String = "0.000",
 )
 
