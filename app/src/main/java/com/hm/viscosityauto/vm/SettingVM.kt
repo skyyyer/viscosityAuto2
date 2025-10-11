@@ -162,7 +162,6 @@ class SettingVM : ViewModel() {
     init {
         Log.e("SettingVM", "init")
         getLocalSetting()
-        initDevicePort()
     }
 
     override fun onCleared() {
@@ -241,7 +240,7 @@ class SettingVM : ViewModel() {
     /**
      * 初始化 设备串口
      */
-    private fun initDevicePort() {
+    fun initDevicePort() {
 
         serialPortManager =
             SerialPortManager(PATH, 9600, object :
@@ -273,6 +272,8 @@ class SettingVM : ViewModel() {
 
                 override fun onADeviceState(state: Int) {
                     if (stateA!=state){
+
+
                         stateA = state
                     }
 
@@ -299,7 +300,6 @@ class SettingVM : ViewModel() {
 
     }
 
-
     /**
      * 开启关闭  AB 检测值上报
      */
@@ -308,13 +308,12 @@ class SettingVM : ViewModel() {
         val byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.AB_VALUE_UP + (if (state) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
 
     /**
-     * 设置参数
+     * 设置参数(手动调试)
      */
     suspend fun setParam(cleanDurationA:String,cleanDurationB:String,addDurationA: String,addDurationB: String) {
         //清洗时间
@@ -326,7 +325,6 @@ class SettingVM : ViewModel() {
                 cleanA
             ) + ByteUtil.intToHex4(cleanB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
         delay(50)
@@ -340,7 +338,6 @@ class SettingVM : ViewModel() {
                 addA
             ) + ByteUtil.intToHex4(addB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
     }
@@ -355,42 +352,36 @@ class SettingVM : ViewModel() {
                 moterSpeedConvert(advParamModel.emptySpeed.toInt())
             ) + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空抽提时间
         byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(advParamModel.emptyExtractDuration.toInt())  + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空抽提间隔
        byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(advParamModel.emptyExtractInterval.toInt())  + "0000"  + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空烘干时间
          byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.EMPTY_DRYING_DURATION +  ByteUtil.intToHex4(advParamModel.emptyDryingDuration.toInt())+ "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //清洗电机速度
        byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex( moterSpeedConvert(advParamModel.cleanSpeed.toInt()))  + "000000"  + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //清洗烘干时间
          byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(advParamModel.cleanDryingDuration.toInt())  + "0000"  + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //泄压时间
@@ -399,12 +390,40 @@ class SettingVM : ViewModel() {
                 advParamModel.decompDuration.toInt()
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
 
 
+    /**
+     * 设置 抽提参数 （设备参数页面 使用）
+     */
+    suspend fun setExtractParam(extractDurA:String,extractIntA:String,speedA:String,extractDurB:String,extractIntB:String,speedB:String) {
+        //抽提时间
+        var byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
+                extractDurA.toInt()
+            ) + ByteUtil.intToHex4(extractDurB.toInt()) + CRC + SerialPortManager.FOOT
+        )
+
+        serialPortManager?.write(byteArray)
+        delay(50)
+        //抽提间隔
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_INTERVAL + ByteUtil.intToHex4(
+                extractIntA.toInt()
+            ) + ByteUtil.intToHex4(extractIntB.toInt()) + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
+        delay(50)
+        //电机速度
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.MOTOR_SPEED + ByteUtil.intToHex(
+                moterSpeedConvert(speedA.toInt())
+            ) + "00" + ByteUtil.intToHex(moterSpeedConvert(speedB.toInt())) + "00" + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
+    }
 
     /**
      * 设定值、灵敏度
@@ -422,7 +441,6 @@ class SettingVM : ViewModel() {
                 sensitivity
             ) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -436,7 +454,6 @@ class SettingVM : ViewModel() {
                 if (state2) 1 else 0
             ) + ByteUtil.intToHex(if (state3) 1 else 0) + ByteUtil.intToHex(if (state4) 1 else 0) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -449,7 +466,6 @@ class SettingVM : ViewModel() {
             SerialPortManager.HEAD + SerialPortManager.MOTOR_SEN + ByteUtil.intToHex(mode) +
                     ByteUtil.intToHex(speed) + "00" + ByteUtil.intToHex(if (enable) 1 else 0) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -463,7 +479,6 @@ class SettingVM : ViewModel() {
                 if (state) 1 else 0
             ) + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -476,7 +491,6 @@ class SettingVM : ViewModel() {
                 state
             ) +  "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -669,7 +683,6 @@ class SettingVM : ViewModel() {
             )
         }
 
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
@@ -690,7 +703,6 @@ class SettingVM : ViewModel() {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + "00" + "00" + "000000" + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -705,7 +717,6 @@ class SettingVM : ViewModel() {
                 model
             ) + "00" + "000000" + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArrayP)
         serialPortManager?.write(byteArrayP)
 
         SPUtils.getInstance().put("mediumInfo", Gson().toJson(mediumList))

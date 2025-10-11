@@ -665,7 +665,6 @@ class MainVM : ViewModel() {
         val byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + SerialPortManager.CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }

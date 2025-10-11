@@ -260,7 +260,7 @@
 
 
     <string name="advanced_param">Adv. Param</string>
-    <string name="manual_clean">Manual Clean</string>
+    <string name="manual_clean">Manual Debug</string>
 
     <string name="clean_empty_setting">Empty Settings</string>
 

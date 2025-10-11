@@ -318,7 +318,7 @@ fun AdvParamPage(vm: SettingVM = viewModel()) {
 
 
 @Composable
-fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boolean = true, onValueChange:(String)->Unit){
+fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boolean = true,onlyNum:Boolean = true, onValueChange:(String)->Unit){
     Box(
         modifier = Modifier
             .size(width, height)
@@ -338,6 +338,7 @@ fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boole
             BasicTextField(
                 value = value,
                 textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
+                keyboardOptions = KeyboardOptions(keyboardType = if (onlyNum) KeyboardType.Number else KeyboardType.Text),
                 singleLine = true,
                 enabled = enabled,
                 modifier = Modifier

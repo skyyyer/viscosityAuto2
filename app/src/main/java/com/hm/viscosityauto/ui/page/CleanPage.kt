@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +76,14 @@ fun CleanPage(vm: SettingVM = viewModel()) {
     var addDurationB by remember {
         mutableStateOf("5")
     }
+
+    DisposableEffect(Unit) {
+        vm.initDevicePort()
+        onDispose {
+            vm.closeSerialPort()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -288,8 +297,8 @@ private fun ItemCmdView(
         }
         Spacer(modifier = Modifier.height(32.dp))
 
-        Row (Modifier.fillMaxWidth()) {
-            BaseButton(stringResource(id = R.string.clean),modifier = Modifier.weight(1f)) {
+        Row(Modifier.fillMaxWidth()) {
+            BaseButton(stringResource(id = R.string.clean), modifier = Modifier.weight(1f)) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -313,7 +322,7 @@ private fun ItemCmdView(
             Spacer(modifier = Modifier.width(32.dp))
 
 
-            BaseButton(stringResource(id = R.string.clean_empty),modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.clean_empty), modifier = Modifier.weight(1f)) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -326,8 +335,8 @@ private fun ItemCmdView(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row (Modifier.fillMaxWidth()){
-            BaseButton(stringResource(id = R.string.clean_drying),modifier = Modifier.weight(1f)) {
+        Row(Modifier.fillMaxWidth()) {
+            BaseButton(stringResource(id = R.string.clean_drying), modifier = Modifier.weight(1f)) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -335,7 +344,7 @@ private fun ItemCmdView(
                 onDrying()
             }
             Spacer(modifier = Modifier.width(32.dp))
-            BaseButton(stringResource(id = R.string.end),modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.end), modifier = Modifier.weight(1f)) {
                 onEnd()
             }
 

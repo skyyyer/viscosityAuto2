@@ -443,7 +443,7 @@ fun AddMediumView(
                     modifier = Modifier.width(80.dp)
                 )
 
-                InputView(value = name, width = 200.dp, onValueChange = {
+                InputView(value = name, width = 200.dp, onlyNum = false, onValueChange = {
                     name = if (it.length > 5) {
                         it.substring(0, 5)
                     } else {

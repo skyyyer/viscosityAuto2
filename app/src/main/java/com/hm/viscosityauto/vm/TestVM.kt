@@ -802,13 +802,14 @@ class TestVM : ViewModel() {
                 state
             ) + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
 
+    /**
+     *  设置参数
+     */
     private suspend fun setParam() {
-        //设置参数
         //清洗时间
         val cleanDurationA =
             (if (passageModelA.cleanDuration.toIntOrNull() == null) 0 else passageModelA.cleanDuration.toInt())
@@ -820,7 +821,6 @@ class TestVM : ViewModel() {
                 cleanDurationA
             ) + ByteUtil.intToHex4(cleanDurationB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
         delay(50)
@@ -836,11 +836,10 @@ class TestVM : ViewModel() {
                 addDurationA
             ) + ByteUtil.intToHex4(addDurationB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
 
-        //进清抽提时间
+        //抽提时间
         val extractDurationA =
             (if (passageModelA.extractDuration.toIntOrNull() == null) 0 else passageModelA.extractDuration.toInt())
         val extractDurationB =
@@ -851,12 +850,11 @@ class TestVM : ViewModel() {
                 extractDurationA
             ) + ByteUtil.intToHex4(extractDurationB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
         delay(50)
 
-        //进清抽提间隔
+        //抽提间隔
         val extractIntervalA =
             (if (passageModelA.extractInterval.toIntOrNull() == null) 0 else passageModelA.extractInterval.toInt())
         val extractIntervalB =
@@ -867,7 +865,6 @@ class TestVM : ViewModel() {
                 extractIntervalA
             ) + ByteUtil.intToHex4(extractIntervalB) + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
 
@@ -879,10 +876,9 @@ class TestVM : ViewModel() {
 
         byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.MOTOR_SPEED + ByteUtil.intToHex(
-                motorSpeedA
+                moterSpeedConvert(motorSpeedA)
             ) + "00" + ByteUtil.intToHex(moterSpeedConvert(motorSpeedB)) + "00" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
@@ -898,7 +894,6 @@ class TestVM : ViewModel() {
                 advParamModel.emptySpeed.toInt()
             ) + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空抽提时间
@@ -907,7 +902,6 @@ class TestVM : ViewModel() {
                 advParamModel.emptyExtractDuration.toInt()
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空抽提间隔
@@ -916,7 +910,6 @@ class TestVM : ViewModel() {
                 advParamModel.emptyExtractInterval.toInt()
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //排空烘干时间
@@ -925,7 +918,6 @@ class TestVM : ViewModel() {
                 advParamModel.emptyDryingDuration.toInt()
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //清洗电机速度
@@ -934,7 +926,6 @@ class TestVM : ViewModel() {
                 advParamModel.cleanSpeed.toInt()
             ) + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
         delay(50)
         //清洗烘干时间
@@ -943,7 +934,6 @@ class TestVM : ViewModel() {
                 advParamModel.cleanDryingDuration.toInt()
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
 
@@ -958,7 +948,6 @@ class TestVM : ViewModel() {
         val byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
@@ -1140,7 +1129,6 @@ class TestVM : ViewModel() {
             )
         }
 
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
 
     }
@@ -1161,7 +1149,6 @@ class TestVM : ViewModel() {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + "00" + "00" + "000000" + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArray)
         serialPortManager?.write(byteArray)
     }
 
@@ -1176,7 +1163,6 @@ class TestVM : ViewModel() {
                 model
             ) + "00" + "000000" + SerialPortManager.FOOT
         )
-        ByteUtil.printByteArray(byteArrayP)
         serialPortManager?.write(byteArrayP)
 
         SPUtils.getInstance().put("mediumInfo", Gson().toJson(mediumList))

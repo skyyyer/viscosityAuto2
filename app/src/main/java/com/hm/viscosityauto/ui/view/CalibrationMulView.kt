@@ -102,7 +102,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
     ) {
 
         Text(
-            text = stringResource(id = R.string.temperature_edit_2),
+            text = stringResource(id = R.string.temperature_edit_3),
             style = MaterialTheme.typography.titleMedium.copy(textColorBlue)
         )
         Spacer(modifier = Modifier.height(28.dp))

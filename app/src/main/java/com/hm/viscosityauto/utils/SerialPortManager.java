@@ -215,6 +215,7 @@ public class SerialPortManager {
 
     public void write(byte[] data) {
         try {
+            ByteUtil.printByteArray(data);
             outputStream.write(data);
         } catch (IOException e) {
             Log.e(TAG, "Error writing to OutputStream", e);

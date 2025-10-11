@@ -292,7 +292,7 @@
     <string name="auto_empty">自动排空</string>
 
     <string name="advanced_param">高级参数</string>
-    <string name="manual_clean">手动清洗</string>
+    <string name="manual_clean">手动调试</string>
 
     <string name="clean_empty_setting">排空设置</string>
     <string name="drying_duration">烘干时间</string>

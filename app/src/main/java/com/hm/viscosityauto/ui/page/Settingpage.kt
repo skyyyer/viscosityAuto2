@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -87,6 +88,7 @@ import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.SettingVM
 import com.hm.viscosityauto.vm.TestState
 import com.iwdael.wifimanager.Wifi
+import kotlinx.coroutines.delay
 import java.io.File
 
 
@@ -143,7 +145,14 @@ fun SettingPage(vm: MainVM) {
 
     DisposableEffect(Unit) {
         vm.getApp()
-        onDispose { }
+        onDispose {
+            settingVm.closeSerialPort()
+        }
+    }
+
+    LaunchedEffect(Unit){
+        delay(1000)
+        settingVm.initDevicePort()
     }
 
 
