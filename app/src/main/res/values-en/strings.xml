@@ -104,6 +104,7 @@
 
     <string name="medium">Medium</string>
     <string name="medium_add">Add Medium</string>
+    <string name="medium_edit">Edit Medium</string>
     <string name="medium_name">Name</string>
     <string name="medium_pid">Pid</string>
     <string name="medium_water">Water</string>

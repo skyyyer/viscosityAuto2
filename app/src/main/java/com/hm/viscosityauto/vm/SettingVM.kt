@@ -16,6 +16,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hm.viscosity.model.MediumModel
+import com.hm.viscosityauto.GlobalState
 import com.hm.viscosityauto.model.PointTModel
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
@@ -160,13 +161,13 @@ class SettingVM : ViewModel() {
      * -通道计时器
      */
     init {
-        Log.e("SettingVM", "init")
+        Log.e("SettingVM", "init"+this)
         getLocalSetting()
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("SettingVM", "onCleared")
+        Log.e("SettingVM", "onCleared"+this)
         stopTemperature()
         closeSerialPort()
     }
@@ -217,7 +218,6 @@ class SettingVM : ViewModel() {
             mediumList.addAll(Gson().fromJson(mediumInfo, listType))
         }
 
-
         val configInfo = SPUtils.getInstance().getString("configInfo", "")
         if (configInfo.isEmpty()) {
             for (i in 0 until 9) {
@@ -233,6 +233,20 @@ class SettingVM : ViewModel() {
         val deviceParam = SPUtils.getInstance().getString("deviceParam", "")
         if (deviceParam.isNotEmpty()){
             DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
+        }
+
+        if (!GlobalState.isSetAdvParam) {
+            viewModelScope.launch {
+                while (serialPortManager==null){
+                    delay(500)
+                }
+                setAdvParam(advParamModel)
+                setMedium(mediumList.find {
+                    it.isSel
+                }?.p!!.toInt())
+
+                GlobalState.isSetAdvParam = true
+            }
         }
     }
 

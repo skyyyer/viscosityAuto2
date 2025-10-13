@@ -353,7 +353,6 @@ class TestVM : ViewModel() {
             mediumList.addAll(Gson().fromJson(mediumInfo, listType))
         }
 
-
         val configInfo = SPUtils.getInstance().getString("configInfo", "")
         if (configInfo.isEmpty()) {
             for (i in 0 until 9) {
@@ -374,8 +373,10 @@ class TestVM : ViewModel() {
 
         if (!GlobalState.isSetAdvParam) {
             viewModelScope.launch {
+                while (serialPortManager==null){
+                    delay(500)
+                }
                 setAdvParam(advParamModel)
-
                 setMedium(mediumList.find {
                     it.isSel
                 }?.p!!.toInt())
@@ -935,7 +936,13 @@ class TestVM : ViewModel() {
             ) + "0000" + CRC + SerialPortManager.FOOT
         )
         serialPortManager?.write(byteArray)
-
+        //泄压时间
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.DECOM_P_DURATION + ByteUtil.intToHex4(
+                advParamModel.decompDuration.toInt()
+            ) + "0000" + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
 
     }
 

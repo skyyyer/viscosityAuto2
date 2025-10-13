@@ -2,8 +2,8 @@ package com.hm.viscosity.model
 
 data class MediumModel(
     val  p: String ="",
-    val  name: String,
-    var  isSel: Boolean,
+    val  name: String = "",
+    var  isSel: Boolean = false,
     var  isCanDel: Boolean = false
 
 )

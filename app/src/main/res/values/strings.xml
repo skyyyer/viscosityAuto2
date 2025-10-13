@@ -113,6 +113,7 @@
 
     <string name="medium">介质</string>
     <string name="medium_add">介质添加</string>
+    <string name="medium_edit">介质修改</string>
     <string name="medium_name">介质名称</string>
     <string name="medium_pid">介质系数</string>
     <string name="medium_water">水</string>

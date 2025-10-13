@@ -150,7 +150,7 @@ fun SettingPage(vm: MainVM) {
         }
     }
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         delay(1000)
         settingVm.initDevicePort()
     }
@@ -422,6 +422,7 @@ fun SettingPage(vm: MainVM) {
                         Spacer(modifier = Modifier.weight(1f))
 
                         BaseButton(stringResource(id = R.string.medium_add)) {
+                            selMediumIndex = -1
                             addMediumDialog.value = true
                         }
 
@@ -454,16 +455,9 @@ fun SettingPage(vm: MainVM) {
                                     settingVm.setMedium(settingVm.mediumList[index].p.toInt())
                                 },
                                 onLongClick = {
-                                    if (model.isCanDel) {
-                                        selMediumIndex = index
-                                        delMediumDialog.value = true
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            context.getText(R.string.cant_del_tip),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                                    selMediumIndex = index
+                                    addMediumDialog.value = true
+
                                 })
                         }
                     }
@@ -573,6 +567,9 @@ fun SettingPage(vm: MainVM) {
                 AddMediumView(
                     settingVm.curTemperature,
                     settingVm.heatingState,
+                    if (selMediumIndex >= 0) settingVm.mediumList[selMediumIndex] else MediumModel(
+                        isCanDel = true
+                    ),
                     onConfirm = { name, p ->
                         if (name.isEmpty() || p.isEmpty()) {
                             Toast.makeText(
@@ -583,14 +580,28 @@ fun SettingPage(vm: MainVM) {
                         } else {
                             addMediumDialog.value = false
 
-                            settingVm.mediumList.add(
-                                MediumModel(
-                                    p,
-                                    name,
-                                    isSel = false,
-                                    isCanDel = true
+                            if (selMediumIndex == -1) {
+                                settingVm.mediumList.add(
+                                    MediumModel(
+                                        p,
+                                        name,
+                                        isSel = false,
+                                        isCanDel = true
+                                    )
                                 )
-                            )
+                            } else {
+                                settingVm.mediumList[selMediumIndex] =
+                                    settingVm.mediumList[selMediumIndex].copy(
+                                        p,
+                                        name,
+                                    )
+
+                                if (settingVm.mediumList[selMediumIndex].isSel) {
+                                    settingVm.setMedium(settingVm.mediumList[selMediumIndex].p.toInt())
+                                }
+
+                            }
+
                             SPUtils.getInstance()
                                 .put("mediumInfo", Gson().toJson(settingVm.mediumList))
                         }
@@ -606,6 +617,26 @@ fun SettingPage(vm: MainVM) {
                         }
                         settingVm.setMedium(settingVm.mediumList[index].p.toInt())
 
+                    }, onDel = {
+                        delMediumDialog.value = true
+
+                    }, onReset = {
+                        if (selMediumIndex == 0) {
+                            settingVm.mediumList[selMediumIndex] =
+                                settingVm.mediumList[selMediumIndex].copy(p = "4")
+                        } else {
+                            settingVm.mediumList[selMediumIndex] =
+                                settingVm.mediumList[selMediumIndex].copy(p = "8")
+                        }
+
+                        if (settingVm.mediumList[selMediumIndex].isSel) {
+                            settingVm.setMedium(settingVm.mediumList[selMediumIndex].p.toInt())
+                        }
+
+                        SPUtils.getInstance()
+                            .put("mediumInfo", Gson().toJson(settingVm.mediumList))
+
+                        addMediumDialog.value = false
                     },
                     setT = {
                         settingVm.setTemperature(it)
@@ -655,10 +686,12 @@ fun SettingPage(vm: MainVM) {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     BaseButton(title = stringResource(id = R.string.confirm)) {
+                        addMediumDialog.value = false
                         delMediumDialog.value = false
 
                         if (settingVm.mediumList[selMediumIndex].isSel) {
                             settingVm.mediumList[0] = settingVm.mediumList[0].copy(isSel = true)
+                            settingVm.setMedium(settingVm.mediumList[0].p.toInt())
                         }
                         settingVm.mediumList.removeAt(selMediumIndex)
 
@@ -866,7 +899,11 @@ fun WifiPwdDialogView(
         Spacer(modifier = Modifier.height(32.dp))
 
 
-        InputView(value = pwd.value, width = 300.dp, height = 50.dp, onValueChange = {  pwd.value = it})
+        InputView(
+            value = pwd.value,
+            width = 300.dp,
+            height = 50.dp,
+            onValueChange = { pwd.value = it })
 
         Spacer(modifier = Modifier.height(32.dp))
 

@@ -63,205 +63,6 @@ import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.vm.SettingVM
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun MediumView(
-    vm: SettingVM = viewModel(),
-) {
-
-    val context = LocalContext.current
-
-    val addMediumDialog = remember {
-        mutableStateOf(false)
-    }
-
-
-    val delMediumDialog = remember {
-        mutableStateOf(false)
-    }
-    var selMediumIndex by remember {
-        mutableIntStateOf(0)
-    }
-
-
-    //介质
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(id = R.string.medium),
-                style = MaterialTheme.typography.titleSmall
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-//            Icon(
-//                imageVector = Icons.Filled.Add,
-//                contentDescription = null,
-//                modifier = Modifier
-//                    .size(40.dp)
-//                    .padding(5.dp)
-//                    .clickable {
-//                        if (vm.mediumList.size >= 20) {
-//                            Toast
-//                                .makeText(
-//                                    context,
-//                                    context.getString(R.string.over_max_value),
-//                                    Toast.LENGTH_SHORT
-//                                )
-//                                .show()
-//                            return@clickable
-//                        }
-//
-//                        addMediumDialog.value = true
-//                    }
-//            )
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(8.dp)
-                .background(Color.Transparent),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            vm.mediumList.forEachIndexed { index, model ->
-
-                ItemLab(
-                    title = model.name,
-                    isSle = model.isSel,
-                    isCanDel = model.isCanDel,
-                    onClick = {
-                        vm.mediumList.forEach {
-                            it.isSel = false
-                        }
-                        vm.mediumList[index] =
-                            vm.mediumList[index].copy(isSel = true)
-
-                        vm.setMedium(vm.mediumList[index].p.toInt())
-                    },
-                    onLongClick = {
-                        if (model.isCanDel) {
-                            selMediumIndex = index
-                            delMediumDialog.value = true
-                        } else {
-                            Toast.makeText(
-                                context,
-                                context.getText(R.string.cant_del_tip),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    })
-            }
-        }
-        Spacer(modifier = Modifier.height(50.dp))
-
-        BaseButton(stringResource(id = R.string.medium_add)) {
-            addMediumDialog.value = true
-        }
-
-        Spacer(modifier = Modifier.width(20.dp))
-
-    }
-
-    //添加介质
-    BaseDialog(dialogState = addMediumDialog, onDismissRequest = {
-        val index = vm.mediumList.indexOfFirst {
-            it.isSel
-        }
-        vm.setMedium(vm.mediumList[index].p.toInt())
-
-    }) {
-        AddMediumView(vm.curTemperature, vm.heatingState, onConfirm = { name, p ->
-            if (name.isEmpty() || p.isEmpty()) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.input_completely),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                addMediumDialog.value = false
-
-                vm.mediumList.add(MediumModel(p, name, isSel = false, isCanDel = true))
-                SPUtils.getInstance().put("mediumInfo", Gson().toJson(vm.mediumList))
-            }
-
-        }, onDebug = {
-            vm.setMedium(it.toInt())
-        }, onCancel = {
-            addMediumDialog.value = false
-
-        }, setT = {
-            vm.setTemperature(it)
-        }, stopTemperature = {
-            vm.stopTemperature()
-        })
-    }
-
-
-    //删除弹框
-    BaseDialog(contentView = {
-        Column(
-            modifier = Modifier
-                .width(440.dp)
-                .background(color = Color.White, shape = RoundedCornerShape(5.dp))
-                .padding(30.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = stringResource(id = R.string.tip),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(id = R.string.del_tip),
-                style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = vm.mediumList[selMediumIndex].name + "(${vm.mediumList[selMediumIndex].p})",
-                style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray)
-            )
-
-            Spacer(modifier = Modifier.height(26.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                BaseButton(title = stringResource(id = R.string.cancel), isNegativeStyle = true) {
-                    delMediumDialog.value = false
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-
-                BaseButton(title = stringResource(id = R.string.confirm)) {
-                    delMediumDialog.value = false
-
-                    if (vm.mediumList[selMediumIndex].isSel) {
-                        vm.mediumList[0] = vm.mediumList[0].copy(isSel = true)
-                    }
-                    vm.mediumList.removeAt(selMediumIndex)
-
-
-                    SPUtils.getInstance()
-                        .put("mediumInfo", Gson().toJson(vm.mediumList))
-                }
-
-            }
-
-        }
-
-    }, dialogState = delMediumDialog)
-
-}
-
 
 @Composable
 fun ItemLab(
@@ -300,8 +101,11 @@ fun ItemLab(
 fun AddMediumView(
     curTemperature: String,
     heatingState: Int,
+    model:MediumModel,
     onConfirm: (name: String, p: String) -> Unit,
     onCancel: () -> Unit,
+    onDel: () -> Unit,
+    onReset: () -> Unit,
     onDebug: (p: String) -> Unit,
     stopTemperature: () -> Unit,
     setT: (String) -> Unit,
@@ -310,10 +114,10 @@ fun AddMediumView(
     val context = LocalContext.current
 
     var name by remember {
-        mutableStateOf("")
+        mutableStateOf(model.name)
     }
     var p by remember {
-        mutableStateOf("")
+        mutableStateOf(model.p)
     }
     var setTemperature by remember {
         mutableStateOf("40")
@@ -331,7 +135,7 @@ fun AddMediumView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(id = R.string.medium_add),
+                text = stringResource(id = if (model.name.isEmpty()) R.string.medium_add else R.string.medium_edit),
                 style = MaterialTheme.typography.titleMedium.copy(textColorBlue),
 
                 )
@@ -443,7 +247,10 @@ fun AddMediumView(
                     modifier = Modifier.width(80.dp)
                 )
 
-                InputView(value = name, width = 200.dp, onlyNum = false, onValueChange = {
+                InputView(value = if (!model.isCanDel) {
+                    if (name == "硅油")
+                        context.getString(R.string.medium_silicone_oil) else context.getString(R.string.medium_water)
+                } else name, width = 200.dp, enabled = model.isCanDel, onlyNum = false, onValueChange = {
                     name = if (it.length > 5) {
                         it.substring(0, 5)
                     } else {
@@ -476,7 +283,6 @@ fun AddMediumView(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-
                 BaseButton(
                     title = stringResource(id = R.string.cancel),
                     isNegativeStyle = true
@@ -484,6 +290,27 @@ fun AddMediumView(
                     onCancel()
                 }
                 Spacer(modifier = Modifier.width(20.dp))
+
+
+                if (model.isCanDel&&model.name.isNotEmpty()){
+                    BaseButton(
+                        title = stringResource(id = R.string.del),
+                    ) {
+                        onDel()
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                }
+                if (!model.isCanDel){
+                    BaseButton(
+                        title = stringResource(id = R.string.reset),
+                    ) {
+                        onReset()
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                }
+
+
+
                 BaseButton(title = stringResource(id = R.string.debugging)) {
                     if (p.toIntOrNull() == null) {
                         Toast.makeText(
