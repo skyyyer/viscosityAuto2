@@ -19,6 +19,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -100,6 +101,15 @@ fun DebugPage(vm: SettingVM = viewModel()) {
             false
         )
     }
+
+
+    DisposableEffect(Unit) {
+        vm.initDevicePort()
+        onDispose {
+            vm.closeSerialPort()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -266,7 +276,7 @@ fun DebugPage(vm: SettingVM = viewModel()) {
 
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
                     Text(
                         text = stringResource(id = R.string.direction),

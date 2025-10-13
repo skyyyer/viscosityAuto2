@@ -29,9 +29,9 @@ public class MyApp extends BaseApplication implements Thread.UncaughtExceptionHa
     public void onCreate() {
         super.onCreate();
 
-//        Thread.setDefaultUncaughtExceptionHandler(this);
-
         CrashReport.initCrashReport(getApplicationContext(), "6ceb1d5c67", false);
+
+        Thread.setDefaultUncaughtExceptionHandler(this);
 
     }
 
