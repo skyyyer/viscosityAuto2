@@ -211,32 +211,31 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
 
         //tab
-        Row(
-            modifier = Modifier
-                .width(380.dp)
-                .height(40.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-
-            Text(
-                text = stringResource(id = R.string.raw_temperature),
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-
-            Text(
-                text = stringResource(id = R.string.real_temperature),
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-        }
+//        Row(
+//            modifier = Modifier
+//                .width(380.dp)
+//                .height(40.dp),
+//            horizontalArrangement = Arrangement.SpaceAround,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//
+//
+//            Text(
+//                text = stringResource(id = R.string.raw_temperature),
+//                style = MaterialTheme.typography.bodyLarge
+//            )
+//
+//
+//            Text(
+//                text = stringResource(id = R.string.real_temperature),
+//                style = MaterialTheme.typography.bodyLarge
+//            )
+//
+//        }
 
 
         LazyColumn(
-            modifier = Modifier
-                .width(380.dp)
+            modifier = Modifier.fillMaxWidth()
                 .height(200.dp),
         ) {
             itemsIndexed(pointTList) { index, items ->
@@ -246,14 +245,24 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                         .fillMaxWidth()
                         .height(40.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
 
                 ) {
+
+                    Text(
+                        text = stringResource(id = R.string.raw_temperature)+": ",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
 
                     InputView(value = items.testT, enabled = multipleEditState.value,onValueChange = {
                         pointTList[index] = pointTList[index].copy(testT = it)
                     })
+                    Spacer(modifier = Modifier.width(28.dp))
 
+                    Text(
+                        text = stringResource(id = R.string.real_temperature)+": ",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
 
                     InputView(value = items.realT,enabled = multipleEditState.value, onValueChange = {
                         pointTList[index] = pointTList[index].copy(realT = it)

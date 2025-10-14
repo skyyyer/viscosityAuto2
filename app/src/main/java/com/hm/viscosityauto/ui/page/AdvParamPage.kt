@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
@@ -78,7 +80,7 @@ fun AdvParamPage(vm: SettingVM = viewModel()) {
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
-        Box(modifier = Modifier.padding(horizontal = 28.dp)) {
+        Box(modifier = Modifier.padding(horizontal = 24.dp)) {
             BaseTitle(title = stringResource(id = R.string.advanced_param), onBack = {
                 Nav.back()
             })
@@ -279,12 +281,12 @@ fun AdvParamPage(vm: SettingVM = viewModel()) {
             ) {
                 Text(
                     text = stringResource(id = R.string.reset),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            VerticalDivider(
-                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
-            )
+            Box(modifier = Modifier.width(1.dp).height(40.dp).background(brush = Brush.verticalGradient(colors = listOf(
+                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent))))
+
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -308,7 +310,7 @@ fun AdvParamPage(vm: SettingVM = viewModel()) {
             ) {
                 Text(
                     text = stringResource(id = R.string.save),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
 

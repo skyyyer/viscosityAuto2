@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,8 +47,8 @@ import com.hm.viscosityauto.ui.view.click.noMulClick
 @Composable
 fun BaseButton(
     title: String = stringResource(id = R.string.ok),
-    style: TextStyle = MaterialTheme.typography.bodyMedium.copy(
-        color = Color.White,
+    style: TextStyle = MaterialTheme.typography.titleSmall.copy(
+        color = Color.White, fontSize = 25.sp
     ),
     containerColor: Color = buttonBg,
     isBrush: Boolean = true,
@@ -59,6 +60,7 @@ fun BaseButton(
 ) {
     Row(
         modifier = modifier
+            .defaultMinSize(minWidth = 82.dp)
             .background(
                 if (isError) {
                     Brush.verticalGradient(
@@ -94,7 +96,7 @@ fun BaseButton(
                 color = if (isNegativeStyle) textColorGray else Color.Transparent,
                 shape = RoundedCornerShape(5.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {

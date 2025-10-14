@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,15 +46,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.DurationModel
 import com.hm.viscosityauto.room.test.TestRecords
+import com.hm.viscosityauto.ui.theme.GrayBg
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
+import com.hm.viscosityauto.ui.theme.cardBgWhite
+import com.hm.viscosityauto.ui.theme.dividerColor
 import com.hm.viscosityauto.ui.theme.keyBoardBg
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.textColorGray
@@ -157,7 +163,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                 .padding(top = 24.dp)
         ) {
             //标题
-            Box(modifier = Modifier.padding(horizontal = 28.dp)) {
+            Box(modifier = Modifier.padding(horizontal = 24.dp)) {
                 //标题
                 BaseTitle(title = stringResource(id = R.string.test_records), onBack = {
                     Nav.back()
@@ -216,9 +222,11 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
 //                stringResource(id = R.string.viscosity_constant) + "(mm²/S²)",
                 stringResource(id = R.string.viscosity) + "(mm²/S)",
                 stringResource(id = R.string.test_time),
-                modifier = Modifier.background(
-                    cardBg
-                ),
+                modifier = Modifier
+                    .background(
+                        cardBg
+                    )
+                    .height(44.dp),
                 isTitle = true
             )
 
@@ -244,6 +252,8 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                         tipTime = { obtainLastLoadTime(it) })
                 }
             ) {
+
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -257,6 +267,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                             items.date + " " + items.time,
                             modifier = Modifier
                                 .background(color = if (selIndex == index) keyBoardBg else Color.Transparent)
+                                .height(52.dp)
                                 .clickable {
                                     if (items.durationArray.isNotEmpty()) {
                                         selData.value = items
@@ -271,13 +282,16 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
 
                             }, isSel = selList.contains(items)
                         )
+                        HorizontalDivider(
+                            color = dividerColor,
+                            thickness = 1.dp,
+                        )
+
 //                    }
                     }
                 }
 
             }
-
-
 
 
         }
@@ -429,7 +443,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                             text = stringResource(id = R.string.test_detail),
                             style = MaterialTheme.typography.titleMedium.copy(color = textColorBlue)
                         )
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(28.dp))
 
                         Row(Modifier.fillMaxWidth()) {
                             ItemDataView(
@@ -497,7 +511,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                                     Array<DurationModel>::class.java
                                 ).toList()
                             ) { index, items ->
-                                ItemDurationView(index, items)
+                                ItemDurView(index, items)
                             }
 
                         }
@@ -530,6 +544,41 @@ fun ItemDataView(
 }
 
 @Composable
+fun ItemDurView(
+    index: Int,
+    item: DurationModel,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Text(
+            text = stringResource(id = R.string.number_start) + (index + 1) + stringResource(id = R.string.number_end) + ":  ",
+            style = if (item.enable) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyLarge.copy(
+                color = GrayBg,
+                textDecoration = if (item.derelict) TextDecoration.LineThrough else null
+
+            ),
+            textAlign = TextAlign.Center,
+        )
+
+        Text(
+            text = "%.2f".format(item.duration) + "(s)",
+            style = if (item.enable) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyLarge.copy(
+                color = GrayBg,
+                textDecoration = if (item.derelict) TextDecoration.LineThrough else null
+            ),
+            textAlign = TextAlign.Center,
+        )
+
+    }
+}
+
+
+@Composable
 fun ItemRecordView(
     testNum: String,
     duration: String,
@@ -545,24 +594,29 @@ fun ItemRecordView(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .height(52.dp)
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
 
     ) {
 
         if (!isTitle) {
-            Checkbox(
-                checked = isSel,
-                onCheckedChange = {
-                    onSel(it)
-                },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = cardBgBlue,
-                    uncheckedColor = cardBgBlue
-                ),
-                modifier = Modifier.size(50.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(50.dp), contentAlignment = Alignment.Center
+            ) {
+                Checkbox(
+                    checked = isSel,
+                    onCheckedChange = {
+                        onSel(it)
+                    },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = cardBgBlue,
+                        uncheckedColor = dividerColor
+                    ),
+                    modifier = Modifier
+                        .size(20.dp)
+                )
+            }
         } else {
             Spacer(modifier = Modifier.width(50.dp))
         }
@@ -570,19 +624,25 @@ fun ItemRecordView(
 
         Text(
             text = testNum,
-            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 19.sp
+            ),
             modifier = Modifier.weight(1f)
         )
 
         Text(
             text = duration,
-            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 19.sp
+            ),
             modifier = Modifier.weight(0.8f)
         )
 
         Text(
             text = temperature,
-            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 19.sp
+            ),
             modifier = Modifier.weight(0.6f)
         )
 
@@ -595,13 +655,17 @@ fun ItemRecordView(
 
         Text(
             text = viscosity,
-            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 19.sp
+            ),
             modifier = Modifier.weight(1f)
         )
 
         Text(
             text = time,
-            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge,
+            style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 19.sp
+            ),
             modifier = Modifier.weight(1.2f)
         )
     }

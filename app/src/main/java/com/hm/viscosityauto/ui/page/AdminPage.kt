@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -95,7 +97,7 @@ fun AdminPage(vm: MainVM) {
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
-        Box(modifier = Modifier.padding(horizontal = 28.dp)) {
+        Box(modifier = Modifier.padding(horizontal = 24.dp)) {
             BaseTitle(title = stringResource(id = R.string.admin_manager), onBack = {
                 Nav.back()
             })
@@ -199,6 +201,8 @@ fun AdminPage(vm: MainVM) {
 //                        editAdminDialog.value = true
 //                    }
                     )
+                    HorizontalDivider(thickness = 1.dp, color = dividerColor)
+
                 }
             })
 
@@ -211,6 +215,7 @@ fun AdminPage(vm: MainVM) {
                     .height(64.dp)
                     .fillMaxWidth()
                     .background(color = cardBg),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
@@ -222,19 +227,30 @@ fun AdminPage(vm: MainVM) {
                 ) {
                     Text(
                         text = stringResource(id = R.string.add_admin),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                     )
                 }
-                VerticalDivider(
-                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
-                )
+                Box(modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
+                        )
+                    ))
+
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
                         .clickable {
-                            if (selAdminIndex==-1){
-                                ToastUtil.show(context,context.getString(R.string.unselect_user_tip))
+                            if (selAdminIndex == -1) {
+                                ToastUtil.show(
+                                    context,
+                                    context.getString(R.string.unselect_user_tip)
+                                )
                                 return@clickable
                             }
                             editAdminDialog.value = true
@@ -242,19 +258,30 @@ fun AdminPage(vm: MainVM) {
                 ) {
                     Text(
                         text = stringResource(id = R.string.edit),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                     )
                 }
-                VerticalDivider(
-                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
-                )
+                Box(modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
+                        )
+                    ))
+
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
                         .clickable {
-                            if (selAdminIndex==-1){
-                                ToastUtil.show(context,context.getString(R.string.unselect_user_tip))
+                            if (selAdminIndex == -1) {
+                                ToastUtil.show(
+                                    context,
+                                    context.getString(R.string.unselect_user_tip)
+                                )
                                 return@clickable
                             }
                             delAdminDialog.value = true
@@ -262,12 +289,20 @@ fun AdminPage(vm: MainVM) {
                 ) {
                     Text(
                         text = stringResource(id = R.string.del),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                     )
                 }
-                VerticalDivider(
-                    thickness = 1.dp, color = dividerColor, modifier = Modifier.height(50.dp)
-                )
+                Box(modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
+                        )
+                    ))
+
 
                 Box(
                     modifier = Modifier
@@ -293,7 +328,8 @@ fun AdminPage(vm: MainVM) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color.Black.copy(alpha = 0.1f)).NoPressStateClick(onClick = {
+                .background(color = Color.Black.copy(alpha = 0.1f))
+                .NoPressStateClick(onClick = {
                     addAdminDialog.value = false
                 }),
             contentAlignment = Alignment.Center
@@ -343,7 +379,8 @@ fun AdminPage(vm: MainVM) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color.Black.copy(alpha = 0.1f)).NoPressStateClick(onClick = {
+                .background(color = Color.Black.copy(alpha = 0.1f))
+                .NoPressStateClick(onClick = {
                     editAdminDialog.value = false
                 }),
             contentAlignment = Alignment.Center
@@ -356,6 +393,7 @@ fun AdminPage(vm: MainVM) {
                 vm.editAdmin(vm.adminList[selAdminIndex].copy(name = name, pwd = pwd, role = role))
                 editAdminDialog.value = false
             }
+
         }
     }
 
@@ -383,7 +421,7 @@ fun AdminItemView(
                 },
                 colors = CheckboxDefaults.colors(
                     checkedColor = cardBgBlue,
-                    uncheckedColor = cardBgBlue
+                    uncheckedColor = dividerColor
                 ),
                 modifier = Modifier.size(50.dp)
             )

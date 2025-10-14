@@ -26,16 +26,23 @@ val Typography = Typography(
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),
 
-    displaySmall = TextStyle(
+    displayMedium = TextStyle(
         fontFamily = FontFamily( Font(R.font.source_han_serif_cn_bold)),
         fontSize = 44.sp,
         color = textColor,
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),
 
-    titleLarge = TextStyle(
+    displaySmall = TextStyle(
         fontFamily = FontFamily( Font(R.font.source_han_serif_cn_bold)),
         fontSize = 33.sp,
+        color = textColor,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
+    ),
+
+    titleLarge = TextStyle(
+        fontFamily = FontFamily( Font(R.font.source_han_serif_cn_bold)),
+        fontSize = 31.sp,
         color = textColor,
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),

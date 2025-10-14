@@ -204,40 +204,53 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
 
 
         //tab
+//        Row(
+//            modifier = Modifier
+//                .width(380.dp)
+//                .height(40.dp),
+//            horizontalArrangement = Arrangement.SpaceAround,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//
+//
+//            Text(
+//                text = stringResource(id = R.string.raw_temperature),
+//                style = MaterialTheme.typography.bodyLarge
+//            )
+//
+//
+//            Text(
+//                text = stringResource(id = R.string.real_temperature),
+//                style = MaterialTheme.typography.bodyLarge
+//            )
+//
+//        }
+//
+
         Row(
             modifier = Modifier
-                .width(380.dp)
-                .height(40.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-
-            Text(
-                text = stringResource(id = R.string.raw_temperature),
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-
-            Text(
-                text = stringResource(id = R.string.real_temperature),
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-        }
-
-        Row(
-            modifier = Modifier
-                .width(380.dp)
+                .fillMaxWidth()
                 .height(40.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
 
-        ) {
+            ) {
+
+            Text(
+                text = stringResource(id = R.string.raw_temperature)+": ",
+                style = MaterialTheme.typography.bodyLarge
+            )
+
 
             InputView(value = setT, enabled = singleEditState.value,onValueChange = {
                 setT = it
             })
+
+            Spacer(modifier = Modifier.width(28.dp))
+
+            Text(
+                text = stringResource(id = R.string.real_temperature)+": ",
+                style = MaterialTheme.typography.bodyLarge
+            )
 
 
             InputView(value = realT,enabled = singleEditState.value, onValueChange = {
@@ -245,6 +258,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             })
 
         }
+
         Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),

@@ -98,7 +98,7 @@ fun AuditPage(vm: AuditVM = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 28.dp)
+                .padding(all = 16.dp)
         ) {
             //标题
             BaseTitle(title = stringResource(id = R.string.audit_history), onBack = {

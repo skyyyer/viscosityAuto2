@@ -180,6 +180,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
     BasePage {
 
+        Spacer(modifier = Modifier.height(12.dp))
         //标题
 
         BaseTitle(title = stringResource(id = R.string.test), onBack = {
@@ -198,7 +199,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 //                vm.closeSerialPort()
         })
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (isReady) {
             Row {
@@ -271,7 +272,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                 //温度控制
                 Column(
                     modifier = Modifier
-                        .width(320.dp).padding(horizontal = 16.dp)
+                        .width(360.dp)
+                        .padding(horizontal = 16.dp)
                         .background(TestCardBg, shape = RoundedCornerShape(5.dp)),
                     horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -321,7 +323,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                     Row {
                         Text(
                             text = vm.curTemperature + " ℃",
-                            style = MaterialTheme.typography.displaySmall,
+                            style = MaterialTheme.typography.displayMedium,
                             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                         )
 
@@ -335,7 +337,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                             HeatState.Heating -> stringResource(id = R.string.controllingT)
                             HeatState.Keeping -> stringResource(id = R.string.keepingT)
                             else -> ""
-                        }, style = MaterialTheme.typography.bodyLarge
+                        }, style = MaterialTheme.typography.titleSmall
                     )
 
 
@@ -345,7 +347,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = stringResource(id = R.string.set_temperature) + ":  ",
-                            style = MaterialTheme.typography.titleMedium.copy(
+                            style = MaterialTheme.typography.titleSmall.copy(
                                 color = textColorBlue,
                                 fontSize = 24.sp
                             )
@@ -414,7 +416,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -441,7 +443,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -466,7 +468,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
 
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -532,7 +534,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
 
                 }
@@ -612,7 +614,7 @@ fun TestPage(vm: TestVM = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 76.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
+                .padding(top = 82.dp, start = 20.dp, end = 20.dp, bottom = 10.dp)
                 .background(color = cardBgWhite)
                 .padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -774,7 +776,8 @@ private fun ConfigItemView(
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
-            .width(300.dp).fillMaxHeight()
+            .width(300.dp)
+            .fillMaxHeight()
             .background(
                 color = cardBg,
                 shape = RoundedCornerShape(5.dp)

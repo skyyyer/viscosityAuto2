@@ -43,12 +43,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
@@ -167,7 +169,7 @@ fun SettingPage(vm: MainVM) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 28.dp)
+                    .padding(horizontal = 24.dp)
             ) {
                 BaseTitle(title = stringResource(id = R.string.setting), onBack = {
                     Nav.back()
@@ -189,7 +191,7 @@ fun SettingPage(vm: MainVM) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             LazyColumn(modifier = Modifier
                 .weight(1f)
@@ -210,57 +212,59 @@ fun SettingPage(vm: MainVM) {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 30.dp)
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.language),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.width(120.dp)
-                        )
 
-                        Row(
-                            modifier = Modifier.NoPressStateClick(onClick = {
-                                vm.setLanguage(LANGUAGE_ZH)
-                            }),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painter = painterResource(id = if (vm.language.value == LANGUAGE_ZH) R.mipmap.selected_icon2 else R.mipmap.select_icon2),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(6.dp))
+                        Row (Modifier.width(528.dp),  verticalAlignment = Alignment.CenterVertically){
                             Text(
-                                text = stringResource(id = R.string.chinese),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(80.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.NoPressStateClick(onClick = {
-
-                                vm.setLanguage(LANGUAGE_EN)
-                            })
-                        ) {
-                            Image(
-                                painter = painterResource(id = if (vm.language.value == LANGUAGE_EN) R.mipmap.selected_icon2 else R.mipmap.select_icon2),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                text = stringResource(id = R.string.language),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.width(120.dp)
                             )
 
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(id = R.string.english),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Row(
+                                modifier = Modifier.NoPressStateClick(onClick = {
+                                    vm.setLanguage(LANGUAGE_ZH)
+                                }),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Image(
+                                    painter = painterResource(id = if (vm.language.value == LANGUAGE_ZH) R.mipmap.selected_icon2 else R.mipmap.select_icon2),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(id = R.string.chinese),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(80.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.NoPressStateClick(onClick = {
+
+                                    vm.setLanguage(LANGUAGE_EN)
+                                })
+                            ) {
+                                Image(
+                                    painter = painterResource(id = if (vm.language.value == LANGUAGE_EN) R.mipmap.selected_icon2 else R.mipmap.select_icon2),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = stringResource(id = R.string.english),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.width(200.dp))
 
 
                         Text(
@@ -277,12 +281,12 @@ fun SettingPage(vm: MainVM) {
                         ) {
                             Text(
                                 text = "${vm.date}  ${vm.time}",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -311,7 +315,8 @@ fun SettingPage(vm: MainVM) {
                             ) {
                                 BaseButton(
                                     isBrush = false,
-                                    title = stringResource(id = R.string.update)
+                                    title = stringResource(id = R.string.update),
+                                    style = MaterialTheme.typography.bodyMedium
                                 ) {
                                     vm.installApk(context as Activity)
                                 }
@@ -320,13 +325,13 @@ fun SettingPage(vm: MainVM) {
 
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = dividerColor
                     )
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
 
                     //温度设置
@@ -344,36 +349,37 @@ fun SettingPage(vm: MainVM) {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 30.dp)
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.temperature_edit_1),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier
-                                .width(120.dp)
-                                .clickable {
-                                    calibrationSingleDialog.value = true
-                                }
-                        )
 
-                        CustomWidthSwitch(
-                            trackWidth = 52.dp,
-                            trackHeight = 24.dp,
-                            thumbSize = 20.dp,
-                            checked = settingVm.calibrationState.intValue == CalibrationState.Single,
-                            onCheckedChange = {
-                                if (it) {
-                                    settingVm.setCalibrationState(CalibrationState.Single)
-                                } else {
-                                    settingVm.setCalibrationState(CalibrationState.None)
-                                }
-                            })
+                        Row (Modifier.width(528.dp),  verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(id = R.string.temperature_edit_1),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .width(120.dp)
+                                    .clickable {
+                                        calibrationSingleDialog.value = true
+                                    }
+                            )
 
-                        Spacer(modifier = Modifier.width(200.dp))
+                            CustomWidthSwitch(
+                                trackWidth = 52.dp,
+                                trackHeight = 24.dp,
+                                thumbSize = 20.dp,
+                                checked = settingVm.calibrationState.intValue == CalibrationState.Single,
+                                onCheckedChange = {
+                                    if (it) {
+                                        settingVm.setCalibrationState(CalibrationState.Single)
+                                    } else {
+                                        settingVm.setCalibrationState(CalibrationState.None)
+                                    }
+                                })
+                        }
 
                         Text(
                             text = stringResource(id = R.string.temperature_edit_3),
@@ -398,13 +404,13 @@ fun SettingPage(vm: MainVM) {
                                 }
                             })
                     }
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     HorizontalDivider(
                         thickness = 1.dp,
                         color = dividerColor
                     )
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     //介质设置
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -428,7 +434,7 @@ fun SettingPage(vm: MainVM) {
 
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     FlowRow(
                         modifier = Modifier
@@ -486,12 +492,19 @@ fun SettingPage(vm: MainVM) {
             ) {
                 Text(
                     text = stringResource(id = R.string.admin_manager),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            VerticalDivider(
-                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
-            )
+            Box(modifier = Modifier
+                .width(1.dp)
+                .height(40.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                        )
+                    )
+                ))
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -502,12 +515,19 @@ fun SettingPage(vm: MainVM) {
             ) {
                 Text(
                     text = stringResource(id = R.string.advanced_param),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            VerticalDivider(
-                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
-            )
+            Box(modifier = Modifier
+                .width(1.dp)
+                .height(40.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                        )
+                    )
+                ))
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -518,12 +538,19 @@ fun SettingPage(vm: MainVM) {
             ) {
                 Text(
                     text = stringResource(id = R.string.device_param),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            VerticalDivider(
-                thickness = 1.dp, color = dividerColor, modifier = Modifier.height(40.dp)
-            )
+            Box(modifier = Modifier
+                .width(1.dp)
+                .height(40.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                        )
+                    )
+                ))
 
             Box(
                 modifier = Modifier
@@ -535,7 +562,7 @@ fun SettingPage(vm: MainVM) {
             ) {
                 Text(
                     text = stringResource(id = R.string.manual_clean),
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
 
@@ -800,7 +827,7 @@ fun SettingPage(vm: MainVM) {
 
                 Box(
                     modifier = Modifier
-                        .size(600.dp, 320.dp)
+                        .size(600.dp, 300.dp)
                         .shadow(
                             elevation = 16.dp, shape = RoundedCornerShape(10.dp),
                         )

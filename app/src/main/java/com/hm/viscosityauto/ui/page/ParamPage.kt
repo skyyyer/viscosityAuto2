@@ -121,7 +121,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
             .fillMaxSize()
             .padding(top = 24.dp)
     ) {
-        Box(modifier = Modifier.padding(horizontal = 28.dp)) {
+        Box(modifier = Modifier.padding(horizontal = 24.dp)) {
             BaseTitle(title = stringResource(id = R.string.device_param), onBack = {
                 if (vm.stateA != TestState.Empty || vm.stateB != TestState.Empty) {
                     ToastUtil.show(context, context.getString(R.string.exit_tip))
@@ -255,7 +255,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
 
             ItemChannelView("A", vm.stateA, extractDurA, extractIntA, speedA,
-                modifier = Modifier.width(320.dp), onEdit = { extractDur, extractInt, speed ->
+                modifier = Modifier.width(424.dp), onEdit = { extractDur, extractInt, speed ->
                     extractDurA = extractDur
                     extractIntA = extractInt
                     speedA = speed
@@ -289,11 +289,11 @@ fun ParamPage(vm: SettingVM = viewModel()) {
 
             }
 
-            Spacer(modifier = Modifier.width(82.dp))
+                Spacer(modifier = Modifier.width(56.dp))
 
             ItemChannelView(
                 "B", vm.stateB, extractDurB, extractIntB, speedB,
-                modifier = Modifier.width(320.dp), onEdit = { extractDur, extractInt, speed ->
+                modifier = Modifier.width(424.dp), onEdit = { extractDur, extractInt, speed ->
                     extractDurB = extractDur
                     extractIntB = extractInt
                     speedB = speed
@@ -383,7 +383,7 @@ private fun ItemView(
         }
 
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            BaseButton {
+            BaseButton(modifier = Modifier.width(102.dp)) {
 
                 if (value1Str.toIntOrNull() == null || value2Str.toIntOrNull() == null) {
                     ToastUtil.show(context, context.getString(R.string.input_error))
@@ -447,7 +447,7 @@ private fun ItemChannelView(
     Column(
         modifier
             .background(cardBg, shape = RoundedCornerShape(12.dp))
-            .padding(20.dp),
+            .padding(horizontal = 75.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -457,13 +457,15 @@ private fun ItemChannelView(
             Image(
                 painter = painterResource(id = if (name == "A") R.mipmap.a_icon else R.mipmap.b_icon),
                 contentDescription = null,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(50.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
 
             BaseButton(
                 stringResource(id = if (state == TestState.Empty) R.string.start else R.string.end),
-                modifier = Modifier.width(80.dp)
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.width(83.dp),
+
             ) {
                 onBtn()
             }

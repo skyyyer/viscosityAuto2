@@ -110,7 +110,7 @@ fun PassageCard(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 10.dp)
+//            .padding(horizontal = 10.dp)
             .background(
                 when (model.state) {
                     Empty -> {
@@ -137,7 +137,7 @@ fun PassageCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(vertical = 16.dp, horizontal = 30.dp),
+                .padding(top = 16.dp, bottom = 8.dp, start = 30.dp, end = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -321,7 +321,7 @@ fun PassageCard(
                                 R.string.end
                             }
                         }
-                    )
+                    ), modifier = Modifier.width(104.dp)
                 ) {
                     when (model.state) {
                         Empty -> {

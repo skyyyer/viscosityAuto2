@@ -229,7 +229,7 @@ private fun ItemCard(title: String, res: Int,bg:Color =cardBg.copy(alpha = 0.8f)
             Spacer(modifier = Modifier.height(70.dp))
 
 
-            Text(text = title, style = MaterialTheme.typography.titleLarge)
+            Text(text = title, style = MaterialTheme.typography.displaySmall)
         }
 
 

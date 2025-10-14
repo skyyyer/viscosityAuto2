@@ -95,7 +95,7 @@ fun CleanPage(vm: SettingVM = viewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 28.dp)
+                .padding(horizontal = 24.dp)
         ) {
             BaseTitle(title = stringResource(id = R.string.manual_clean), onBack = {
                 if (vm.stateA != Empty || vm.stateB != Empty) {

@@ -40,7 +40,7 @@ fun HelpPage(videoPath: String) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(all = 28.dp)
+                .padding(vertical = 24.dp, horizontal = 24.dp)
         ) {
 
 

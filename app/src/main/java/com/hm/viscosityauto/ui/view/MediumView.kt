@@ -1,8 +1,10 @@
 package com.hm.viscosityauto.ui.view
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,11 +50,14 @@ import com.google.gson.Gson
 import com.hm.viscosity.model.MediumModel
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.page.InputView
+import com.hm.viscosityauto.ui.theme.borderColor
 import com.hm.viscosityauto.ui.theme.buttonEnd
 import com.hm.viscosityauto.ui.theme.buttonStart
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
 import com.hm.viscosityauto.ui.theme.cardBgGray
+import com.hm.viscosityauto.ui.theme.cardBgWhite
+import com.hm.viscosityauto.ui.theme.dividerColor
 import com.hm.viscosityauto.ui.theme.keyBoardBg
 import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
@@ -75,13 +80,16 @@ fun ItemLab(
     val context = LocalContext.current
     Box(
         modifier = Modifier
-            .background(if (isSle) cardBgBlue else cardBgGray, shape = RoundedCornerShape(5.dp))
+            .background(if (isSle) cardBgBlue else cardBgWhite, shape = RoundedCornerShape(5.dp))
+            .border( width = 1.dp,
+                color = if (!isSle) borderColor else Color.Transparent,
+                shape = RoundedCornerShape(5.dp))
             .longClick(onClick = {
                 onClick()
             }, onLongClick = {
                 onLongClick()
             })
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 24.dp, vertical = 4.dp)
     ) {
         Text(
             text = if (!isCanDel) {
@@ -225,16 +233,16 @@ fun AddMediumView(
                     text = curTemperature + " ℃",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                if (heatingState != 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Image(
-                        painter = painterResource(id = if (heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(20.dp)
-                    )
-                }
+//                if (heatingState != 0) {
+//                    Spacer(modifier = Modifier.width(8.dp))
+//
+//                    Image(
+//                        painter = painterResource(id = if (heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                            .size(20.dp)
+//                    )
+//                }
 
             }
 

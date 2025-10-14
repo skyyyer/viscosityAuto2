@@ -20,7 +20,7 @@
     <string name="start_heating">Start Heating</string>
     <string name="keep_t_not_finish">keep temperature is not complete</string>
 
-    <string name="raw_temperature">Raw Temperature</string>
+    <string name="raw_temperature">Raw Temp</string>
     <string name="cur_temperature">Cur Temp</string>
     <string name="temperature_tip">Temperature not reached. Start test anyway?</string>
     <string name="exit_tip">Please end all tests before exiting</string>
@@ -119,7 +119,7 @@
     <string name="temperature_edit_3">Multi-point</string>
 
     <string name="test_temperature">Test Temp</string>
-    <string name="real_temperature">Calibrated Temp</string>
+    <string name="real_temperature">Real Temp</string>
     <string name="edit_t_tip">Cannot modify during test</string>
 
     <string name="test_data_shortage">Minimum 2 datasets</string>
