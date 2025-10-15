@@ -45,7 +45,7 @@ fun BasePage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 28.dp, vertical = 12.dp).NoPressStateClick(onClick = {
+            .padding(horizontal = 28.dp, vertical = 24.dp).NoPressStateClick(onClick = {
                 focusManager.clearFocus()
             }),
     ) {

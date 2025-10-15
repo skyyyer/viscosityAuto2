@@ -207,13 +207,15 @@ fun TimerPickerView(
         ) {
 
             BaseButton(
-                title = stringResource(id = R.string.cancel),
+                title = stringResource(id = R.string.cancel),style  = MaterialTheme.typography.titleSmall, isPaddingV = false,
                 isNegativeStyle = true
             ) {
                 onCancel()
             }
             Spacer(modifier = Modifier.width(20.dp))
-            BaseButton(title = stringResource(id = R.string.confirm)) {
+            BaseButton(title = stringResource(id = R.string.confirm),style  = MaterialTheme.typography.titleSmall.copy(
+                color = Color.White,
+            ), isPaddingV = false) {
                 onConfirm(year, month, day, hour, minute, second)
             }
 

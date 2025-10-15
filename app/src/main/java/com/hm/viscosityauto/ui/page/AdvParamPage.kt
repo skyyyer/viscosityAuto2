@@ -346,7 +346,7 @@ fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boole
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.Transparent)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(horizontal = 8.dp),
                 onValueChange = {
                     onValueChange(it)
                 })

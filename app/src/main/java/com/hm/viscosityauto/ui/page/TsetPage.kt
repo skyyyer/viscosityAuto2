@@ -58,6 +58,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -180,11 +182,10 @@ fun TestPage(vm: TestVM = viewModel()) {
 
     BasePage {
 
-        Spacer(modifier = Modifier.height(12.dp))
         //标题
 
         BaseTitle(title = stringResource(id = R.string.test), onBack = {
-            if (configDialog.value){
+            if (configDialog.value) {
                 configDialog.value = false
                 return@BaseTitle
             }
@@ -274,7 +275,7 @@ fun TestPage(vm: TestVM = viewModel()) {
                     modifier = Modifier
                         .width(360.dp)
                         .padding(horizontal = 16.dp)
-                        .background(TestCardBg, shape = RoundedCornerShape(5.dp)),
+                        .background(TestCardBg, shape = RoundedCornerShape(8.dp)),
                     horizontalAlignment = Alignment.CenterHorizontally,
 
                     ) {
@@ -337,7 +338,11 @@ fun TestPage(vm: TestVM = viewModel()) {
                             HeatState.Heating -> stringResource(id = R.string.controllingT)
                             HeatState.Keeping -> stringResource(id = R.string.keepingT)
                             else -> ""
-                        }, style = MaterialTheme.typography.titleSmall
+                        },
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontSize = 23.sp,
+                            fontFamily = FontFamily(Font(R.font.source_han_serif_cn_semibold))
+                        )
                     )
 
 
@@ -349,7 +354,8 @@ fun TestPage(vm: TestVM = viewModel()) {
                             text = stringResource(id = R.string.set_temperature) + ":  ",
                             style = MaterialTheme.typography.titleSmall.copy(
                                 color = textColorBlue,
-                                fontSize = 24.sp
+                                fontSize = 23.sp,
+                                fontFamily = FontFamily(Font(R.font.source_han_serif_cn_semibold))
                             )
                         )
 
@@ -416,7 +422,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -443,7 +449,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
@@ -468,7 +474,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
 
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -497,7 +503,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     if (vm.heatingState != 0) {
                         Spacer(modifier = Modifier.width(8.dp))
@@ -534,7 +540,7 @@ fun TestPage(vm: TestVM = viewModel()) {
 
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
 
                 }
@@ -610,7 +616,7 @@ fun TestPage(vm: TestVM = viewModel()) {
     }
 
     //配置列表
-    if (configDialog.value){
+    if (configDialog.value) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -884,12 +890,14 @@ private fun ConfigItemView(
                 onInput = {
                     passageModel = passageModel.copy(motorSpeed = it)
                 })
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
 
             if (isEdit) {
                 Row {
-                    BaseButton(stringResource(id = R.string.save)) {
+                    BaseButton(stringResource(id = R.string.save),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false) {
                         if (passageModel.isReady()) {
                             isEdit = false
                             onSave(passageModel)
@@ -899,7 +907,9 @@ private fun ConfigItemView(
                     }
 
                     Spacer(modifier = Modifier.width(16.dp))
-                    BaseButton(stringResource(id = R.string.cancel)) {
+                    BaseButton(stringResource(id = R.string.cancel),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false) {
                         isEdit = false
                         passageModel = model
                     }
@@ -907,11 +917,15 @@ private fun ConfigItemView(
 
             } else {
                 Row {
-                    BaseButton(stringResource(id = R.string.edit)) {
+                    BaseButton(stringResource(id = R.string.edit),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false) {
                         isEdit = true
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    BaseButton(stringResource(id = R.string.select)) {
+                    BaseButton(stringResource(id = R.string.select),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false) {
                         onSel()
                     }
 
@@ -929,17 +943,23 @@ private fun ConfigItemView(
                 verticalArrangement = Arrangement.Center
             ) {
 
-                BaseButton("A", modifier = Modifier.width(84.dp)) {
+                BaseButton("A", modifier = Modifier.width(108.dp),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     passageModel = modelA
                     isEdit = true
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                BaseButton("B", modifier = Modifier.width(84.dp)) {
+                BaseButton("B", modifier = Modifier.width(108.dp),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     passageModel = modelB
                     isEdit = true
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                BaseButton(stringResource(id = R.string.custom), modifier = Modifier.width(84.dp)) {
+                BaseButton(stringResource(id = R.string.custom), modifier = Modifier.width(108.dp),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     passageModel = PassageModel()
                     isEdit = true
                 }

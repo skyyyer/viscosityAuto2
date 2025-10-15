@@ -138,7 +138,7 @@ fun AddMediumView(
             modifier = Modifier
                 .width(600.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(5.dp))
-                .padding(vertical = 28.dp)
+                .padding(vertical = 20.dp)
                 .align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -147,7 +147,7 @@ fun AddMediumView(
                 style = MaterialTheme.typography.titleMedium.copy(textColorBlue),
 
                 )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             //温度
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp), verticalAlignment = Alignment.Bottom) {
@@ -156,70 +156,25 @@ fun AddMediumView(
                     text = stringResource(id = R.string.set_temperature) + ":  ",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                InputView(value = setTemperature, onValueChange = { setTemperature = it})
+                InputView(value = setTemperature, height = 30.dp, onValueChange = { setTemperature = it})
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(24.dp))
 
                 if (heatingState != 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .size(82.dp, 32.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        buttonStart,
-                                        buttonEnd,
-                                    )
-                                ), shape = RoundedCornerShape(5.dp)
-                            )
-                            .noMulClick {
-                                stopTemperature()
-                            }
-                        ,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            maxLines = 1,
-                            text = stringResource(id = R.string.end),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color.White,
-                            ),
-                        )
+                    BaseButton(stringResource(id = R.string.end),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false){
+                        stopTemperature()
                     }
                 } else {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Row(
-                        modifier = Modifier
-                            .size(82.dp, 32.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        buttonStart,
-                                        buttonEnd,
-                                    )
-                                ), shape = RoundedCornerShape(5.dp)
-                            )
-                            .noMulClick {
-                                if (LimitUtil.isOverLimit(context, setTemperature)) {
-                                    return@noMulClick
-                                }
+                    BaseButton(stringResource(id = R.string.start),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false){
+                        if (LimitUtil.isOverLimit(context, setTemperature)) {
+                            return@BaseButton
+                        }
 
-                                setT(setTemperature)
-                            }
-                        ,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            maxLines = 1,
-                            text = stringResource(id = R.string.start),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color.White,
-                            ),
-                        )
+                        setT(setTemperature)
                     }
                 }
 
@@ -246,19 +201,19 @@ fun AddMediumView(
 
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(id = R.string.medium_name),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.width(80.dp)
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.width(92.dp)
                 )
 
                 InputView(value = if (!model.isCanDel) {
                     if (name == "硅油")
                         context.getString(R.string.medium_silicone_oil) else context.getString(R.string.medium_water)
-                } else name, width = 200.dp, enabled = model.isCanDel, onlyNum = false, onValueChange = {
+                } else name, width = 200.dp, height = 30.dp, enabled = model.isCanDel, onlyNum = false, onValueChange = {
                     name = if (it.length > 5) {
                         it.substring(0, 5)
                     } else {
@@ -267,16 +222,16 @@ fun AddMediumView(
                 })
 
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(id = R.string.medium_pid),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.width(80.dp)
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.width(92.dp)
                 )
 
-                InputView(value =  p, width = 200.dp, onValueChange = {
+                InputView(value =  p, width = 200.dp,height = 30.dp, onValueChange = {
                     p = it
                 })
 
@@ -292,7 +247,7 @@ fun AddMediumView(
                 horizontalArrangement = Arrangement.Center
             ) {
                 BaseButton(
-                    title = stringResource(id = R.string.cancel),
+                    title = stringResource(id = R.string.cancel),style  = MaterialTheme.typography.titleSmall, isPaddingV = false,
                     isNegativeStyle = true
                 ) {
                     onCancel()
@@ -302,7 +257,9 @@ fun AddMediumView(
 
                 if (model.isCanDel&&model.name.isNotEmpty()){
                     BaseButton(
-                        title = stringResource(id = R.string.del),
+                        title = stringResource(id = R.string.del),style  = MaterialTheme.typography.titleSmall.copy(
+                            color = Color.White,
+                        ), isPaddingV = false
                     ) {
                         onDel()
                     }
@@ -310,7 +267,9 @@ fun AddMediumView(
                 }
                 if (!model.isCanDel){
                     BaseButton(
-                        title = stringResource(id = R.string.reset),
+                        title = stringResource(id = R.string.reset),style  = MaterialTheme.typography.titleSmall.copy(
+                            color = Color.White,
+                        ), isPaddingV = false
                     ) {
                         onReset()
                     }
@@ -319,7 +278,9 @@ fun AddMediumView(
 
 
 
-                BaseButton(title = stringResource(id = R.string.debugging)) {
+                BaseButton(title = stringResource(id = R.string.debugging),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     if (p.toIntOrNull() == null) {
                         Toast.makeText(
                             context, context.getString(R.string.input_error), Toast
@@ -337,7 +298,9 @@ fun AddMediumView(
                     onDebug(p)
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                BaseButton(title = stringResource(id = R.string.confirm)) {
+                BaseButton(title = stringResource(id = R.string.confirm),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     if (p.toIntOrNull() == null) {
                         Toast.makeText(
                             context, context.getString(R.string.input_error), Toast

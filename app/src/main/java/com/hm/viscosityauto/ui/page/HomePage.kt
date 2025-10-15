@@ -208,7 +208,7 @@ fun TimeView(week: String, date: String, time: String, admin: String) {
 @Composable
 private fun ItemCard(title: String, res: Int,bg:Color =cardBg.copy(alpha = 0.8f),  onClick: (() -> Unit) = {}) {
     Box(modifier = Modifier
-        .size(212.dp, 312.dp)
+        .size(200.dp, 292.dp)
         .background(bg, shape = RoundedCornerShape(15.dp))
         .clip(shape = RoundedCornerShape(15.dp))
         .clickable {
@@ -223,13 +223,13 @@ private fun ItemCard(title: String, res: Int,bg:Color =cardBg.copy(alpha = 0.8f)
             Image(
                 painter = painterResource(id = res),
                 contentDescription = null,
-                modifier = Modifier.size(82.dp)
+                modifier = Modifier.size(88.dp,70.dp)
             )
 
-            Spacer(modifier = Modifier.height(70.dp))
+            Spacer(modifier = Modifier.height(65.dp))
 
 
-            Text(text = title, style = MaterialTheme.typography.displaySmall)
+            Text(text = title, style = MaterialTheme.typography.titleMedium)
         }
 
 

@@ -128,7 +128,7 @@ fun PassageCard(
                     else -> {
                         cardBgBlue1
                     }
-                }, shape = RoundedCornerShape(5.dp)
+                }, shape = RoundedCornerShape(8.dp)
             ),
         contentAlignment = Alignment.Center,
     ) {
@@ -137,7 +137,7 @@ fun PassageCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp, bottom = 8.dp, start = 30.dp, end = 30.dp),
+                .padding(top = 16.dp, bottom = 18.dp, start = 30.dp, end = 30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -163,12 +163,15 @@ fun PassageCard(
                         FinishAll -> stringResource(id = R.string.finish)
                         else -> stringResource(id = R.string.empty)
                     },
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 23.sp),
                 )
 
                 Text(
                     text = stringResource(id = R.string.config),
-                    style = MaterialTheme.typography.bodyLarge.copy(color = textColorBlue),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = textColorBlue,
+                        fontSize = 23.sp,
+                    ),
                     modifier = Modifier.clickable {
                         onConfig()
                     }
@@ -191,7 +194,7 @@ fun PassageCard(
             )
 
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
 
             ItemData(
@@ -205,7 +208,7 @@ fun PassageCard(
             )
 
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             ItemData(
                 name = stringResource(id = R.string.test_count),
@@ -218,7 +221,7 @@ fun PassageCard(
                     durationShow.value = true
                 }
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             ItemData(stringResource(id = R.string.keep_t_duration) + "(s)",
                 if (model.state == Empty) model.keepTDuration else keepTCount,
@@ -229,7 +232,7 @@ fun PassageCard(
                 })
 
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (model.state == Empty) {
 
@@ -242,7 +245,7 @@ fun PassageCard(
                     })
 
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 ItemData(stringResource(id = R.string.extract_interval) + "(s)",
                     model.extractInterval,
@@ -252,7 +255,7 @@ fun PassageCard(
 
                     })
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 if (SPUtils.getInstance().getBoolean("autoClean", true)) {
                     ItemData(stringResource(id = R.string.clean_times),
@@ -263,7 +266,7 @@ fun PassageCard(
 
                         })
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     ItemData(stringResource(id = R.string.clean_duration) + "(s)",
                         model.cleanDuration,
@@ -273,7 +276,7 @@ fun PassageCard(
 
                         })
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     ItemData(stringResource(id = R.string.add_liquid_duration) + "(s)",
                         model.addDuration,
@@ -282,7 +285,7 @@ fun PassageCard(
                             updateModel(model.copy(addDuration = it))
 
                         })
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 ItemData(stringResource(id = R.string.motor_speed) + "(Kpa)",
@@ -292,7 +295,7 @@ fun PassageCard(
                         updateModel(model.copy(motorSpeed = it))
                     })
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
             } else {
                 ItemData(stringResource(id = R.string.timekeeping), timekeeping, isTimer = true)
 

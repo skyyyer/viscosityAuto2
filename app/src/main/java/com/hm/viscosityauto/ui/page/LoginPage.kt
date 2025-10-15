@@ -107,7 +107,7 @@ fun LoginPage(vm: MainVM = viewModel()) {
                 modifier = Modifier
                     .wrapContentHeight()
                     .size(415.dp, 348.dp)
-                    .shadow(
+                    .shadow(spotColor = Color(0X551B4565),
                         elevation = 16.dp, shape = RoundedCornerShape(10.dp),
                     )
                     .background(color = cardBgWhite)
@@ -119,14 +119,14 @@ fun LoginPage(vm: MainVM = viewModel()) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
                         text = stringResource(id = R.string.user_login),
                         style = MaterialTheme.typography.titleMedium.copy(color = textColorBlue)
                     )
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Box(
                         modifier = Modifier

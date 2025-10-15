@@ -115,71 +115,37 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            InputView(value = vm.setTemperature, onValueChange = { vm.setTemperature = it})
+            InputView(
+                value = vm.setTemperature,
+                height = 30.dp,
+                onValueChange = { vm.setTemperature = it })
 
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(24.dp))
 
             if (vm.heatingState != 0) {
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Row(
-                    modifier = Modifier
-                        .size(82.dp, 32.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    buttonStart,
-                                    buttonEnd,
-                                )
-                            ), shape = RoundedCornerShape(5.dp)
-                        )
-                        .noMulClick {
-                            vm.stopTemperature()
-                        }
-                       ,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                BaseButton(
+                    stringResource(id = R.string.end),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ),
+                    isPaddingV = false
                 ) {
-                    Text(
-                        maxLines = 1,
-                        text = stringResource(id = R.string.end),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.White,
-                        ),
-                    )
+                    vm.stopTemperature()
                 }
             } else {
-                Spacer(modifier = Modifier.width(8.dp))
-                Row(
-                    modifier = Modifier
-                        .size(82.dp, 32.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    buttonStart,
-                                    buttonEnd,
-                                )
-                            ), shape = RoundedCornerShape(5.dp)
-                        )
-                        .noMulClick {
-                            if (LimitUtil.isOverLimit(context, vm.setTemperature)) {
-                                return@noMulClick
-                            }
-
-                            vm.setTemperature(vm.setTemperature)
-                        }
-                    ,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                BaseButton(
+                    stringResource(id = R.string.start),
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ),
+                    isPaddingV = false
                 ) {
-                    Text(
-                        maxLines = 1,
-                        text = stringResource(id = R.string.start),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.White,
-                        ),
-                    )
+                    if (LimitUtil.isOverLimit(context, vm.setTemperature)) {
+                        return@BaseButton
+                    }
+
+                    vm.setTemperature(vm.setTemperature)
                 }
             }
 
@@ -235,7 +201,8 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(200.dp),
         ) {
             itemsIndexed(pointTList) { index, items ->
@@ -246,32 +213,40 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                         .height(40.dp),
                     verticalAlignment = Alignment.CenterVertically,
 
-                ) {
+                    ) {
 
                     Text(
-                        text = stringResource(id = R.string.raw_temperature)+": ",
+                        text = stringResource(id = R.string.raw_temperature) + ": ",
                         style = MaterialTheme.typography.bodyLarge
                     )
 
 
-                    InputView(value = items.testT, enabled = multipleEditState.value,onValueChange = {
-                        pointTList[index] = pointTList[index].copy(testT = it)
-                    })
+                    InputView(
+                        value = items.testT,
+                        height = 30.dp,
+                        enabled = multipleEditState.value,
+                        onValueChange = {
+                            pointTList[index] = pointTList[index].copy(testT = it)
+                        })
                     Spacer(modifier = Modifier.width(28.dp))
 
                     Text(
-                        text = stringResource(id = R.string.real_temperature)+": ",
+                        text = stringResource(id = R.string.real_temperature) + ": ",
                         style = MaterialTheme.typography.bodyLarge
                     )
 
-                    InputView(value = items.realT,enabled = multipleEditState.value, onValueChange = {
-                        pointTList[index] = pointTList[index].copy(realT = it)
-                    })
+                    InputView(
+                        value = items.realT,
+                        height = 30.dp,
+                        enabled = multipleEditState.value,
+                        onValueChange = {
+                            pointTList[index] = pointTList[index].copy(realT = it)
+                        })
 
                 }
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -280,7 +255,9 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
             if (multipleEditState.value) {
                 BaseButton(
-                    title = stringResource(id = R.string.reset),
+                    title = stringResource(id = R.string.reset),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false
                 ) {
                     multipleEditState.value = false
                     vm.pointTList = vm.pointTListDef
@@ -291,13 +268,18 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 BaseButton(
-                    title = stringResource(id = R.string.cancel),
+                    title = stringResource(id = R.string.cancel),style  = MaterialTheme.typography.titleSmall,
+                    isPaddingV = false,
                     isNegativeStyle = true
                 ) {
+                    pointTList.clear()
+                    pointTList.addAll(vm.pointTList)
                     multipleEditState.value = false
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                BaseButton(title = stringResource(id = R.string.confirm)) {
+                BaseButton(title = stringResource(id = R.string.confirm),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
                     val tempList: MutableList<PointTModel> = mutableStateListOf()
                     tempList.addAll(pointTList)
                     tempList.removeIf {
@@ -344,7 +326,9 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                 }
             } else {
                 BaseButton(
-                    title = stringResource(id = R.string.edit),
+                    title = stringResource(id = R.string.edit),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false
                 ) {
                     multipleEditState.value = true
                 }

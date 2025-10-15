@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -463,7 +464,9 @@ private fun ItemChannelView(
 
             BaseButton(
                 stringResource(id = if (state == TestState.Empty) R.string.start else R.string.end),
-                style = MaterialTheme.typography.bodyLarge,
+                style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false,
                 modifier = Modifier.width(83.dp),
 
             ) {
@@ -486,13 +489,13 @@ private fun ItemChannelView(
                 textAlign = TextAlign.Center
             )
 
-            InputView(value = value1Str, enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value1Str, width = 83.dp, height = 30.dp, enabled = (state == TestState.Empty), onValueChange = {
                 value1Str = it
                 onEdit(value1Str, value2Str, value3Str)
             })
 
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
 
         Row(
@@ -505,13 +508,13 @@ private fun ItemChannelView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value2Str, enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value2Str, width = 83.dp, height = 30.dp,enabled = (state == TestState.Empty), onValueChange = {
                 value2Str = it
                 onEdit(value1Str, value2Str, value3Str)
 
             })
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
 
         Row(
@@ -524,7 +527,7 @@ private fun ItemChannelView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value3Str, enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value3Str, width = 83.dp, height = 30.dp,enabled = (state == TestState.Empty), onValueChange = {
                 value3Str = it
                 onEdit(value1Str, value2Str, value3Str)
 

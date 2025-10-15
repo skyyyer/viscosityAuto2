@@ -815,6 +815,10 @@ fun SettingPage(vm: MainVM) {
 
         //单点弹窗
         if (calibrationSingleDialog.value) {
+            val rememberState  = remember {
+                settingVm.calibrationState.intValue
+            }
+            settingVm.setCalibrationState(CalibrationState.None)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -843,10 +847,11 @@ fun SettingPage(vm: MainVM) {
                             .align(Alignment.TopEnd)
                             .clip(shape = RoundedCornerShape(13.dp))
                             .clickable {
+
+                                settingVm.setCalibrationState(rememberState)
                                 calibrationSingleDialog.value = false
                             }
                     )
-
                     CalibrationSingleView(settingVm)
 
 
@@ -857,6 +862,10 @@ fun SettingPage(vm: MainVM) {
 
         //多点弹窗
         if (calibrationMulDialog.value) {
+            val rememberState  = remember {
+                settingVm.calibrationState.intValue
+            }
+            settingVm.setCalibrationState(CalibrationState.None)
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -885,6 +894,7 @@ fun SettingPage(vm: MainVM) {
                             .align(Alignment.TopEnd)
                             .clip(shape = RoundedCornerShape(13.dp))
                             .clickable {
+                                settingVm.setCalibrationState(rememberState)
                                 calibrationMulDialog.value = false
                             }
                     )

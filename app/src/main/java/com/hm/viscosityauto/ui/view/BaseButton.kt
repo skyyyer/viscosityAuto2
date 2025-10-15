@@ -40,6 +40,7 @@ import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.buttonBg
 import com.hm.viscosityauto.ui.theme.buttonEnd
 import com.hm.viscosityauto.ui.theme.buttonStart
+import com.hm.viscosityauto.ui.theme.cardBgGray
 import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.view.click.noMulClick
 
@@ -54,6 +55,7 @@ fun BaseButton(
     isBrush: Boolean = true,
     isNegativeStyle: Boolean = false,
     isError: Boolean = false,
+    isPaddingV:Boolean = true,
     icon: Int = 0,
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
@@ -93,10 +95,10 @@ fun BaseButton(
             }
             .border(
                 width = 1.dp,
-                color = if (isNegativeStyle) textColorGray else Color.Transparent,
+                color = if (isNegativeStyle) cardBgGray else Color.Transparent,
                 shape = RoundedCornerShape(5.dp)
             )
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = if (isPaddingV) 4.dp else 2.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {

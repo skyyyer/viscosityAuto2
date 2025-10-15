@@ -110,69 +110,26 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
                 text = stringResource(id = R.string.set_temperature) + ":  ",
                 style = MaterialTheme.typography.bodyLarge
             )
-            InputView(value = vm.setTemperature, onValueChange = { vm.setTemperature = it})
+            InputView(value = vm.setTemperature,height = 30.dp, onValueChange = { vm.setTemperature = it})
 
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(24.dp))
 
             if (vm.heatingState != 0) {
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Row(
-                    modifier = Modifier.size(82.dp,32.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    buttonStart,
-                                    buttonEnd,
-                                )
-                            ), shape = RoundedCornerShape(5.dp)
-                        )
-                        .noMulClick {
-                            vm.stopTemperature()
-                        }
-                       ,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        maxLines = 1,
-                        text = stringResource(id = R.string.end),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.White,
-                        ),
-                    )
+                BaseButton(stringResource(id = R.string.end),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false){
+                    vm.stopTemperature()
                 }
             } else {
-                Spacer(modifier = Modifier.width(8.dp))
-                Row(
-                    modifier = Modifier.size(82.dp,32.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    buttonStart,
-                                    buttonEnd,
-                                )
-                            ), shape = RoundedCornerShape(5.dp)
-                        )
-                        .noMulClick {
-                            if (LimitUtil.isOverLimit(context, vm.setTemperature)) {
-                                return@noMulClick
-                            }
+                BaseButton(stringResource(id = R.string.start),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false){
+                    if (LimitUtil.isOverLimit(context, vm.setTemperature)) {
+                        return@BaseButton
+                    }
 
-                            vm.setTemperature(vm.setTemperature)
-                        }
-                    ,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        maxLines = 1,
-                        text = stringResource(id = R.string.start),
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.White,
-                        ),
-                    )
+                    vm.setTemperature(vm.setTemperature)
                 }
             }
 
@@ -241,7 +198,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = setT, enabled = singleEditState.value,onValueChange = {
+            InputView(value = setT, height = 30.dp,enabled = singleEditState.value,onValueChange = {
                 setT = it
             })
 
@@ -253,13 +210,13 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = realT,enabled = singleEditState.value, onValueChange = {
+            InputView(value = realT,height = 30.dp,enabled = singleEditState.value, onValueChange = {
                 realT = it
             })
 
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -267,13 +224,19 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
 
             if (singleEditState.value) {
                 BaseButton(
-                    title = stringResource(id = R.string.cancel),
+                    title = stringResource(id = R.string.cancel),style  = MaterialTheme.typography.titleSmall,
+                    isPaddingV = false,
                     isNegativeStyle = true
                 ) {
+                    setT = vm.offsetSetT
+                    realT = vm.offsetRealT
+
                     singleEditState.value = false
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                BaseButton(title = stringResource(id = R.string.confirm)) {
+                BaseButton(title = stringResource(id = R.string.confirm),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false) {
 
                     if (LimitUtil.isOverLimit(context, setT) || LimitUtil.isOverLimit(
                             context,
@@ -292,7 +255,9 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
                 }
             } else {
                 BaseButton(
-                    title = stringResource(id = R.string.edit),
+                    title = stringResource(id = R.string.edit),style  = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.White,
+                    ), isPaddingV = false
                 ) {
                     singleEditState.value = true
                 }

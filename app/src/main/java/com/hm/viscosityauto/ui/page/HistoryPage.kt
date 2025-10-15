@@ -502,7 +502,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                             style = MaterialTheme.typography.bodyLarge.copy(color = textColorBlue),
                             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Start
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         LazyVerticalGrid(columns = GridCells.Fixed(2)) {
                             itemsIndexed(
@@ -551,7 +551,7 @@ fun ItemDurView(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

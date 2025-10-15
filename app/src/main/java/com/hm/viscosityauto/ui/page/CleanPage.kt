@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -273,7 +274,7 @@ private fun ItemCmdView(
                 textAlign = TextAlign.Center
             )
 
-            InputView(value = value1Str, onValueChange = {
+            InputView(value = value1Str, height = 30.dp, onValueChange = {
                 value1Str = it
             })
 
@@ -291,14 +292,16 @@ private fun ItemCmdView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value2Str, onValueChange = {
+            InputView(value = value2Str,  height = 30.dp, onValueChange = {
                 value2Str = it
             })
         }
         Spacer(modifier = Modifier.height(32.dp))
 
         Row(Modifier.fillMaxWidth()) {
-            BaseButton(stringResource(id = R.string.clean), modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.clean), modifier = Modifier.weight(1f),style  = MaterialTheme.typography.titleSmall.copy(
+                color = Color.White,
+            )) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -322,7 +325,9 @@ private fun ItemCmdView(
             Spacer(modifier = Modifier.width(32.dp))
 
 
-            BaseButton(stringResource(id = R.string.clean_empty), modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.clean_empty), modifier = Modifier.weight(1f),style  = MaterialTheme.typography.titleSmall.copy(
+                color = Color.White,
+            )) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -336,7 +341,9 @@ private fun ItemCmdView(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(Modifier.fillMaxWidth()) {
-            BaseButton(stringResource(id = R.string.clean_drying), modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.clean_drying), modifier = Modifier.weight(1f),style  = MaterialTheme.typography.titleSmall.copy(
+                color = Color.White,
+            )) {
                 if (state != Empty) {
                     ToastUtil.show(context, context.getString(R.string.device_running))
                     return@BaseButton
@@ -344,7 +351,9 @@ private fun ItemCmdView(
                 onDrying()
             }
             Spacer(modifier = Modifier.width(32.dp))
-            BaseButton(stringResource(id = R.string.end), modifier = Modifier.weight(1f)) {
+            BaseButton(stringResource(id = R.string.end), modifier = Modifier.weight(1f),style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+            )) {
                 onEnd()
             }
 

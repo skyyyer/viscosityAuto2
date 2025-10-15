@@ -596,7 +596,7 @@ fun AdminAddView(
                     Checkbox(
                         checked = role == 1,
                         null,
-                        colors = CheckboxDefaults.colors(checkedColor = cardBgBlue)
+                        colors = CheckboxDefaults.colors(checkedColor = cardBgBlue, uncheckedColor = dividerColor)
                     )
                     Text(text = "  " + stringResource(id = R.string.role_admin))
                 }
@@ -610,7 +610,7 @@ fun AdminAddView(
                     Checkbox(
                         checked = role == 0,
                         null,
-                        colors = CheckboxDefaults.colors(checkedColor = cardBgBlue)
+                        colors = CheckboxDefaults.colors(checkedColor = cardBgBlue, uncheckedColor = dividerColor)
                     )
                     Text(text = "  " + stringResource(id = R.string.role_user))
                 }
@@ -623,8 +623,10 @@ fun AdminAddView(
             BaseButton(
                 stringResource(id = R.string.ok),
                 modifier = Modifier
-                    .size(308.dp, 50.dp),
-                style = MaterialTheme.typography.titleSmall.copy(color = Color.White)
+                    .size(308.dp, 40.dp),
+                style  = MaterialTheme.typography.titleSmall.copy(
+                    color = Color.White,
+                ), isPaddingV = false
             ) {
 
                 if (name.isEmpty()) {
