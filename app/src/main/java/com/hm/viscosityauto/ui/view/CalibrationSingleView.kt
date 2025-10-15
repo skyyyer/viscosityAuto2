@@ -104,13 +104,13 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
         Spacer(modifier = Modifier.height(28.dp))
 
         //温度
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
             Text(
-                text = stringResource(id = R.string.set_temperature) + ":  ",
+                text = stringResource(id = R.string.set_temperature) + ": ",
                 style = MaterialTheme.typography.bodyLarge
             )
-            InputView(value = vm.setTemperature,height = 30.dp, onValueChange = { vm.setTemperature = it})
+            InputView(value = vm.setTemperature,height = 24.dp, onValueChange = { vm.setTemperature = it})
 
 
             Spacer(modifier = Modifier.width(24.dp))
@@ -157,7 +157,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
 
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
 
         //tab
@@ -198,7 +198,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = setT, height = 30.dp,enabled = singleEditState.value,onValueChange = {
+            InputView(value = setT, height = 24.dp,enabled = singleEditState.value,onValueChange = {
                 setT = it
             })
 
@@ -210,13 +210,13 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = realT,height = 30.dp,enabled = singleEditState.value, onValueChange = {
+            InputView(value = realT,height = 24.dp,enabled = singleEditState.value, onValueChange = {
                 realT = it
             })
 
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center

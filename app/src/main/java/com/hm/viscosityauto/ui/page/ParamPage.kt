@@ -489,7 +489,7 @@ private fun ItemChannelView(
                 textAlign = TextAlign.Center
             )
 
-            InputView(value = value1Str, width = 83.dp, height = 30.dp, enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value1Str, width = 83.dp, height = 24.dp, enabled = (state == TestState.Empty), onValueChange = {
                 value1Str = it
                 onEdit(value1Str, value2Str, value3Str)
             })
@@ -508,7 +508,7 @@ private fun ItemChannelView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value2Str, width = 83.dp, height = 30.dp,enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value2Str, width = 83.dp, height = 24.dp,enabled = (state == TestState.Empty), onValueChange = {
                 value2Str = it
                 onEdit(value1Str, value2Str, value3Str)
 
@@ -527,7 +527,7 @@ private fun ItemChannelView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value3Str, width = 83.dp, height = 30.dp,enabled = (state == TestState.Empty), onValueChange = {
+            InputView(value = value3Str, width = 83.dp, height = 24.dp,enabled = (state == TestState.Empty), onValueChange = {
                 value3Str = it
                 onEdit(value1Str, value2Str, value3Str)
 

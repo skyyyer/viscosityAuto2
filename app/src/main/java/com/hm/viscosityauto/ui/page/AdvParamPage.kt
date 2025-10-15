@@ -329,7 +329,7 @@ fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boole
                 color = cardBgGray,
                 shape = RoundedCornerShape(5.dp)
             )
-            .background(color = cardBgWhite)
+            .background(color = cardBgWhite, shape =  RoundedCornerShape(5.dp))
     ) {
         Row(
             modifier = Modifier

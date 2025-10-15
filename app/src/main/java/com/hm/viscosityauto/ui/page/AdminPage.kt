@@ -152,7 +152,8 @@ fun AdminPage(vm: MainVM) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .background(cardBg, RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp)),
+                    .background(cardBg, RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp))
+                    .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
 

@@ -108,16 +108,16 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
         Spacer(modifier = Modifier.height(28.dp))
 
         //温度
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
             Text(
-                text = stringResource(id = R.string.set_temperature) + ":  ",
+                text = stringResource(id = R.string.set_temperature) + ": ",
                 style = MaterialTheme.typography.bodyLarge
             )
 
             InputView(
                 value = vm.setTemperature,
-                height = 30.dp,
+                height = 24.dp,
                 onValueChange = { vm.setTemperature = it })
 
 
@@ -173,7 +173,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
 
         //tab
@@ -210,7 +210,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp),
+                        .height(36.dp),
                     verticalAlignment = Alignment.CenterVertically,
 
                     ) {
@@ -223,7 +223,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
                     InputView(
                         value = items.testT,
-                        height = 30.dp,
+                        height = 24.dp,
                         enabled = multipleEditState.value,
                         onValueChange = {
                             pointTList[index] = pointTList[index].copy(testT = it)
@@ -237,7 +237,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
 
                     InputView(
                         value = items.realT,
-                        height = 30.dp,
+                        height = 24.dp,
                         enabled = multipleEditState.value,
                         onValueChange = {
                             pointTList[index] = pointTList[index].copy(realT = it)
@@ -246,7 +246,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                 }
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

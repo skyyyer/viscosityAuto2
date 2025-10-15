@@ -150,13 +150,13 @@ fun AddMediumView(
             Spacer(modifier = Modifier.height(16.dp))
 
             //温度
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp), verticalAlignment = Alignment.Bottom) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp), verticalAlignment = Alignment.CenterVertically) {
 
                 Text(
-                    text = stringResource(id = R.string.set_temperature) + ":  ",
+                    text = stringResource(id = R.string.set_temperature) + ": ",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                InputView(value = setTemperature, height = 30.dp, onValueChange = { setTemperature = it})
+                InputView(value = setTemperature, height = 24.dp, onValueChange = { setTemperature = it})
 
                 Spacer(modifier = Modifier.width(24.dp))
 
@@ -213,7 +213,7 @@ fun AddMediumView(
                 InputView(value = if (!model.isCanDel) {
                     if (name == "硅油")
                         context.getString(R.string.medium_silicone_oil) else context.getString(R.string.medium_water)
-                } else name, width = 200.dp, height = 30.dp, enabled = model.isCanDel, onlyNum = false, onValueChange = {
+                } else name, width = 200.dp, height = 24.dp, enabled = model.isCanDel, onlyNum = false, onValueChange = {
                     name = if (it.length > 5) {
                         it.substring(0, 5)
                     } else {
@@ -231,14 +231,14 @@ fun AddMediumView(
                     modifier = Modifier.width(92.dp)
                 )
 
-                InputView(value =  p, width = 200.dp,height = 30.dp, onValueChange = {
+                InputView(value =  p, width = 200.dp,height = 24.dp, onValueChange = {
                     p = it
                 })
 
             }
 
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
 
 

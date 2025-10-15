@@ -627,7 +627,8 @@ fun ItemRecordView(
             style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyLarge.copy(
                 fontSize = 19.sp
             ),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
         )
 
         Text(
@@ -635,7 +636,8 @@ fun ItemRecordView(
             style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 19.sp
             ),
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier.weight(0.8f),
+            textAlign = TextAlign.Center
         )
 
         Text(
@@ -643,7 +645,8 @@ fun ItemRecordView(
             style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 19.sp
             ),
-            modifier = Modifier.weight(0.6f)
+            modifier = Modifier.weight(0.6f),
+            textAlign = TextAlign.Center
         )
 
 //
@@ -658,7 +661,8 @@ fun ItemRecordView(
             style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 19.sp
             ),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
         )
 
         Text(
@@ -666,7 +670,8 @@ fun ItemRecordView(
             style = if (isTitle) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 19.sp
             ),
-            modifier = Modifier.weight(1.2f)
+            modifier = Modifier.weight(1.2f),
+            textAlign = TextAlign.Center
         )
     }
 }

@@ -274,12 +274,12 @@ private fun ItemCmdView(
                 textAlign = TextAlign.Center
             )
 
-            InputView(value = value1Str, height = 30.dp, onValueChange = {
+            InputView(value = value1Str, height =  24.dp, onValueChange = {
                 value1Str = it
             })
 
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
 
         Row(
@@ -292,7 +292,7 @@ private fun ItemCmdView(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-            InputView(value = value2Str,  height = 30.dp, onValueChange = {
+            InputView(value = value2Str,  height = 24.dp, onValueChange = {
                 value2Str = it
             })
         }
