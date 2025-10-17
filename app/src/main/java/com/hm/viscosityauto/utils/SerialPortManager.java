@@ -4,6 +4,8 @@ import android.serialport.SerialPort;
 import android.util.Log;
 
 
+import com.hm.viscosityauto.vm.TestState;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -110,9 +112,9 @@ public class SerialPortManager {
 
         void onHeatingState(int state);
 
-        void onADeviceState(int state);
+        void onADeviceState(int state,double dur);
 
-        void onBDeviceState(int state);
+        void onBDeviceState(int state,double dur);
 
         void onADetectedValue(int valueUp,int valueDown);
 
@@ -169,14 +171,28 @@ public class SerialPortManager {
 
                                     case A_STATE:
                                         int AState = Integer.parseInt(String.valueOf(data.charAt(1)));
-                                        mListener.onADeviceState(AState);
+                                        if (AState== TestState.Finish){
+                                            String  inteA= String.valueOf
+                                                    (Integer.parseInt(readString.substring(8,12), 16));
+                                            String  deciA = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
+                                            double dur = Double.parseDouble(inteA+"."+deciA);
+                                            mListener.onADeviceState(AState,dur);
+                                        }else {
+                                            mListener.onADeviceState(AState,0);
+                                        }
 
                                         Log.d(TAG, "A_STATE:   " +AState);
-
                                         break;
                                     case B_STATE:
                                         int BState = Integer.parseInt(String.valueOf(data.charAt(1)));
-                                        mListener.onBDeviceState(BState);
+                                        if (BState== TestState.Finish){
+                                            String  inteB= String.valueOf(Integer.parseInt(readString.substring(8,12), 16));
+                                            String  deciB = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
+                                            double dur = Double.parseDouble(inteB+"."+deciB);
+                                            mListener.onBDeviceState(BState,dur);
+                                        }else {
+                                            mListener.onBDeviceState(BState,0);
+                                        }
                                         Log.d(TAG, "B_STATE:   " +BState);
                                         break;
 

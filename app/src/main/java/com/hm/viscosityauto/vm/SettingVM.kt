@@ -127,18 +127,11 @@ class SettingVM : ViewModel() {
     var mediumList = mutableStateListOf<MediumModel>()
 
 
-    //初始化串口 用于打印的 后续可以将Act中的输出流对象换成这里的输出流对象
-    private lateinit var mSerialPort: SerialPort //串口对象
-    private var mOutputStream: OutputStream? = null //串口的输出流对象 用于发送指令
-
-    //数据库
-    private var DB: AppDatabase = AppDatabase.getDatabase(MyApp.getInstance())
-
 
     //设备参数
     var DeviceParamModel by mutableStateOf(DeviceParamModel())
 
-    var configList: MutableList<PassageModel> = mutableStateListOf()
+    var deviceParamModelConfigList: MutableList<DeviceParamModel> = mutableStateListOf()
 
     //泄压计时器
     var timerDecomP: CountDownTimer? = null
@@ -152,6 +145,8 @@ class SettingVM : ViewModel() {
                 AdvParamModel::class.java
             )
         )
+
+
 
 
     /**
@@ -218,19 +213,19 @@ class SettingVM : ViewModel() {
             mediumList.addAll(Gson().fromJson(mediumInfo, listType))
         }
 
-        val configInfo = SPUtils.getInstance().getString("configInfo", "")
+        val configInfo = SPUtils.getInstance().getString("deviceParamConfigInfo", "")
         if (configInfo.isEmpty()) {
-            for (i in 0 until 9) {
-                configList.add(PassageModel(testCount = "0"))
+            for (i in 0 until 10) {
+                deviceParamModelConfigList.add(DeviceParamModel())
             }
-            SPUtils.getInstance().put("configInfo", Gson().toJson(configList))
+            SPUtils.getInstance().put("deviceParamConfigInfo", Gson().toJson(deviceParamModelConfigList))
         } else {
-            val listType = object : TypeToken<List<PassageModel>>() {}.type
-            configList.clear()
-            configList.addAll(Gson().fromJson(configInfo, listType))
+            val listType = object : TypeToken<List<DeviceParamModel>>() {}.type
+            deviceParamModelConfigList.clear()
+            deviceParamModelConfigList.addAll(Gson().fromJson(configInfo, listType))
         }
 
-        val deviceParam = SPUtils.getInstance().getString("deviceParam", "")
+        val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
         if (deviceParam.isNotEmpty()){
             DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
         }
@@ -284,7 +279,7 @@ class SettingVM : ViewModel() {
                     }
                 }
 
-                override fun onADeviceState(state: Int) {
+                override fun onADeviceState(state: Int,dur:Double) {
                     if (stateA!=state){
 
 
@@ -293,18 +288,18 @@ class SettingVM : ViewModel() {
 
                 }
 
-                override fun onBDeviceState(state: Int) {
+                override fun onBDeviceState(state: Int,dur:Double) {
                     if (stateB!=state){
                         stateB = state
                     }
                 }
 
                 override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp, aDown = valueDown)
+                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp.toString(), aDown = valueDown.toString())
                 }
 
                 override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
+                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp.toString(), bDown = valueDown.toString())
 
                 }
 

@@ -566,7 +566,7 @@ fun ItemDurView(
         )
 
         Text(
-            text = "%.2f".format(item.duration) + "(s)",
+            text = item.duration.toString() + "(s)",
             style = if (item.enable) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyLarge.copy(
                 color = GrayBg,
                 textDecoration = if (item.derelict) TextDecoration.LineThrough else null

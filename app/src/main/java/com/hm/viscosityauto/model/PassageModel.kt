@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 data class PassageModel(
     var id: Int = 0,
     var number: String = "0",
-    var duration: String = "0.00",
+    var duration: String = "0.0000",
     var temperature: String = "0.0",
     var viscosity: String = "0.00000",
     var constant: String = "0.0",
@@ -43,7 +43,7 @@ data class PassageModel(
         val format = DecimalFormat("#.00")
 
         var durationArrayOfAll = 0.0
-        var durationArrayTemp = mutableListOf<Float>()
+        var durationArrayTemp = mutableListOf<Double>()
         durationArray.forEach() {
             if (!it.derelict) {
                 durationArrayTemp.add(it.duration)
@@ -68,7 +68,7 @@ data class PassageModel(
             it.enable = (abs(it.duration - durationArrayOfAll) <= allowableError) && !it.derelict
         }
 
-        val enableDurationArray: ArrayList<Float> = ArrayList()
+        val enableDurationArray: ArrayList<Double> = ArrayList()
         durationArray.forEach() {
             if (it.enable) {
                 enableDurationArray.add(it.duration)
@@ -100,7 +100,7 @@ data class PassageModel(
 }
 
 data class DurationModel(
-    val duration: Float,
+    val duration: Double,
     var enable: Boolean = true,
     var derelict: Boolean = false,//是否遗弃
     var temperature: String = "0.000",

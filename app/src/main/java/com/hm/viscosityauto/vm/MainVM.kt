@@ -69,7 +69,7 @@ const val LANGUAGE_ZH = "zh"
 const val LANGUAGE_EN = "en"
 
 
-const val MaxT = 100 //最大温度
+const val MaxT = 150 //最大温度
 
 
 class MainVM : ViewModel() {
@@ -186,10 +186,10 @@ class MainVM : ViewModel() {
                 override fun onHeatingState(state: Int) {
                 }
 
-                override fun onADeviceState(state: Int) {
+                override fun onADeviceState(state: Int,dur:Double) {
                 }
 
-                override fun onBDeviceState(state: Int) {
+                override fun onBDeviceState(state: Int,dur:Double) {
                 }
 
                 override fun onADetectedValue(valueUp: Int, valueDown: Int) {

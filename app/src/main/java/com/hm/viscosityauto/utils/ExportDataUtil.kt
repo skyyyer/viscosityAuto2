@@ -129,7 +129,7 @@ class ExportDataUtil {
                                 str + context.getString(R.string.number_start) + (index + 1) + context.getString(
                                     R.string.number_end
                                 ) +
-                                        "%.2f".format(it.duration) + "(s) \r\n"
+                                        it.duration+ "(s) \r\n"
 //                        it.duration.toString() + "(s)  " + it.temperature + "(℃)\r\n"
                         }
                     }

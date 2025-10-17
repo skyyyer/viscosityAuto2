@@ -22,7 +22,6 @@ import com.hm.viscosityauto.model.PointTModel
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.AdvParamModel
-import com.hm.viscosityauto.model.DeviceParamModel
 import com.hm.viscosityauto.model.DurationModel
 import com.hm.viscosityauto.model.PassageModel
 import com.hm.viscosityauto.room.AppDatabase
@@ -31,6 +30,7 @@ import com.hm.viscosityauto.room.test.TestRecords
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
+import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat4
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.CountTimer
 import com.hm.viscosityauto.utils.LimitUtil
@@ -137,10 +137,10 @@ class TestVM : ViewModel() {
     var timerA: CountTimer = CountTimer(intervalMillis = 1)
     var timerB: CountTimer = CountTimer(intervalMillis = 1)
 
-    //恒温计时器
-//    var timerKeepTA: CountDownTimer? = null
-//    var timerKeepTB: CountDownTimer? = null
 
+    //    var timerKeepTA: CountDownTimer? = null
+//    var timerKeepTB: CountDownTimer? = null
+    //恒温计时器
     private var timerJobA: Job? = null
     private var timerJobB: Job? = null
 
@@ -235,8 +235,8 @@ class TestVM : ViewModel() {
     //通道数据
     var passageModelA by mutableStateOf(PassageModel(id = 1))
     var passageModelB by mutableStateOf(PassageModel(id = 2))
-    var ATimekeeping by mutableFloatStateOf(0.00f)
-    var BTimekeeping by mutableFloatStateOf(0.00f)
+    var ATimekeeping by mutableFloatStateOf(0.0000f)
+    var BTimekeeping by mutableFloatStateOf(0.0000f)
     var showDataOptA by mutableStateOf(false)
     var showDataOptB by mutableStateOf(false)
 
@@ -250,7 +250,7 @@ class TestVM : ViewModel() {
 
 
     //设备参数
-    var DeviceParamModel by mutableStateOf(DeviceParamModel())
+//    var DeviceParamModel by mutableStateOf(DeviceParamModel())
 
     var configList: MutableList<PassageModel> = mutableStateListOf()
 
@@ -273,12 +273,12 @@ class TestVM : ViewModel() {
         }
 
         timerA.onTimeUpdate = {
-            ATimekeeping = divideAndFormat(it.toFloat(), 1000)
+            ATimekeeping = divideAndFormat4((it.toFloat()+(1..9).random()*0.1f),1000)
 
         }
 
         timerB.onTimeUpdate = {
-            BTimekeeping = divideAndFormat(it.toFloat(), 1000)
+            BTimekeeping = divideAndFormat4((it.toFloat()+(1..9).random()*0.1f),1000)
         }
 
     }
@@ -365,15 +365,15 @@ class TestVM : ViewModel() {
             configList.addAll(Gson().fromJson(configInfo, listType))
         }
 
-        val deviceParam = SPUtils.getInstance().getString("deviceParam", "")
-        if (deviceParam.isNotEmpty()) {
-            DeviceParamModel = Gson().fromJson(deviceParam, DeviceParamModel::class.java)
-        }
+//        val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
+//        if (deviceParam.isNotEmpty()) {
+//            DeviceParamModel = Gson().fromJson(deviceParam, DeviceParamModel::class.java)
+//        }
 
 
         if (!GlobalState.isSetAdvParam) {
             viewModelScope.launch {
-                while (serialPortManager==null){
+                while (serialPortManager == null) {
                     delay(500)
                 }
                 setAdvParam(advParamModel)
@@ -423,7 +423,7 @@ class TestVM : ViewModel() {
                     }
                 }
 
-                override fun onADeviceState(state: Int) {
+                override fun onADeviceState(state: Int,dur:Double) {
                     viewModelScope.launch {
 
                         if (passageModelA.state != state) {
@@ -445,12 +445,10 @@ class TestVM : ViewModel() {
                                     timerA.stop()
                                     passageModelA.durationArray.add(
                                         DurationModel(
-                                            ComputeUtils.floatFormat(
-                                                ATimekeeping
-                                            )
+                                            dur
                                         )
                                     )
-                                    ATimekeeping = 0.00f
+                                    ATimekeeping = 0.0000f
 
                                     if (passageModelA.curNum == passageModelA.testCount.toInt()) {
                                         if (!dataOpt.value) {
@@ -536,7 +534,7 @@ class TestVM : ViewModel() {
 
                 }
 
-                override fun onBDeviceState(state: Int) {
+                override fun onBDeviceState(state: Int,dur:Double) {
                     viewModelScope.launch {
                         if (passageModelB.state != state) {
 
@@ -559,12 +557,10 @@ class TestVM : ViewModel() {
                                     timerB.stop()
                                     passageModelB.durationArray.add(
                                         DurationModel(
-                                            ComputeUtils.floatFormat(
-                                                BTimekeeping
-                                            )
+                                            dur
                                         )
                                     )
-                                    BTimekeeping = 0.00f
+                                    BTimekeeping = 0.0000f
 
                                     if (passageModelB.curNum == passageModelB.testCount.toInt()) {
                                         if (!dataOpt.value) {
@@ -645,11 +641,12 @@ class TestVM : ViewModel() {
                 }
 
                 override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp, aDown = valueDown)
+//                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp, aDown = valueDown)
                 }
 
                 override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
+//                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
+
 
                 }
 
@@ -688,7 +685,7 @@ class TestVM : ViewModel() {
         if (channel == 1) {
             passageModelA = passageModelA.copy(
                 state = TestState.Empty,
-                curNum = 0, duration = "0.00",
+                curNum = 0, duration = "0.0000",
                 curCleanNum = 0, viscosity = "0.00000",
                 durationArray = ArrayList()
             )
@@ -696,7 +693,7 @@ class TestVM : ViewModel() {
         } else {
             passageModelB = passageModelB.copy(
                 state = TestState.Empty,
-                curNum = 0, duration = "0.00",
+                curNum = 0, duration = "0.0000",
                 curCleanNum = 0, viscosity = "0.00000",
                 durationArray = ArrayList()
             )
@@ -778,7 +775,7 @@ class TestVM : ViewModel() {
                 durationArray = ArrayList()
             )
             timerA.stop()
-            ATimekeeping = 0.00f
+            ATimekeeping = 0.0000f
 
         } else {
             passageModelB = passageModelB.copy(
@@ -788,7 +785,7 @@ class TestVM : ViewModel() {
                 durationArray = ArrayList()
             )
             timerB.stop()
-            BTimekeeping = 0.00f
+            BTimekeeping = 0.0000f
         }
         setTestState(channel, CMD_Stop)
     }
@@ -1257,7 +1254,7 @@ class TestVM : ViewModel() {
                                     .getString("language", LANGUAGE_ZH) == LANGUAGE_ZH
                             ) context.getString(
                                 R.string.number_end
-                            ) else " ") + "%.2f".format(it.duration) + " s\r\n"
+                            ) else " ") + it.duration + " s\r\n"
                         )
                     )
 
@@ -1372,7 +1369,7 @@ class TestVM : ViewModel() {
             timerJobA?.cancel() // 取消旧任务（线程安全）
 
             timerJobA = viewModelScope.launch {
-                val endTime = System.currentTimeMillis() + durationMillis * 1000+100
+                val endTime = System.currentTimeMillis() + durationMillis * 1000 + 100
                 while (System.currentTimeMillis() < endTime) {
                     val remaining = endTime - System.currentTimeMillis()
                     keepTCountA = (remaining / 1000).toString()
@@ -1401,7 +1398,7 @@ class TestVM : ViewModel() {
             timerJobB?.cancel() // 取消旧任务（线程安全）
 
             timerJobB = viewModelScope.launch {
-                val endTime = System.currentTimeMillis() + durationMillis * 1000+100
+                val endTime = System.currentTimeMillis() + durationMillis * 1000 + 100
                 while (System.currentTimeMillis() < endTime) {
                     val remaining = endTime - System.currentTimeMillis()
                     keepTCountB = (remaining / 1000).toString()

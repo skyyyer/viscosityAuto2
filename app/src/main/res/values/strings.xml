@@ -269,6 +269,7 @@
     <string name="detected_value">检测值</string>
     <string name="set_value">设定值</string>
     <string name="sensitivity">光强度</string>
+    <string name="cur_data">当前数据</string>
 
     <string name="debug_mode">测试模式</string>
     <string name="motor_test">电机测试</string>

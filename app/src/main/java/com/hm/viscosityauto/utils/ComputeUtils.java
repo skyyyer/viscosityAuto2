@@ -65,6 +65,23 @@ public class ComputeUtils {
         return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
     }
 
+    /**
+     * float  int 相除 保留4位小数
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public static Float divideAndFormat4(float a, int b) {
+        if (b == 0) {
+            Toast.makeText(MyApp.getInstance(), MyApp.getInstance().getString(R.string.data_error), Toast.LENGTH_SHORT).show();
+            return 0f;
+        }
+        float result = a / b;
+        DecimalFormat df = new DecimalFormat("#.0000"); // 创建一个DecimalFormat实例来格式化数字
+        return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
+    }
+
 
     /**
      * float  保留2位小数
@@ -73,7 +90,7 @@ public class ComputeUtils {
      * @return
      */
     public static Float floatFormat(float a) {
-        DecimalFormat df = new DecimalFormat("0.00"); // 创建一个DecimalFormat实例来格式化数字
+        DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
         return Float.valueOf(df.format(a)); // 使用DecimalFormat格式化结果
     }
 

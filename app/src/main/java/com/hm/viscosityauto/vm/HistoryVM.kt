@@ -281,7 +281,7 @@ class HistoryVM : ViewModel() {
                                     .getString("language", LANGUAGE_ZH) == LANGUAGE_ZH
                             ) context.getString(
                                 R.string.number_end
-                            ) else " ") +  "%.2f".format(it.duration) + " s\r\n"
+                            ) else " ") +  it.duration + " s\r\n"
                         )
                     )
 
