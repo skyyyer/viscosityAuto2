@@ -44,7 +44,7 @@ public class ComputeUtils {
             return 0f;
         }
         float result = a / b;
-        DecimalFormat df = new DecimalFormat("#.0000"); // 创建一个DecimalFormat实例来格式化数字
+        DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
         return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
     }
 
@@ -61,7 +61,7 @@ public class ComputeUtils {
             return 0f;
         }
         float result = a / b;
-        DecimalFormat df = new DecimalFormat("#.00"); // 创建一个DecimalFormat实例来格式化数字
+        DecimalFormat df = new DecimalFormat("0.00"); // 创建一个DecimalFormat实例来格式化数字
         return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
     }
 
@@ -78,20 +78,20 @@ public class ComputeUtils {
             return 0f;
         }
         float result = a / b;
-        DecimalFormat df = new DecimalFormat("#.0000"); // 创建一个DecimalFormat实例来格式化数字
+        DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
         return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
     }
 
 
     /**
-     * float  保留2位小数
+     * double  保留4位小数
      *
      * @param a
      * @return
      */
-    public static Float floatFormat(float a) {
+    public static Double doubleFormat4(double a) {
         DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
-        return Float.valueOf(df.format(a)); // 使用DecimalFormat格式化结果
+        return Double.valueOf(df.format(a)); // 使用DecimalFormat格式化结果
     }
 
     /**
@@ -103,7 +103,7 @@ public class ComputeUtils {
      */
     public static Float multiplyAndFormat(float a, float b) {
         float result = a * b;
-        DecimalFormat df = new DecimalFormat("#.0000"); // 创建一个DecimalFormat实例来格式化数字
+        DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
         return Float.valueOf(df.format(result)); // 使用DecimalFormat格式化结果
     }
 

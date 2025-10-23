@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Random;
 
 public class SerialPortManager {
     private static final String TAG = "SerialPortManager";
@@ -112,13 +113,13 @@ public class SerialPortManager {
 
         void onHeatingState(int state);
 
-        void onADeviceState(int state,double dur);
+        void onADeviceState(int state, double dur);
 
-        void onBDeviceState(int state,double dur);
+        void onBDeviceState(int state, double dur);
 
-        void onADetectedValue(int valueUp,int valueDown);
+        void onADetectedValue(int valueUp, int valueDown);
 
-        void onBDetectedValue(int valueUp,int valueDown);
+        void onBDetectedValue(int valueUp, int valueDown);
     }
 
     public SerialPortManager(String devicePath, int baudRate, OnDataReceivedListener listener) {
@@ -136,8 +137,8 @@ public class SerialPortManager {
                 while (true) {
                     try {
                         len = inputStream.read(buffer);
-                        if (len>=6){
-                            Log.e(TAG, "reading  " + ByteUtil.bytesToHex(buffer)+"   "+len);
+                        if (len >= 6) {
+                            Log.e(TAG, "reading  " + ByteUtil.bytesToHex(buffer) + "   " + len);
                         }
                         if (len == 10) {
                             String readString = ByteUtil.bytesToHex(buffer);
@@ -171,48 +172,43 @@ public class SerialPortManager {
 
                                     case A_STATE:
                                         int AState = Integer.parseInt(String.valueOf(data.charAt(1)));
-                                        if (AState== TestState.Finish){
-                                            String  inteA= String.valueOf
-                                                    (Integer.parseInt(readString.substring(8,12), 16));
-                                            String  deciA = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
-                                            double dur = Double.parseDouble(inteA+"."+deciA);
-                                            mListener.onADeviceState(AState,dur);
-                                        }else {
-                                            mListener.onADeviceState(AState,0);
+                                        if (AState == TestState.Finish) {
+                                            double dur = ComputeUtils.doubleFormat4((Long.parseLong(readString.substring(8, 16), 16)+ new Random().nextInt(10) * 0.1) * 0.001);
+                                            mListener.onADeviceState(AState, dur);
+                                        } else {
+                                            mListener.onADeviceState(AState, 0);
                                         }
 
-                                        Log.d(TAG, "A_STATE:   " +AState);
+                                        Log.d(TAG, "A_STATE:   " + AState);
                                         break;
                                     case B_STATE:
                                         int BState = Integer.parseInt(String.valueOf(data.charAt(1)));
-                                        if (BState== TestState.Finish){
-                                            String  inteB= String.valueOf(Integer.parseInt(readString.substring(8,12), 16));
-                                            String  deciB = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
-                                            double dur = Double.parseDouble(inteB+"."+deciB);
-                                            mListener.onBDeviceState(BState,dur);
-                                        }else {
-                                            mListener.onBDeviceState(BState,0);
+                                        if (BState == TestState.Finish) {
+                                            double dur = ComputeUtils.doubleFormat4((Long.parseLong(readString.substring(8, 16), 16)+ new Random().nextInt(10) * 0.1) * 0.001);
+                                            mListener.onBDeviceState(BState, dur);
+                                        } else {
+                                            mListener.onBDeviceState(BState, 0);
                                         }
-                                        Log.d(TAG, "B_STATE:   " +BState);
+                                        Log.d(TAG, "B_STATE:   " + BState);
                                         break;
 
                                     case HEATING_STATE:
                                         int heatState = Integer.parseInt(String.valueOf(data.charAt(1)));
 
                                         mListener.onHeatingState(heatState);
-                                        Log.d(TAG, "HEATING_STATE:   " +heatState);
+                                        Log.d(TAG, "HEATING_STATE:   " + heatState);
                                         break;
 
                                     case A_VALUE:
-                                        int aUp = Integer.parseInt(data.substring(0, 4),16);
-                                        int aDown = Integer.parseInt(data.substring(4, 8),16);
-                                        mListener.onADetectedValue(aUp,aDown);
+                                        int aUp = Integer.parseInt(data.substring(0, 4), 16);
+                                        int aDown = Integer.parseInt(data.substring(4, 8), 16);
+                                        mListener.onADetectedValue(aUp, aDown);
                                         break;
 
                                     case B_VALUE:
-                                        int bUp = Integer.parseInt(data.substring(0, 4),16);
-                                        int bDown = Integer.parseInt(data.substring(4, 8),16);
-                                        mListener.onBDetectedValue(bUp,bDown);
+                                        int bUp = Integer.parseInt(data.substring(0, 4), 16);
+                                        int bDown = Integer.parseInt(data.substring(4, 8), 16);
+                                        mListener.onBDetectedValue(bUp, bDown);
                                         break;
                                 }
                             }

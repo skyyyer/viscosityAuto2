@@ -2,7 +2,6 @@ package com.hm.viscosityauto.ui.page
 
 import NoPressStateClick
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,19 +20,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -64,7 +58,6 @@ import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.dividerColor
-import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.view.AddMediumView
@@ -73,25 +66,24 @@ import com.hm.viscosityauto.ui.view.BaseDialog
 import com.hm.viscosityauto.ui.view.BaseTitle
 import com.hm.viscosityauto.ui.view.CalibrationMulView
 import com.hm.viscosityauto.ui.view.CalibrationSingleView
-import com.hm.viscosityauto.ui.view.WlanView
-
 import com.hm.viscosityauto.ui.view.CustomWidthSwitch
 import com.hm.viscosityauto.ui.view.ItemLab
 import com.hm.viscosityauto.ui.view.PwdDialogView
 import com.hm.viscosityauto.ui.view.TimerPickerView
+import com.hm.viscosityauto.ui.view.WlanView
 import com.hm.viscosityauto.ui.view.click.doubleClick
+import com.hm.viscosityauto.utils.ComputeUtils
 import com.hm.viscosityauto.utils.FileUtil
 import com.hm.viscosityauto.utils.SPUtils
-import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.CalibrationState
 import com.hm.viscosityauto.vm.LANGUAGE_EN
 import com.hm.viscosityauto.vm.LANGUAGE_ZH
 import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.SettingVM
-import com.hm.viscosityauto.vm.TestState
 import com.iwdael.wifimanager.Wifi
 import kotlinx.coroutines.delay
 import java.io.File
+import java.util.Random
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -940,6 +932,7 @@ fun WifiPwdDialogView(
             value = pwd.value,
             width = 300.dp,
             height = 50.dp,
+            onlyNum = false,
             onValueChange = { pwd.value = it })
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -963,6 +956,25 @@ fun WifiPwdDialogView(
         }
 
     }
+}
+
+
+@Preview
+@Composable
+fun  tesdt(){
+   val ss =  "ABABABBB".toLong(16)
+
+    val dur = ComputeUtils.doubleFormat4(
+        (ss + Random().nextInt(10) * 0.1) * 0.001
+    )
+
+    Column {
+        Text(text =dur.toString())
+
+
+        Text(text = ComputeUtils.doubleFormat4(((ss+ Random().nextInt(10) * 0.1)*0.001)).toString())
+    }
+
 }
 
 

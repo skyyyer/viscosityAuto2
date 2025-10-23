@@ -963,7 +963,7 @@ class TestVM : ViewModel() {
      */
     private fun getTemperature(temperature: String): String {
         var t = "0"
-        val df = DecimalFormat("#.00")
+        val df = DecimalFormat("0.00")
 
         when (calibrationState.intValue) {
             0 -> {

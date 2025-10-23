@@ -40,7 +40,7 @@ data class PassageModel(
 
     //计算粘度
     fun computeViscosity(): Boolean {
-        val format = DecimalFormat("#.00")
+        val format = DecimalFormat("0.00000")
 
         var durationArrayOfAll = 0.0
         var durationArrayTemp = mutableListOf<Double>()
@@ -84,7 +84,7 @@ data class PassageModel(
 
         } else {
             duration = format.format(enableDurationArray.average()).toString()
-            val formatViscosity = DecimalFormat("#.00000")
+            val formatViscosity = DecimalFormat("0.00000")
             viscosity = formatViscosity.format((duration.toFloat() * constant.toFloat()))
         }
 
