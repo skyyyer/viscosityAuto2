@@ -172,10 +172,7 @@ public class SerialPortManager {
                                     case A_STATE:
                                         int AState = Integer.parseInt(String.valueOf(data.charAt(1)));
                                         if (AState== TestState.Finish){
-                                            String  inteA= String.valueOf
-                                                    (Integer.parseInt(readString.substring(8,12), 16));
-                                            String  deciA = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
-                                            double dur = Double.parseDouble(inteA+"."+deciA);
+                                            double dur =ComputeUtils.doubleFormat4(Long.parseLong(readString.substring(8,16), 16)*0.0001);
                                             mListener.onADeviceState(AState,dur);
                                         }else {
                                             mListener.onADeviceState(AState,0);
@@ -186,9 +183,7 @@ public class SerialPortManager {
                                     case B_STATE:
                                         int BState = Integer.parseInt(String.valueOf(data.charAt(1)));
                                         if (BState== TestState.Finish){
-                                            String  inteB= String.valueOf(Integer.parseInt(readString.substring(8,12), 16));
-                                            String  deciB = String.valueOf(Integer.parseInt(readString.substring(12,16), 16));
-                                            double dur = Double.parseDouble(inteB+"."+deciB);
+                                            double dur = ComputeUtils.doubleFormat4(Long.parseLong(readString.substring(8,16), 16)*0.0001);
                                             mListener.onBDeviceState(BState,dur);
                                         }else {
                                             mListener.onBDeviceState(BState,0);

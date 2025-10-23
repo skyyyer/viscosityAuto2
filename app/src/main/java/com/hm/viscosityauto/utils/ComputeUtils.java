@@ -84,14 +84,14 @@ public class ComputeUtils {
 
 
     /**
-     * float  保留2位小数
+     * double  保留4位小数
      *
      * @param a
      * @return
      */
-    public static Float floatFormat(float a) {
+    public static Double doubleFormat4(double a) {
         DecimalFormat df = new DecimalFormat("0.0000"); // 创建一个DecimalFormat实例来格式化数字
-        return Float.valueOf(df.format(a)); // 使用DecimalFormat格式化结果
+        return Double.valueOf(df.format(a)); // 使用DecimalFormat格式化结果
     }
 
     /**
