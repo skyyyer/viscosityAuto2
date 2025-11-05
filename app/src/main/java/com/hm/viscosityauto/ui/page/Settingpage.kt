@@ -959,22 +959,22 @@ fun WifiPwdDialogView(
 }
 
 
-@Preview
-@Composable
-fun  tesdt(){
-   val ss =  "ABABABBB".toLong(16)
-
-    val dur = ComputeUtils.doubleFormat4(
-        (ss + Random().nextInt(10) * 0.1) * 0.001
-    )
-
-    Column {
-        Text(text =dur.toString())
-
-
-        Text(text = ComputeUtils.doubleFormat4(((ss+ Random().nextInt(10) * 0.1)*0.001)).toString())
-    }
-
-}
+//@Preview
+//@Composable
+//fun  tesdt(){
+//   val ss =  "ABABABBB".toLong(16)
+//
+//    val dur = ComputeUtils.doubleFormat4(
+//        (ss + Random().nextInt(10) * 0.1) * 0.001
+//    )
+//
+//    Column {
+//        Text(text =dur.toString())
+//
+//
+//        Text(text = ComputeUtils.doubleFormat4(((ss+ Random().nextInt(10) * 0.1)*0.001)).toString())
+//    }
+//
+//}
 
 
