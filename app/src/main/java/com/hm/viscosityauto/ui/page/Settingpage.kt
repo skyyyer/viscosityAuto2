@@ -54,6 +54,7 @@ import com.hm.viscosityauto.AvdParamPageRoute
 import com.hm.viscosityauto.CleanPageRoute
 import com.hm.viscosityauto.DeviceParamPageRoute
 import com.hm.viscosityauto.ManagerPageRoute
+import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgWhite
@@ -70,6 +71,7 @@ import com.hm.viscosityauto.ui.view.CustomWidthSwitch
 import com.hm.viscosityauto.ui.view.ItemLab
 import com.hm.viscosityauto.ui.view.PwdDialogView
 import com.hm.viscosityauto.ui.view.TimerPickerView
+import com.hm.viscosityauto.ui.view.UploadView
 import com.hm.viscosityauto.ui.view.WlanView
 import com.hm.viscosityauto.ui.view.click.doubleClick
 import com.hm.viscosityauto.utils.ComputeUtils
@@ -97,6 +99,10 @@ fun SettingPage(vm: MainVM) {
         mutableStateOf(false)
     }
     val wifiDialogState = remember {
+        mutableStateOf(false)
+    }
+
+    val uploadDialogState = remember {
         mutableStateOf(false)
     }
 
@@ -172,7 +178,14 @@ fun SettingPage(vm: MainVM) {
                         .align(Alignment.CenterEnd)
                         .padding(end = 126.dp)
                 ) {
+                    BaseButton(
+                        title = stringResource(id = R.string.upload_setting),
+                        icon = R.mipmap.upload_icon
+                    ) {
+                        uploadDialogState.value = true
+                    }
 
+                    Spacer(modifier = Modifier.width(20.dp))
                     BaseButton(
                         title = stringResource(id = R.string.wifi),
                         icon = R.mipmap.wifi_icon
@@ -211,7 +224,10 @@ fun SettingPage(vm: MainVM) {
                         modifier = Modifier.padding(horizontal = 30.dp)
                     ) {
 
-                        Row (Modifier.width(528.dp),  verticalAlignment = Alignment.CenterVertically){
+                        Row(
+                            Modifier.width(528.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = stringResource(id = R.string.language),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -348,7 +364,10 @@ fun SettingPage(vm: MainVM) {
                         modifier = Modifier.padding(horizontal = 30.dp)
                     ) {
 
-                        Row (Modifier.width(528.dp),  verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            Modifier.width(528.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = stringResource(id = R.string.temperature_edit_1),
                                 style = MaterialTheme.typography.bodyLarge,
@@ -487,16 +506,18 @@ fun SettingPage(vm: MainVM) {
                     style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            Box(modifier = Modifier
-                .width(1.dp)
-                .height(40.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
                         )
                     )
-                ))
+            )
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -510,16 +531,18 @@ fun SettingPage(vm: MainVM) {
                     style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            Box(modifier = Modifier
-                .width(1.dp)
-                .height(40.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
                         )
                     )
-                ))
+            )
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -533,16 +556,18 @@ fun SettingPage(vm: MainVM) {
                     style = MaterialTheme.typography.titleSmall.copy(fontSize = 23.sp),
                 )
             }
-            Box(modifier = Modifier
-                .width(1.dp)
-                .height(40.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+            Box(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(40.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent, Color.Black.copy(0.5f), Color.Transparent
+                            )
                         )
                     )
-                ))
+            )
 
             Box(
                 modifier = Modifier
@@ -761,6 +786,40 @@ fun SettingPage(vm: MainVM) {
         }
 
 
+        //上传弹框
+        if (uploadDialogState.value) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+                UploadView(
+                    uploadPath = vm.uploadPath.value,
+                    uploadName = vm.uploadUser.value,
+                    uploadPwd = vm.uploadPwd.value,
+                    vm.devId,
+                    onSave = { path, name, pwd ->
+                        vm.editUploadInfo(path, name, pwd)
+
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.save_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        uploadDialogState.value = false
+                    }, onClose = {
+                        uploadDialogState.value = false
+                    })
+
+            }
+
+        }
+
         //wifi弹窗
         if (wifiDialogState.value) {
             Box(
@@ -807,7 +866,7 @@ fun SettingPage(vm: MainVM) {
 
         //单点弹窗
         if (calibrationSingleDialog.value) {
-            val rememberState  = remember {
+            val rememberState = remember {
                 settingVm.calibrationState.intValue
             }
             settingVm.setCalibrationState(CalibrationState.None)
@@ -854,7 +913,7 @@ fun SettingPage(vm: MainVM) {
 
         //多点弹窗
         if (calibrationMulDialog.value) {
-            val rememberState  = remember {
+            val rememberState = remember {
                 settingVm.calibrationState.intValue
             }
             settingVm.setCalibrationState(CalibrationState.None)

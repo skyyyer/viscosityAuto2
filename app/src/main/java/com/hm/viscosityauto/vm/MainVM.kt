@@ -143,8 +143,18 @@ class MainVM : ViewModel() {
     var uploadUser = mutableStateOf(SPUtils.getInstance().getString("uploadUser", "ceshi"))
     var uploadPwd = mutableStateOf(SPUtils.getInstance().getString("uploadPwd", "123456"))
 
-
-
+    val devId =
+        if (Build.VERSION.SDK_INT >= 28) {
+            try {
+                val c = Class.forName("android.os.SystemProperties")
+                val get: Method = c.getMethod("get", String::class.java)
+                get.invoke(c, "ro.serialno") as String
+            } catch (var4: Exception) {
+                ""
+            }
+        } else {
+            Build.SERIAL
+        }
 
     /**
      * 初始化
@@ -383,11 +393,6 @@ class MainVM : ViewModel() {
                     des = Operate.EditUpload.des
                 )
             )
-            Toast.makeText(
-                MyApp.getInstance(),
-                MyApp.getInstance().getString(R.string.save_success),
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 

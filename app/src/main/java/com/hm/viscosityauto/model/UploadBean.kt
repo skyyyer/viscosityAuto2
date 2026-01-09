@@ -9,14 +9,14 @@ data class UploadBean(
 )
 
 data class Detail(
-    val jiancedidian: String = "",
-    val jiancejieguo: String = "",
-    val jianceren: String = "",
-    val jianceriqi: String = "",
-    val jiancexiangmu: String = "",
-    val jiancezhi: String = "",
-    val lianxidianhua: String = "",
-    val shanghumingcheng: String = "",
-    val yangpinbianhao: String = "",
-    val yangpinmingcheng: String = ""
+    val jiancedidian: String = "-",
+    val jiancejieguo: String = "-",
+    val jianceren: String = "-",
+    val jianceriqi: String = "-",
+    val jiancexiangmu: String = "-",
+    val jiancezhi: String = "-",
+    val lianxidianhua: String = "-",
+    val shanghumingcheng: String = "-",
+    val yangpinbianhao: String = "-",
+    val yangpinmingcheng: String = "-"
 )

@@ -1,6 +1,7 @@
 package com.hm.viscosityauto.vm
 
 import android.content.Context
+import android.os.Build
 import android.os.CountDownTimer
 import android.serialport.SerialPort
 import android.util.Log
@@ -50,6 +51,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.OutputStream
+import java.lang.reflect.Method
 import java.text.DecimalFormat
 
 

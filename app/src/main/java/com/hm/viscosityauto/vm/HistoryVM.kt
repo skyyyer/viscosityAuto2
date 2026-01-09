@@ -1,13 +1,14 @@
 package com.hm.viscosityauto.vm
 
+import android.R.attr.password
+import android.R.id
 import android.annotation.SuppressLint
 import android.content.Context
-import android.provider.Settings
+import android.os.Build
 import android.serialport.SerialPort
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
@@ -15,23 +16,18 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
-import com.hm.viscosityauto.http.HttpUrl
-import com.hm.viscosityauto.http.RetrofitClient
 import com.hm.viscosityauto.model.Detail
 import com.hm.viscosityauto.model.DurationModel
 import com.hm.viscosityauto.model.UploadBean
 import com.hm.viscosityauto.room.AppDatabase
 import com.hm.viscosityauto.room.admin.AdminRecords
-import com.hm.viscosityauto.room.audit.AuditRecords
 import com.hm.viscosityauto.room.test.TestRecords
 import com.hm.viscosityauto.ui.view.LoadingDialog
-import com.hm.viscosityauto.utils.ComputeUtils
 import com.hm.viscosityauto.utils.ExportDataUtil
 import com.hm.viscosityauto.utils.FileUtil
 import com.hm.viscosityauto.utils.NetworkUtil
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.StringUtils
-import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.utils.UploadUtil
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +36,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
-import java.util.HashMap
+import java.lang.reflect.Method
+
 
 class HistoryVM : ViewModel() {
 
@@ -66,21 +63,33 @@ class HistoryVM : ViewModel() {
     private lateinit var mSerialPort: SerialPort //串口对象
     private var mOutputStream: OutputStream? = null //串口的输出流对象 用于发送指令
 
+    val devId =
+        if (Build.VERSION.SDK_INT >= 28) {
+            try {
+                val c = Class.forName("android.os.SystemProperties")
+                val get: Method = c.getMethod("get", String::class.java)
+                get.invoke(c, "ro.serialno") as String
+            } catch (var4: Exception) {
+                ""
+            }
+        } else {
+            Build.SERIAL
+        }
 
     init {
         initPrintPort()
-//        var durationArray: ArrayList<DurationModel> = ArrayList()
-//        durationArray.add(DurationModel(203f,true))
-//        durationArray.add(DurationModel(103f,false))
-//        durationArray.add(DurationModel(203f,true))
-//        durationArray.add(DurationModel(203f,true))
-//        durationArray.add(DurationModel(403f,false))
-//        durationArray.add(DurationModel(203f,true))
-//        durationArray.add(DurationModel(203f,true))
+//        val durationArray: ArrayList<DurationModel> = ArrayList()
+//        durationArray.add(DurationModel(203.0, true))
+//        durationArray.add(DurationModel(103.0, false))
+//        durationArray.add(DurationModel(203.0, true))
+//        durationArray.add(DurationModel(203.0, true))
+//        durationArray.add(DurationModel(403.0, false))
+//        durationArray.add(DurationModel(203.0, true))
+//        durationArray.add(DurationModel(203.0, true))
 //
 //        recordsList.add(
 //            TestRecords(
-//                testNum ="555",
+//                testNum = "555",
 //                duration = "200",
 //                temperature = "55",
 //                constant = "0.22",
@@ -88,7 +97,7 @@ class HistoryVM : ViewModel() {
 //                date = "2025-05-23",
 //                time = "12-05-23",
 //                durationArray = Gson().toJson(durationArray),
-//                tester ="admin"
+//                tester = "admin"
 //            )
 //        )
 
@@ -153,9 +162,8 @@ class HistoryVM : ViewModel() {
     fun upLoadData(context: Context, testRecord: TestRecords) {
         if (NetworkUtil.isNetworkAvailable(MyApp.getInstance())) {
             LoadingDialog.show(context.getString(R.string.uploading))
-            val devId = Settings.Secure.getString(
-                MyApp.getInstance().contentResolver, Settings.Secure.ANDROID_ID
-            )
+
+
             val uploadPath = SPUtils.getInstance()
                 .getString(
                     "uploadPath",
@@ -166,13 +174,12 @@ class HistoryVM : ViewModel() {
 
             val detail = Detail(
                 jiancedidian = "QD",
-//                jiancejieguo = if (testRecord.isPass) "合格" else "不合格",
-//                jianceren = testRecord.user,
-//                jianceriqi = testRecord.date,
-//                jiancezhi = testRecord.result,
-//                jiancexiangmu = ConfigType.fromType(testRecord.testType)!!.name + " "+testRecord.filterInfo,
-//                yangpinbianhao = testRecord.num,
-//                yangpinmingcheng = testRecord.name
+                jiancejieguo = testRecord.viscosity,
+                jianceren = testRecord.tester,
+                jianceriqi = testRecord.date,
+                jiancezhi = testRecord.temperature +"  "+testRecord.constant+ "  "+testRecord.duration,
+                jiancexiangmu = context.getString(R.string.app_name),
+                yangpinbianhao = testRecord.testNum,
             )
 
 
@@ -183,10 +190,20 @@ class HistoryVM : ViewModel() {
                 yqbh = devId,
                 details = listOf(detail)
             )
+
+            Log.e("uploadBean", Gson().toJson(uploadBean))
+
+            val sb  = "{\"details\":[{\"jiancedidian\":\"默认地点\",\"jiancejieguo\":\"计算标准:国标(静态)(非单向)     洁净度等级:> 300000\",\"jianceren\":\"\",\"jianceriqi\":\"2025-12-11 14:04:14\",\"jiancexiangmu\":\"尘埃粒子检测\",\"jiancezhi\":\"0.3μm置信度:28434753个/m3   0.5μm置信度:21112562个/m3   1μm置信度:128244个/m3   5μm置信度:0个/m3\",\"lianxidianhua\":\"\",\"shanghumingcheng\":\"-\",\"yangpinbianhao\":\"-\",\"yangpinmingcheng\":\"-\"}],\"dwmc\":\"\",\"password\":\"123456\",\"username\":\"ceshi\",\"yqbh\":\"3c000c58f701885221b\"}"
+
+
+            Log.e("uploadBean11", sb)
+
+
             try {
                 viewModelScope.launch(Dispatchers.IO) {
                     val result =
-                        UploadUtil().readContentFromPost(uploadPath, Gson().toJson(uploadBean))
+                        UploadUtil().readContentFromPost(uploadPath,Gson().toJson(uploadBean))
+                    Log.e("result", Gson().toJson(result))
 
                     withContext(Dispatchers.Main) {
                         when (result) {
@@ -273,7 +290,7 @@ class HistoryVM : ViewModel() {
             ).toList()
 
             lists.forEachIndexed { index, it ->
-                if (!it.derelict){
+                if (!it.derelict) {
                     list.add(
                         StringUtils.str2Bytes(
                             "    " +
@@ -281,7 +298,7 @@ class HistoryVM : ViewModel() {
                                     .getString("language", LANGUAGE_ZH) == LANGUAGE_ZH
                             ) context.getString(
                                 R.string.number_end
-                            ) else " ") +  it.duration + " s\r\n"
+                            ) else " ") + it.duration + " s\r\n"
                         )
                     )
 

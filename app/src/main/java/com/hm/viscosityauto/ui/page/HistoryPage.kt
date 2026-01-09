@@ -58,7 +58,6 @@ import com.hm.viscosityauto.room.test.TestRecords
 import com.hm.viscosityauto.ui.theme.GrayBg
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
-import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.dividerColor
 import com.hm.viscosityauto.ui.theme.keyBoardBg
 import com.hm.viscosityauto.ui.theme.textColorBlue
@@ -110,7 +109,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
     }
 
 
-    val openDurationDialog = remember {
+    val openDetailDialog = remember {
         mutableStateOf(false)
     }
 
@@ -176,6 +175,17 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                 ) {
                     if (selList.size == 1) {
                         BaseButton(
+                            title = stringResource(id = R.string.upload),
+                            icon = R.mipmap.upload_icon
+                        ) {
+                            val model = selList[0]
+                            Log.e("data", Gson().toJson(model))
+                            vm.upLoadData(context, model)
+
+                        }
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        BaseButton(
                             title = stringResource(id = R.string.print),
                             icon = R.mipmap.print_icon
                         ) {
@@ -185,6 +195,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
 
                         }
                     }
+
                     Spacer(modifier = Modifier.width(20.dp))
                     BaseButton(
                         title = stringResource(id = R.string.export),
@@ -271,7 +282,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                                 .clickable {
                                     if (items.durationArray.isNotEmpty()) {
                                         selData.value = items
-                                        openDurationDialog.value = true
+                                        openDetailDialog.value = true
                                     }
                                 }, onSel = {
                                 if (selList.contains(items)) {
@@ -400,8 +411,8 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
         }, dialogState = exportDialog)
 
 
-        //时长列表
-        if (openDurationDialog.value) {
+        //详情弹窗
+        if (openDetailDialog.value) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -428,7 +439,7 @@ fun HistoryPage(vm: HistoryVM = viewModel()) {
                             .align(Alignment.TopEnd)
                             .clip(shape = RoundedCornerShape(13.dp))
                             .clickable {
-                                openDurationDialog.value = false
+                                openDetailDialog.value = false
                             }
                     )
 
