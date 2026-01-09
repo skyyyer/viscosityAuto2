@@ -223,6 +223,7 @@
     <string name="upload_path">上传路径</string>
     <string name="upload_user">上传账户</string>
     <string name="upload_pwd">上传密码</string>
+    <string name="device_id">设备Id</string>
 
 
     <string name="cur_admin">当前用户</string>

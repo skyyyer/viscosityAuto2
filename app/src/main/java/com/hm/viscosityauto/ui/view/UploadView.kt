@@ -50,12 +50,10 @@ fun UploadView(
     uploadPath: String = "http://39.98.237.174:80/control/upload/data/uploadData",
     uploadName: String = "",
     uploadPwd: String = "",
-    token: String = "",
+    deviceId: String = "",
     onSave: (String, String, String) -> Unit = { _, _, _ -> },
     onClose: () -> Unit = {}
 ) {
-
-    val context = LocalContext.current
 
     var name by remember {
         mutableStateOf(uploadName)
@@ -68,6 +66,7 @@ fun UploadView(
     var path by remember {
         mutableStateOf(uploadPath)
     }
+
 
 
 
@@ -110,13 +109,13 @@ fun UploadView(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "token",
+                    text = stringResource(id = R.string.device_id),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.width(120.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = token,
+                    text = deviceId,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.width(400.dp)
                 )
@@ -226,7 +225,6 @@ fun UploadView(
                         })
                 }
             }
-
 
 
             Spacer(modifier = Modifier.height(24.dp))

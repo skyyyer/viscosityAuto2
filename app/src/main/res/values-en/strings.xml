@@ -97,6 +97,7 @@
     <string name="uploading">Uploading…</string>
     <string name="upload_success">Upload Success</string>
     <string name="upload_fail">Upload Failed</string>
+    <string name="device_id">device ID</string>
 
     <string name="language">Language</string>
     <string name="english">English</string>
