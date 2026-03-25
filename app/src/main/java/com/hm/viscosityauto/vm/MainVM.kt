@@ -497,7 +497,6 @@ class MainVM : ViewModel() {
     fun connectWIFI(context:Context,wifi: IWifi, pwd: String = "") {
 
         LoadingDialog.show(context.getString(R.string.connecting))
-        LoadingDialog.show(context.getString(R.string.connecting))
         viewModelScope.launch {
             delay(15*1000)
             withContext(Dispatchers.Main){

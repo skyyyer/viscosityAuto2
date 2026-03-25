@@ -193,11 +193,6 @@ class HistoryVM : ViewModel() {
 
             Log.e("uploadBean", Gson().toJson(uploadBean))
 
-            val sb  = "{\"details\":[{\"jiancedidian\":\"默认地点\",\"jiancejieguo\":\"计算标准:国标(静态)(非单向)     洁净度等级:> 300000\",\"jianceren\":\"\",\"jianceriqi\":\"2025-12-11 14:04:14\",\"jiancexiangmu\":\"尘埃粒子检测\",\"jiancezhi\":\"0.3μm置信度:28434753个/m3   0.5μm置信度:21112562个/m3   1μm置信度:128244个/m3   5μm置信度:0个/m3\",\"lianxidianhua\":\"\",\"shanghumingcheng\":\"-\",\"yangpinbianhao\":\"-\",\"yangpinmingcheng\":\"-\"}],\"dwmc\":\"\",\"password\":\"123456\",\"username\":\"ceshi\",\"yqbh\":\"3c000c58f701885221b\"}"
-
-
-            Log.e("uploadBean11", sb)
-
 
             try {
                 viewModelScope.launch(Dispatchers.IO) {
