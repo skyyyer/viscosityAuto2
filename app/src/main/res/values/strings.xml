@@ -171,7 +171,8 @@
 
     <string name="valid_data_is_less">有效数据小于3次</string>
     <string name="min_number_is_4">次数最小为4次</string>
-
+    <string name="pls_sel_datas">请选择数据</string>
+    <string name="no_valid_data">没有有效数据</string>
 
 
     <string name="usr_last_load_time">上次加载：</string>

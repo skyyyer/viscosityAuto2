@@ -149,6 +149,8 @@
     <string name="input_completely">Complete All Fields</string>
     <string name="valid_data_is_less">Valid data less than 3 cycles</string>
     <string name="min_number_is_4">Minimum 4 cycles</string>
+    <string name="pls_sel_datas">Please select Data</string>
+    <string name="no_valid_data">No valid data</string>
 
 
     <!-- Network -->

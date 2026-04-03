@@ -397,10 +397,16 @@ fun PassageCard(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 BaseButton(title = stringResource(id = R.string.compute)) {
-                    if (selList.size < 3) {
-                        ToastUtil.show(context, context.getString(R.string.valid_data_is_less))
-                        return@BaseButton
-                    }
+//                    if (selList.size < 3) {
+//                        ToastUtil.show(context, context.getString(R.string.valid_data_is_less))
+//                        return@BaseButton
+//                    }
+//
+//                    if (selList.isEmpty()) {
+//                        ToastUtil.show(context, context.getString(R.string.pls_sel_datas))
+//                        return@BaseButton
+//                    }
+
                     model.durationArray.forEachIndexed { index, item ->
                         item.derelict = !selList.contains(index)
                     }

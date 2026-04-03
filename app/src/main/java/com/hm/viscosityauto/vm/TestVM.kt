@@ -456,8 +456,11 @@ class TestVM : ViewModel() {
                                                 time = TimeUtils.timestampToString(),
                                                 temperature = setTemperature
                                             )
-                                            passageModelA.computeViscosity()
-                                            saveDate(passageModelA)
+                                            val success = passageModelA.computeViscosity()
+                                            if (success){
+                                                saveDate(passageModelA)
+                                            }
+
                                         } else {
                                             showDataOptA = true
                                         }
@@ -568,8 +571,11 @@ class TestVM : ViewModel() {
                                                 time = TimeUtils.timestampToString(),
                                                 temperature = setTemperature
                                             )
-                                            passageModelB.computeViscosity()
-                                            saveDate(passageModelB)
+                                            val success = passageModelB.computeViscosity()
+                                            if (success){
+                                                saveDate(passageModelB)
+                                            }
+
                                         } else {
                                             showDataOptB = true
                                         }

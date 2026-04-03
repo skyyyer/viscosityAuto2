@@ -254,8 +254,10 @@ fun TestPage(vm: TestVM = viewModel()) {
                                 time = TimeUtils.timestampToString(),
                                 temperature = vm.setTemperature
                             )
-                            vm.passageModelA.computeViscosity()
-                            vm.saveDate(vm.passageModelA)
+                            val success = vm.passageModelA.computeViscosity()
+                            if (success){
+                                vm.saveDate(vm.passageModelA)
+                            }
 
                         })
 //                    Spacer(modifier = Modifier.width(8.dp))
@@ -605,8 +607,11 @@ fun TestPage(vm: TestVM = viewModel()) {
                                 time = TimeUtils.timestampToString(),
                                 temperature = vm.setTemperature
                             )
-                            vm.passageModelB.computeViscosity()
-                            vm.saveDate(vm.passageModelB)
+                            val success = vm.passageModelB.computeViscosity()
+                            if (success){
+                                vm.saveDate(vm.passageModelB)
+                            }
+
                         })
                 }
             }

@@ -51,9 +51,8 @@ data class PassageModel(
         }
 
 
-        if (testCount.toInt() > 1) {
-            durationArrayOfAll = format.format(durationArrayTemp.average()).toDouble()
-        }
+
+        durationArrayOfAll = format.format(durationArrayTemp.average()).toDouble()
 
         //在温度100～15°C测定粘度时，这个差数不应超过算术平均值的±0.5%;在低于15～-30°C测定粘度时，这个差数不应超过算术平均值的±1.5%。在低于-30°C测定粘度时，这个差数不应超过算术平均值的±2.5%。
         val allowableError = if (temperature.toFloat() > 15) {
@@ -75,20 +74,17 @@ data class PassageModel(
             }
         }
         Log.e("durationArray", "$allowableError  $durationArrayOfAll")
-        if (enableDurationArray.size < 3) {
-            enableDurationArray.clear()
+        if (enableDurationArray.isEmpty()) {
             ToastUtil.show(
                 MyApp.getInstance(),
-                MyApp.getInstance().getString(R.string.valid_data_is_less)
+                MyApp.getInstance().getString(R.string.no_valid_data)
             )
-
-        } else {
-            duration = format.format(enableDurationArray.average()).toString()
-            val formatViscosity = DecimalFormat("0.00000")
-            viscosity = formatViscosity.format((duration.toFloat() * constant.toFloat()))
+            return false
         }
-
-        return (enableDurationArray.isNotEmpty())
+        duration = format.format(enableDurationArray.average()).toString()
+        val formatViscosity = DecimalFormat("0.00000")
+        viscosity = formatViscosity.format((duration.toFloat() * constant.toFloat()))
+        return true
     }
 
     fun isReady(): Boolean {
