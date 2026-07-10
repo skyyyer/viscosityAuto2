@@ -315,12 +315,7 @@ fun SettingPage(vm: MainVM) {
                             }
                         )
                         Spacer(modifier = Modifier.width(20.dp))
-                        if (vm.newApkPath.value.isNotEmpty()) {
-                            if (File(vm.newApkPath.value).exists() && FileUtil.extractVersionCodeFromApk(
-                                    context,
-                                    File(vm.newApkPath.value)
-                                ) > vm.versionCode.intValue
-                            ) {
+                        if (vm.newApkUrl.value.isNotEmpty()) {
                                 BaseButton(
                                     isBrush = false,
                                     title = stringResource(id = R.string.update),
@@ -328,7 +323,6 @@ fun SettingPage(vm: MainVM) {
                                 ) {
                                     vm.installApk(context as Activity)
                                 }
-                            }
                         }
 
                     }

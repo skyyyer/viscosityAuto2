@@ -4,7 +4,7 @@
     <string name="test">测试</string>
     <string name="setting">设置</string>
     <string name="test_records">记录</string>
-    <string name="help">帮助</string>
+    <string name="help">服务支持</string>
 
     <string name="back">返回</string>
     <string name="tip">提示</string>
@@ -269,7 +269,7 @@
     <string name="up">上</string>
     <string name="down">下</string>
     <string name="detected_value">检测值</string>
-    <string name="set_value">设定值</string>
+    <string name="set_value">差值</string>
     <string name="sensitivity">光强度</string>
     <string name="cur_data">当前数据</string>
 
@@ -312,6 +312,15 @@
     <string name="wait_drying_tip">请等待其他通道烘干完成</string>
 
     <string name="data_optimization">数据优化</string>
+
+    <string name="refer_manual">请查看说明书</string>
+
+
+    <string name="i_get_it">我知道了</string>
+
+    <string name="low_battery_tip">电量过低，设备即将关机，请立即充电。</string>
+
+    <string name="timeout_tip">指令超时，请检查设备</string>
 
 
 </resources>

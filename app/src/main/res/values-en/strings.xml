@@ -235,24 +235,24 @@
 
 
     <string name="device_param">Param</string>
-    <string name="up">up</string>
-    <string name="down">down</string>
-    <string name="detected_value">detected value</string>
-    <string name="set_value">set value</string>
-    <string name="sensitivity">light intensity</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="detected_value">Detected value</string>
+    <string name="set_value">Difference</string>
+    <string name="sensitivity">Light intensity</string>
     <string name="cur_data">Current</string>
 
     <string name="debug_mode">Debug Mode</string>
     <string name="motor_test">Motor Test</string>
     <string name="speed">Speed</string>
     <string name="direction">Direction</string>
-    <string name="forward">forward</string>
-    <string name="reverse">reverse</string>
+    <string name="forward">Forward</string>
+    <string name="reverse">Reverse</string>
     <string name="solenoid_valve_test">solenoid valve test</string>
     <string name="clean_empty">Emptying</string>
     <string name="clean_drying">Drying</string>
 
-    <string name="state">state</string>
+    <string name="state">State</string>
     <string name="clean">Clean</string>
     <string name="device_running">The device is running, please operate it later</string>
 
@@ -286,5 +286,12 @@
     <string name="data_optimization">Data Opt</string>
 
     <string name="tester">Tester</string>
+
+
+    <string name="refer_manual">Please refer to the manual</string>
+
+    <string name="i_get_it">Got it</string>
+    <string name="low_battery_tip">The battery is too low and the device is about to shut down. Please charge it immediately.</string>
+    <string name="timeout_tip">The command times out, please check the equipment</string>
 
 </resources>

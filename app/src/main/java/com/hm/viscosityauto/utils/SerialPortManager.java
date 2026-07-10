@@ -57,6 +57,8 @@ public class SerialPortManager {
     public static final String B_VALUE = "15";
 
 
+    //传感器光强  查询
+    public static final String SENSOR_LIGHT = "16";
     //AB 检测值上报
     public static final String AB_VALUE_UP = "17";
 
@@ -68,6 +70,9 @@ public class SerialPortManager {
     public static final String B_UP_SET = "20";
     //B下设定值 灵敏度
     public static final String B_DOWN_SET = "21";
+
+    //22	设置/查询	泵电机版本	D0=00 旧泵，D0=01 新泵	D0=当前泵版本
+    public static final String PUMP_MOTOR_VER = "22";
 
 
     //电磁阀测试
@@ -104,6 +109,9 @@ public class SerialPortManager {
     //泄压时间
     public static final String DECOM_P_DURATION = "39";
 
+//    51	查询	固件版本号	D0=AA	D0=主版本，D1=次版本，D2=修订，D3:D4=build
+    public static final String FIRMWARW_VER = "51";
+
 
     public interface OnDataReceivedListener {
 
@@ -120,6 +128,11 @@ public class SerialPortManager {
         void onADetectedValue(int valueUp, int valueDown);
 
         void onBDetectedValue(int valueUp, int valueDown);
+
+        void onSensorLightValue(int AvalueUp, int AvalueDown,int BvalueUp, int BvalueDown);
+
+        void onPumpmotor(int version);
+
     }
 
     public SerialPortManager(String devicePath, int baudRate, OnDataReceivedListener listener) {
@@ -210,6 +223,19 @@ public class SerialPortManager {
                                         int bDown = Integer.parseInt(data.substring(4, 8), 16);
                                         mListener.onBDetectedValue(bUp, bDown);
                                         break;
+
+                                    case SENSOR_LIGHT:
+                                        int aUpLight = Integer.parseInt(data.substring(0, 2), 16);
+                                        int aDownLight = Integer.parseInt(data.substring(2,4), 16);
+                                        int bUpLight = Integer.parseInt(data.substring(4,6), 16);
+                                        int bDownLight = Integer.parseInt(data.substring(6, 8), 16);
+                                        mListener.onSensorLightValue(aUpLight, aDownLight,bUpLight,bDownLight);
+                                        break;
+                                    case PUMP_MOTOR_VER:
+                                        int version = Integer.parseInt(data.substring(0, 2), 16);
+                                        mListener.onPumpmotor(version);
+                                        break;
+
                                 }
                             }
 

@@ -40,6 +40,7 @@ import com.hm.viscosityauto.utils.SerialPortManager.CRC
 import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.TimeUtils.splitDateTime
+import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
 import com.hm.viscosityauto.vm.CalibrationState.Single
@@ -466,7 +467,7 @@ class TestVM : ViewModel() {
                                         }
 
                                         if (autoEmpty.value) {
-                                            delay(2000)
+                                            delay(5000)
                                             passageModelA = passageModelA.copy(state = CleanEmpty)
                                             setTestState(passageModelA.id, CMD_CleanEmpty)
                                         } else {//没有排空 直接完成
@@ -476,7 +477,7 @@ class TestVM : ViewModel() {
 
                                         }
                                     } else {
-                                        delay(2000)
+                                        delay(5000)
                                         passageModelA =
                                             passageModelA.copy(
                                                 state = Running
@@ -505,14 +506,14 @@ class TestVM : ViewModel() {
                                                     state = Clean,
                                                     curCleanNum = passageModelA.curCleanNum + 1
                                                 )
-                                                delay(2000)
+                                                delay(5000)
                                                 setTestState(passageModelA.id, CMD_Clean)
                                             }
                                         }
 
                                         CleanEmpty -> {
                                             if (passageModelA.cleanTimes.toInt() > 0 && autoClean.value) {
-                                                delay(2000)
+                                                delay(5000)
                                                 passageModelA = passageModelA.copy(
                                                     state = Clean,
                                                     curCleanNum = passageModelA.curCleanNum + 1
@@ -580,7 +581,7 @@ class TestVM : ViewModel() {
                                             showDataOptB = true
                                         }
                                         if (autoEmpty.value) {
-                                            delay(2000)
+                                            delay(5000)
                                             passageModelB = passageModelB.copy(state = CleanEmpty)
 
                                             setTestState(passageModelB.id, CMD_CleanEmpty)
@@ -591,7 +592,7 @@ class TestVM : ViewModel() {
                                         }
 
                                     } else {
-                                        delay(2000)
+                                        delay(5000)
                                         passageModelB =
                                             passageModelB.copy(
                                                 state = Running
@@ -614,7 +615,7 @@ class TestVM : ViewModel() {
                                                     temperature = setTemperature
                                                 )
                                             } else {
-                                                delay(2000)
+                                                delay(5000)
                                                 passageModelB = passageModelB.copy(
                                                     state = Clean,
                                                     curCleanNum = passageModelB.curCleanNum + 1
@@ -625,7 +626,7 @@ class TestVM : ViewModel() {
 
                                         CleanEmpty -> {//排空后  清洗
                                             if (passageModelB.cleanTimes.toInt() > 0 && autoClean.value) {
-                                                delay(2000)
+                                                delay(5000)
                                                 passageModelB = passageModelB.copy(
                                                     state = Clean,
                                                     curCleanNum = passageModelB.curCleanNum + 1
@@ -654,6 +655,17 @@ class TestVM : ViewModel() {
 //                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
 
 
+                }
+
+                override fun onSensorLightValue(
+                    AvalueUp: Int,
+                    AvalueDown: Int,
+                    BvalueUp: Int,
+                    BvalueDown: Int
+                ) {
+                }
+
+                override fun onPumpmotor(version: Int) {
                 }
 
 
@@ -804,7 +816,7 @@ class TestVM : ViewModel() {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + (if (channel == 1) SerialPortManager.A_CMD else SerialPortManager.B_CMD) + ByteUtil.intToHex(
                 state
-            ) + "000000" + CRC + SerialPortManager.FOOT
+            ) + "010000" + CRC + SerialPortManager.FOOT
         )
         serialPortManager?.write(byteArray)
     }

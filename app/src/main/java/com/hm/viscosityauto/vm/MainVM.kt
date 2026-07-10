@@ -37,10 +37,12 @@ import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.http.HttpUrl
 import com.hm.viscosityauto.http.RetrofitClient
+import com.hm.viscosityauto.model.DeviceParamModel
 import com.hm.viscosityauto.model.DurationModel
 import com.hm.viscosityauto.room.AppDatabase
 import com.hm.viscosityauto.room.admin.AdminRecords
 import com.hm.viscosityauto.room.audit.AuditRecords
+import com.hm.viscosityauto.ui.page.setValueMax
 import com.hm.viscosityauto.ui.view.LoadingDialog
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils
@@ -52,6 +54,7 @@ import com.hm.viscosityauto.utils.SerialPortManager.listSerialPorts
 import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.ToastUtil
+import com.hm.viscosityped.utils.QRCodeUtil
 import com.iwdael.wifimanager.IWifi
 import com.iwdael.wifimanager.IWifiManager
 import com.iwdael.wifimanager.WifiManager
@@ -80,11 +83,10 @@ class MainVM : ViewModel() {
 
     var versionName = mutableStateOf("1.0.0")
     var versionCode = mutableIntStateOf(1)
-    private var newApkUrl = mutableStateOf("")
+    var newApkUrl = mutableStateOf("")
     private var newApkVersionCode = mutableIntStateOf(1)
 
 
-    var newApkPath = mutableStateOf("")
     var helpVideoPath: String = "/sdcard/DCIM/1.mp4"
     var helpVideoENPath: String = "/sdcard/DCIM/1_en.mp4"
 
@@ -156,6 +158,13 @@ class MainVM : ViewModel() {
             Build.SERIAL
         }
 
+    ///设备型号
+    var deviceModel = mutableStateOf("")
+
+    //设备参数
+    var DeviceParamModel by mutableStateOf(DeviceParamModel())
+
+
     /**
      * 初始化
      * -数据库
@@ -207,10 +216,23 @@ class MainVM : ViewModel() {
 
                 override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
                 }
+
+                override fun onSensorLightValue(
+                    AvalueUp: Int,
+                    AvalueDown: Int,
+                    BvalueUp: Int,
+                    BvalueDown: Int
+                ) {
+                }
+
+                override fun onPumpmotor(version: Int) {
+                }
             })
 
         delay(100)
         setLightState(true)
+        delay(100)
+        setParamDiffValue()
         delay(1000)
         serialPortManager?.close()
         serialPortManager = null // 重要！解除引用
@@ -256,6 +278,7 @@ class MainVM : ViewModel() {
             }
         }
 
+        deviceModel.value = SPUtils.getInstance().getString("deviceModel", QRCodeUtil.DEFAULT_PRODUCT_MODEL)
 
     }
 
@@ -671,6 +694,43 @@ class MainVM : ViewModel() {
         )
         serialPortManager?.write(byteArray)
 
+    }
+
+
+    /**
+     * 设置 差值
+     */
+    suspend fun setParamDiffValue() {
+        val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
+        if (deviceParam.isNotEmpty()){
+            DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
+            setValueAndSen(1, DeviceParamModel.aUpSet.toInt()+ setValueMax, DeviceParamModel.aUpSensitivity.toInt())
+            delay(100)
+            setValueAndSen(2, DeviceParamModel.aDownSet.toInt()+ setValueMax, DeviceParamModel.aDownSensitivity.toInt())
+            delay(100)
+            setValueAndSen(3, DeviceParamModel.bUpSet.toInt()+ setValueMax, DeviceParamModel.bUpSensitivity.toInt())
+            delay(100)
+            setValueAndSen(4, DeviceParamModel.bDownSet.toInt()+ setValueMax, DeviceParamModel.bDownSensitivity.toInt())
+        }
+    }
+
+    /**
+     * 设定值、灵敏度
+     */
+    fun setValueAndSen(channelPosition: Int, setValue: Int, sensitivity: Int) {
+        val cmd = when (channelPosition) {
+            1 -> SerialPortManager.A_UP_SET
+            2 -> SerialPortManager.A_DOWN_SET
+            3 -> SerialPortManager.B_UP_SET
+            else -> SerialPortManager.B_DOWN_SET
+        }
+
+        val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + cmd + ByteUtil.intToHex4(setValue) + ByteUtil.intToHex4(
+                sensitivity
+            ) + SerialPortManager.CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
     }
 
     fun installApk(activity: Activity) {

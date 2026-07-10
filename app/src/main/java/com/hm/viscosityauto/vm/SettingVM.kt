@@ -148,7 +148,8 @@ class SettingVM : ViewModel() {
             )
         )
 
-
+    ///泵机 版本型号
+    var pumpMotro = mutableIntStateOf(0)
 
 
     /**
@@ -205,7 +206,7 @@ class SettingVM : ViewModel() {
 
         val mediumInfo = SPUtils.getInstance().getString("mediumInfo", "")
         if (mediumInfo.isEmpty()) {
-            mediumList.add(MediumModel(p = "4", name = "硅油", isSel = true))
+            mediumList.add(MediumModel(p = "15", name = "硅油", isSel = true))
             mediumList.add(MediumModel(p = "8", name = "水", isSel = false))
 
             SPUtils.getInstance().put("mediumInfo", Gson().toJson(mediumList))
@@ -305,6 +306,21 @@ class SettingVM : ViewModel() {
 
                 }
 
+                override fun onSensorLightValue(
+                    AvalueUp: Int,
+                    AvalueDown: Int,
+                    BvalueUp: Int,
+                    BvalueDown: Int
+                ) {
+                    DeviceParamModel = DeviceParamModel.copy(aUpSensitivity = AvalueUp.toString(), aDownSensitivity = AvalueDown.toString()
+                    ,bUpSensitivity = BvalueUp.toString(), bDownSensitivity = BvalueDown.toString())
+
+                }
+
+                override fun onPumpmotor(version: Int) {
+                    pumpMotro.intValue = version
+                }
+
 
             })
 
@@ -318,6 +334,42 @@ class SettingVM : ViewModel() {
 
         val byteArray = ByteUtil.hexStringToByteArray(
             SerialPortManager.HEAD + SerialPortManager.AB_VALUE_UP + (if (state) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
+
+    }
+
+    /**
+     * 查询	四个传感器光强
+     */
+    fun getSensorLight() {
+
+        val byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.SENSOR_LIGHT +"AA" + "000000" + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
+
+    }
+
+    /**
+     * 读取崩机  版本
+     */
+    fun getPumpMotorVer() {
+
+        val byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.PUMP_MOTOR_VER + "AA" + "000000" + CRC + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
+
+    }
+
+    /**
+     * 设置崩机  版本
+     */
+    fun setPumpMotorVer(isNew:Boolean) {
+
+        val byteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.PUMP_MOTOR_VER +( if (isNew) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
         )
         serialPortManager?.write(byteArray)
 

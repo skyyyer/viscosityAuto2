@@ -103,14 +103,6 @@ fun DebugPage(vm: SettingVM = viewModel()) {
     }
 
 
-    DisposableEffect(Unit) {
-        vm.initDevicePort()
-        onDispose {
-            vm.closeSerialPort()
-        }
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -71,8 +71,9 @@ import kotlinx.coroutines.launch
 
 
 const val setValueMax = 4095
+const val setValueMin = -4095
 const val lightValueMax = 100
-
+const val lightValueMin = 0
 
 @Composable
 fun ParamPage(vm: SettingVM = viewModel()) {
@@ -111,6 +112,8 @@ fun ParamPage(vm: SettingVM = viewModel()) {
             vm.initDevicePort()
             delay(500)
             vm.startABValueUp(true)
+            delay(500)
+            vm.getSensorLight()
         }
 
         onDispose {
@@ -189,12 +192,12 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(id = R.string.set_value) + "(0-$setValueMax)",
+                text = stringResource(id = R.string.set_value) + "($setValueMin-$setValueMax)",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(id = R.string.sensitivity) + "(0-$lightValueMax)",
+                text = stringResource(id = R.string.sensitivity) + "($lightValueMin-$lightValueMax)",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
@@ -221,7 +224,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(aUpSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(1, setValue.toInt(), sensitivity.toInt())
+                vm.setValueAndSen(1, setValue.toInt()+setValueMax, sensitivity.toInt())
 
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
@@ -245,7 +248,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(aDownSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(2, setValue.toInt(), sensitivity.toInt())
+                vm.setValueAndSen(2, setValue.toInt()+setValueMax, sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -266,7 +269,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(bUpSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(3, setValue.toInt(), sensitivity.toInt())
+                vm.setValueAndSen(3, setValue.toInt()+setValueMax, sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -287,7 +290,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(bDownSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(4, setValue.toInt(), sensitivity.toInt())
+                vm.setValueAndSen(4, setValue.toInt()+setValueMax, sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -400,25 +403,25 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                         scope.launch {
                             vm.setValueAndSen(
                                 1,
-                                vm.DeviceParamModel.aUpSet.toInt(),
+                                vm.DeviceParamModel.aUpSet.toInt()+setValueMax,
                                 vm.DeviceParamModel.aUpSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 2,
-                                vm.DeviceParamModel.aDownSet.toInt(),
+                                vm.DeviceParamModel.aDownSet.toInt()+setValueMax,
                                 vm.DeviceParamModel.aDownSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 3,
-                                vm.DeviceParamModel.bUpSet.toInt(),
+                                vm.DeviceParamModel.bUpSet.toInt()+setValueMax,
                                 vm.DeviceParamModel.bUpSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 4,
-                                vm.DeviceParamModel.bDownSet.toInt(),
+                                vm.DeviceParamModel.bDownSet.toInt()+setValueMax,
                                 vm.DeviceParamModel.bDownSensitivity.toInt()
                             )
                         }
@@ -504,14 +507,14 @@ private fun ItemView(
                     onValueChange2("0")
                 }
 
-                if (setValue.toInt() < 0 || setValue.toInt() > setValueMax) {
+                if (setValue.toInt() !in setValueMin..setValueMax ) {
                     ToastUtil.show(
                         context,
                         context.getString(R.string.set_value) + context.getString(R.string.over_limit)
                     )
                     return@BaseButton
                 }
-                if (sensitivity.toInt() < 0 || sensitivity.toInt() > lightValueMax) {
+                if (sensitivity.toInt() < lightValueMin || sensitivity.toInt() > lightValueMax) {
                     ToastUtil.show(
                         context,
                         context.getString(R.string.sensitivity) + context.getString(R.string.over_limit)
@@ -737,7 +740,7 @@ private fun ConfigItemView(
         if (deviceParamModel.name.isNotEmpty() || isEdit) {
 
             Text(
-                text = stringResource(id = R.string.set_value) + "(0-$setValueMax)",
+                text = stringResource(id = R.string.set_value) + "($setValueMin-$setValueMax)",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )
@@ -787,7 +790,7 @@ private fun ConfigItemView(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = stringResource(id = R.string.sensitivity) + "(0-$lightValueMax)",
+                text = stringResource(id = R.string.sensitivity) + "($lightValueMin-$lightValueMax)",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center, modifier = Modifier.weight(1f)
             )

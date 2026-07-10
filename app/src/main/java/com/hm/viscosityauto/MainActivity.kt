@@ -1,40 +1,23 @@
 package com.hm.viscosityauto
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import com.hm.viscosityauto.ui.page.TestPage
 import com.hm.viscosityauto.ui.theme.ViscosityAutoTheme
-import com.hm.viscosityauto.ui.view.ItemData
+import com.hm.viscosityauto.ui.view.ErrorView
 import com.hm.viscosityauto.ui.view.LoadingDialog
+import com.hm.viscosityauto.utils.SerialManager
 
 
 object GlobalState {
@@ -57,6 +40,14 @@ class MainActivity : ComponentActivity() {
         sendBroadcast(intent2)
         requestMyPermissions()
 
+
+//        SerialManager
+//            .getInstance(
+//                "/dev/ttyS1",
+//                9600
+//            )
+//            .initialize()
+
         setContent {
             ViscosityAutoTheme {
                 // A surface container using the 'background' color from the theme
@@ -66,6 +57,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavGraph()
                     LoadingDialog.Content()
+//                    ErrorView.Content()
                 }
             }
         }

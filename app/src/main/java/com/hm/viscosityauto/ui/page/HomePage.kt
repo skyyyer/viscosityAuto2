@@ -1,5 +1,6 @@
 package com.hm.viscosityauto.ui.page
 
+import NoPressStateClick
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
@@ -32,9 +33,13 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import com.asi.nav.Nav
@@ -45,10 +50,15 @@ import com.hm.viscosityauto.SettingPageRoute
 import com.hm.viscosityauto.TestPageRoute
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgGray1
+import com.hm.viscosityauto.ui.theme.cardBgWhite
+import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.theme.textEnd
 import com.hm.viscosityauto.ui.theme.textStart
 import com.hm.viscosityauto.utils.FileUtil
+import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.LANGUAGE_ZH
+import com.hm.viscosityped.utils.QRCodeUtil
+import com.hm.viscosityped.utils.QRCodeUtil.SUPPORT_URL_PREFIX
 
 @Composable
 fun HomePage(vm: MainVM = viewModel()) {
@@ -56,6 +66,10 @@ fun HomePage(vm: MainVM = viewModel()) {
     val context = LocalContext.current
 
 
+    ///展示二维码弹框
+    val showCodeDialog = remember {
+        mutableStateOf(false)
+    }
 
 
     Box(
@@ -118,36 +132,61 @@ fun HomePage(vm: MainVM = viewModel()) {
                 }
                 Spacer(modifier = Modifier.width(18.dp))
                 ItemCard(stringResource(id = R.string.help), R.mipmap.help_icon) {
-                    if (vm.language.value== LANGUAGE_ZH){
-                        if (FileUtil.FilePath2Uri(vm.helpVideoPath) == Uri.EMPTY) {
-                            Toast.makeText(
-                                context, context.getString(R.string.no_video),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Nav.to(HelpPageRoute.route)
-                        }
-                    }else{
-                        if (FileUtil.FilePath2Uri(vm.helpVideoENPath) == Uri.EMPTY) {
-                            Toast.makeText(
-                                context, context.getString(R.string.no_video),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Nav.to(HelpPageRoute.route)
-                        }
-                    }
+                    showCodeDialog.value = true
 
                 }
 
             }
 
 
-            Box {
+        }
+
+        //二维码 弹窗
+        if (showCodeDialog.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .NoPressStateClick(onClick = {
+                        showCodeDialog.value = false
+                    }),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(400.dp, 350.dp)
+                        .shadow(
+                            elevation = 16.dp, shape = RoundedCornerShape(10.dp),
+                        )
+                        .background(color = cardBgWhite)
+                        .padding(24.dp)
+                    , contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Text(stringResource(R.string.help), style = TextStyle(fontSize = 26.sp))
+
+                        QRCodeImage(
+                            model = vm.deviceModel.value,
+                            modifier = Modifier.size(250.dp)
+                        )
+//                        Spacer(Modifier.height(16.dp))
+//
+//                        Text(
+//                            SUPPORT_URL_PREFIX + vm.deviceModel.value,
+//                            style = MaterialTheme.typography.bodyLarge.copy(color = textColorGray),
+//                            textAlign = TextAlign.Center
+//                        )
+
+                    }
+                }
+
 
             }
-
-
         }
 
     }
@@ -233,5 +272,44 @@ private fun ItemCard(title: String, res: Int,bg:Color =cardBg.copy(alpha = 0.8f)
         }
 
 
+    }
+}
+
+
+/**
+ * 二维码显示组件
+ */
+@Composable
+fun QRCodeImage(
+    model: String,
+    modifier: Modifier = Modifier,
+    size: Int = 512,
+    foregroundColor: Color = Color.Black,
+    backgroundColor: Color = Color.White
+) {
+    val bitmap = remember(model) {
+        QRCodeUtil.generate(
+            model = model,
+            size = size
+        )
+    }
+
+    if (bitmap != null) {
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = "二维码",
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp)),
+            contentScale = ContentScale.Fit
+        )
+    } else {
+        // 生成失败时的占位
+        Box(
+            modifier = modifier
+                .background(Color.LightGray, RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("生成失败", color = Color.Gray)
+        }
     }
 }

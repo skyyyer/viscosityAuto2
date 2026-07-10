@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 28
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -123,5 +123,7 @@ dependencies {
 
     //app升级
     implementation ("io.github.azhon:appupdate:4.3.6")
+
+    implementation("com.google.zxing:core:3.5.4")
 
 }

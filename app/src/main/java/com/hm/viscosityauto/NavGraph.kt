@@ -72,6 +72,26 @@ fun NavGraph(vm: MainVM = viewModel()) {
         onDispose {  }
     }
 
+//    LaunchedEffect(vm.alertCode) {
+//        if (vm.alertCode!= AlertState.NO_ALERT){
+//            AlarmPlayerManager.start()
+//            if (vm.alertCode== AlertState.LOW_BATTERY){
+//                ErrorView.show(msg = res.getString(R.string.low_battery_tip), onDismiss = {
+//                    AlarmPlayerManager.stop()
+//                })
+//            }else if (vm.alertCode== AlertState.TIMEOUT){
+//                ErrorView.show(msg = res.getString(R.string.timeout_tip), onDismiss = {
+//                    AlarmPlayerManager.stop()
+//
+//                })
+//            }
+//
+//        }else{
+//            AlarmPlayerManager.stop()
+//            ErrorView.dismiss()
+//        }
+//    }
+
     val startPage = SplashPageRoute.route
 
     SetLanguage(vm.language.value)
@@ -116,7 +136,7 @@ fun NavGraph(vm: MainVM = viewModel()) {
         }
 
         composable(ManagerPageRoute.route) {
-            ManagerPage()
+            ManagerPage(vm)
         }
         // Add more destinations similarly.
 
