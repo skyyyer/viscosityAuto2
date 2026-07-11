@@ -1,4 +1,4 @@
-package com.hm.viscosity.model
+package com.hm.viscosityauto.model
 
 data class MediumModel(
     val  p: String ="",

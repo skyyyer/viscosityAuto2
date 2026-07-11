@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
 
 
 const val setValueMax = 4095
-const val setValueMin = -4095
+const val setValueMin = 10
 const val lightValueMax = 100
 const val lightValueMin = 0
 
@@ -82,23 +82,23 @@ fun ParamPage(vm: SettingVM = viewModel()) {
     val scope = rememberCoroutineScope()
 
     var extractDurA by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelA.extracttime)
     }
     var extractIntA by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelA.extracttimejg)
     }
     var speedA by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelA.motorspeed)
     }
 
     var extractDurB by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelB.extracttime)
     }
     var extractIntB by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelB.extracttimejg)
     }
     var speedB by remember {
-        mutableStateOf("5")
+        mutableStateOf(vm.ExtractModelB.motorspeed)
     }
 
 
@@ -224,7 +224,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(aUpSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(1, setValue.toInt()+setValueMax, sensitivity.toInt())
+                vm.setValueAndSen(1, setValue.toInt(), sensitivity.toInt())
 
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
@@ -248,7 +248,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(aDownSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(2, setValue.toInt()+setValueMax, sensitivity.toInt())
+                vm.setValueAndSen(2, setValue.toInt(), sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -269,7 +269,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(bUpSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(3, setValue.toInt()+setValueMax, sensitivity.toInt())
+                vm.setValueAndSen(3, setValue.toInt(), sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -290,7 +290,7 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                 vm.DeviceParamModel = vm.DeviceParamModel.copy(bDownSensitivity = it)
             },
             onConfig = { setValue, sensitivity ->
-                vm.setValueAndSen(4, setValue.toInt()+setValueMax, sensitivity.toInt())
+                vm.setValueAndSen(4, setValue.toInt(), sensitivity.toInt())
                 SPUtils.getInstance().put("deviceParamInfo", Gson().toJson(vm.DeviceParamModel))
 
             }
@@ -327,8 +327,12 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                             speedB
                         )
                         delay(50)
-                        vm.setState(1, 1)
+                        vm.setState(1, 6)
                     }
+                    vm.ExtractModelA = vm.ExtractModelA.copy(extracttime = extractDurA, extracttimejg = extractIntA, motorspeed = speedA)
+
+                    SPUtils.getInstance().put("extractModelA",Gson().toJson(vm.ExtractModelA))
+
 
                 } else {
                     vm.setState(1, 0)
@@ -363,8 +367,10 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                             speedB
                         )
                         delay(50)
-                        vm.setState(2, 1)
+                        vm.setState(2, 6)
                     }
+                    vm.ExtractModelB = vm.ExtractModelB.copy(extracttime = extractDurB, extracttimejg = extractIntB, motorspeed = speedB)
+                    SPUtils.getInstance().put("extractModelB",Gson().toJson(vm.ExtractModelB))
 
                 } else {
                     vm.setState(2, 0)
@@ -403,25 +409,25 @@ fun ParamPage(vm: SettingVM = viewModel()) {
                         scope.launch {
                             vm.setValueAndSen(
                                 1,
-                                vm.DeviceParamModel.aUpSet.toInt()+setValueMax,
+                                vm.DeviceParamModel.aUpSet.toInt(),
                                 vm.DeviceParamModel.aUpSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 2,
-                                vm.DeviceParamModel.aDownSet.toInt()+setValueMax,
+                                vm.DeviceParamModel.aDownSet.toInt(),
                                 vm.DeviceParamModel.aDownSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 3,
-                                vm.DeviceParamModel.bUpSet.toInt()+setValueMax,
+                                vm.DeviceParamModel.bUpSet.toInt(),
                                 vm.DeviceParamModel.bUpSensitivity.toInt()
                             )
                             delay(100)
                             vm.setValueAndSen(
                                 4,
-                                vm.DeviceParamModel.bDownSet.toInt()+setValueMax,
+                                vm.DeviceParamModel.bDownSet.toInt(),
                                 vm.DeviceParamModel.bDownSensitivity.toInt()
                             )
                         }

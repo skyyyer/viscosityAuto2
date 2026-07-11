@@ -238,7 +238,7 @@
     <string name="up">Up</string>
     <string name="down">Down</string>
     <string name="detected_value">Detected value</string>
-    <string name="set_value">Difference</string>
+    <string name="set_value">Threshold</string>
     <string name="sensitivity">Light intensity</string>
     <string name="cur_data">Current</string>
 

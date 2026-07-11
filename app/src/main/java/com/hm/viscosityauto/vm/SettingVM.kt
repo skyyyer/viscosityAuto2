@@ -1,32 +1,25 @@
 package com.hm.viscosityauto.vm
 
-import android.content.Context
-import android.os.Build
 import android.os.CountDownTimer
-import android.serialport.SerialPort
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hm.viscosity.model.MediumModel
+import com.hm.viscosityauto.model.MediumModel
 import com.hm.viscosityauto.GlobalState
 import com.hm.viscosityauto.model.PointTModel
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.AdvParamModel
 import com.hm.viscosityauto.model.DeviceParamModel
-import com.hm.viscosityauto.model.DurationModel
-import com.hm.viscosityauto.model.PassageModel
-import com.hm.viscosityauto.room.AppDatabase
-import com.hm.viscosityauto.room.test.TestRecords
+import com.hm.viscosityauto.model.ExtractModel
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
@@ -36,22 +29,13 @@ import com.hm.viscosityauto.utils.SerialPortManager
 import com.hm.viscosityauto.utils.SerialPortManager.A_CMD
 import com.hm.viscosityauto.utils.SerialPortManager.B_CMD
 import com.hm.viscosityauto.utils.SerialPortManager.CRC
-import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
 import com.hm.viscosityauto.vm.CalibrationState.Single
 import com.hm.viscosityauto.vm.HeatState.Empty
 import com.hm.viscosityauto.vm.TestCMD.CMD_Stop
-import com.hm.viscosityauto.vm.TestState.Clean
-import com.hm.viscosityauto.vm.TestState.CleanEmpty
-import com.hm.viscosityauto.vm.TestState.FinishAll
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.io.OutputStream
-import java.lang.reflect.Method
 import java.text.DecimalFormat
 
 
@@ -129,6 +113,9 @@ class SettingVM : ViewModel() {
     var mediumList = mutableStateListOf<MediumModel>()
 
 
+    //设备参数 抽提信息
+    var ExtractModelA by mutableStateOf(ExtractModel())
+    var ExtractModelB by mutableStateOf(ExtractModel())
 
     //设备参数
     var DeviceParamModel by mutableStateOf(DeviceParamModel())
@@ -231,6 +218,15 @@ class SettingVM : ViewModel() {
         val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
         if (deviceParam.isNotEmpty()){
             DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
+        }
+
+        val extractModelA = SPUtils.getInstance().getString("extractModelA", "")
+        if (deviceParam.isNotEmpty()){
+            ExtractModelA = Gson().fromJson(extractModelA, ExtractModel::class.java)
+        }
+        val extractModelB = SPUtils.getInstance().getString("extractModelB", "")
+        if (deviceParam.isNotEmpty()){
+            ExtractModelB = Gson().fromJson(extractModelB,ExtractModel::class.java)
         }
 
         if (!GlobalState.isSetAdvParam) {

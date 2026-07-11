@@ -1,7 +1,6 @@
 package com.hm.viscosityauto.vm
 
 import android.content.Context
-import android.os.CountDownTimer
 import android.serialport.SerialPort
 import android.util.Log
 import android.widget.Toast
@@ -10,13 +9,12 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hm.viscosity.model.MediumModel
+import com.hm.viscosityauto.model.MediumModel
 import com.hm.viscosityauto.GlobalState
 import com.hm.viscosityauto.model.PointTModel
 import com.hm.viscosityauto.MyApp
@@ -28,7 +26,6 @@ import com.hm.viscosityauto.room.AppDatabase
 import com.hm.viscosityauto.room.admin.AdminRecords
 import com.hm.viscosityauto.room.test.TestRecords
 import com.hm.viscosityauto.utils.ByteUtil
-import com.hm.viscosityauto.utils.ComputeUtils
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat4
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
@@ -40,7 +37,6 @@ import com.hm.viscosityauto.utils.SerialPortManager.CRC
 import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.TimeUtils.splitDateTime
-import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
 import com.hm.viscosityauto.vm.CalibrationState.Single
@@ -48,14 +44,10 @@ import com.hm.viscosityauto.vm.HeatState.Empty
 import com.hm.viscosityauto.vm.HeatState.Keeping
 import com.hm.viscosityauto.vm.TestCMD.CMD_Clean
 import com.hm.viscosityauto.vm.TestCMD.CMD_CleanEmpty
-import com.hm.viscosityauto.vm.TestCMD.CMD_DecomP
-import com.hm.viscosityauto.vm.TestCMD.CMD_Drying
 import com.hm.viscosityauto.vm.TestCMD.CMD_Running
 import com.hm.viscosityauto.vm.TestCMD.CMD_Stop
 import com.hm.viscosityauto.vm.TestState.Clean
 import com.hm.viscosityauto.vm.TestState.CleanEmpty
-import com.hm.viscosityauto.vm.TestState.DecomP
-import com.hm.viscosityauto.vm.TestState.Drying
 import com.hm.viscosityauto.vm.TestState.Finish
 import com.hm.viscosityauto.vm.TestState.FinishAll
 import com.hm.viscosityauto.vm.TestState.Running

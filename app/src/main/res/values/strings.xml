@@ -269,7 +269,7 @@
     <string name="up">上</string>
     <string name="down">下</string>
     <string name="detected_value">检测值</string>
-    <string name="set_value">差值</string>
+    <string name="set_value">阈值</string>
     <string name="sensitivity">光强度</string>
     <string name="cur_data">当前数据</string>
 

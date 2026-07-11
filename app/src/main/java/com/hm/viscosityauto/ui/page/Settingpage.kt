@@ -42,19 +42,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.asi.nav.Nav
 import com.google.gson.Gson
-import com.hm.viscosity.model.MediumModel
+import com.hm.viscosityauto.model.MediumModel
 import com.hm.viscosityauto.AdminPageRoute
 import com.hm.viscosityauto.AvdParamPageRoute
 import com.hm.viscosityauto.CleanPageRoute
 import com.hm.viscosityauto.DeviceParamPageRoute
 import com.hm.viscosityauto.ManagerPageRoute
-import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgWhite
@@ -74,8 +72,6 @@ import com.hm.viscosityauto.ui.view.TimerPickerView
 import com.hm.viscosityauto.ui.view.UploadView
 import com.hm.viscosityauto.ui.view.WlanView
 import com.hm.viscosityauto.ui.view.click.doubleClick
-import com.hm.viscosityauto.utils.ComputeUtils
-import com.hm.viscosityauto.utils.FileUtil
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.vm.CalibrationState
 import com.hm.viscosityauto.vm.LANGUAGE_EN
@@ -84,8 +80,6 @@ import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.SettingVM
 import com.iwdael.wifimanager.Wifi
 import kotlinx.coroutines.delay
-import java.io.File
-import java.util.Random
 
 
 @OptIn(ExperimentalLayoutApi::class)

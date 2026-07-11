@@ -8,15 +8,10 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.net.NetworkSpecifier
-import android.net.wifi.WifiNetworkSpecifier
 import android.os.Build
-import android.os.PatternMatcher
-import android.provider.Settings
 import android.serialport.SerialPort
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -28,9 +23,6 @@ import androidx.lifecycle.viewModelScope
 import com.asi.nav.Nav
 import com.azhon.appupdate.manager.DownloadManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.hm.viscosity.model.MediumModel
-import com.hm.viscosityauto.GlobalState
 import com.hm.viscosityauto.LoginPageRoute
 import com.hm.viscosityauto.MainPageRoute
 import com.hm.viscosityauto.MyApp
@@ -38,20 +30,15 @@ import com.hm.viscosityauto.R
 import com.hm.viscosityauto.http.HttpUrl
 import com.hm.viscosityauto.http.RetrofitClient
 import com.hm.viscosityauto.model.DeviceParamModel
-import com.hm.viscosityauto.model.DurationModel
 import com.hm.viscosityauto.room.AppDatabase
 import com.hm.viscosityauto.room.admin.AdminRecords
 import com.hm.viscosityauto.room.audit.AuditRecords
-import com.hm.viscosityauto.ui.page.setValueMax
 import com.hm.viscosityauto.ui.view.LoadingDialog
 import com.hm.viscosityauto.utils.ByteUtil
-import com.hm.viscosityauto.utils.ComputeUtils
 import com.hm.viscosityauto.utils.NetworkUtil
-import com.hm.viscosityauto.utils.PrintUtils
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.SerialPortManager
 import com.hm.viscosityauto.utils.SerialPortManager.listSerialPorts
-import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityped.utils.QRCodeUtil
@@ -62,8 +49,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.IOException
 import java.io.OutputStream
 import java.lang.reflect.Method
 
@@ -704,13 +689,13 @@ class MainVM : ViewModel() {
         val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
         if (deviceParam.isNotEmpty()){
             DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
-            setValueAndSen(1, DeviceParamModel.aUpSet.toInt()+ setValueMax, DeviceParamModel.aUpSensitivity.toInt())
+            setValueAndSen(1, DeviceParamModel.aUpSet.toInt(), DeviceParamModel.aUpSensitivity.toInt())
             delay(100)
-            setValueAndSen(2, DeviceParamModel.aDownSet.toInt()+ setValueMax, DeviceParamModel.aDownSensitivity.toInt())
+            setValueAndSen(2, DeviceParamModel.aDownSet.toInt(), DeviceParamModel.aDownSensitivity.toInt())
             delay(100)
-            setValueAndSen(3, DeviceParamModel.bUpSet.toInt()+ setValueMax, DeviceParamModel.bUpSensitivity.toInt())
+            setValueAndSen(3, DeviceParamModel.bUpSet.toInt(), DeviceParamModel.bUpSensitivity.toInt())
             delay(100)
-            setValueAndSen(4, DeviceParamModel.bDownSet.toInt()+ setValueMax, DeviceParamModel.bDownSensitivity.toInt())
+            setValueAndSen(4, DeviceParamModel.bDownSet.toInt(), DeviceParamModel.bDownSensitivity.toInt())
         }
     }
 
