@@ -221,11 +221,11 @@ class SettingVM : ViewModel() {
         }
 
         val extractModelA = SPUtils.getInstance().getString("extractModelA", "")
-        if (deviceParam.isNotEmpty()){
+        if (extractModelA.isNotEmpty()){
             ExtractModelA = Gson().fromJson(extractModelA, ExtractModel::class.java)
         }
         val extractModelB = SPUtils.getInstance().getString("extractModelB", "")
-        if (deviceParam.isNotEmpty()){
+        if (extractModelB.isNotEmpty()){
             ExtractModelB = Gson().fromJson(extractModelB,ExtractModel::class.java)
         }
 
