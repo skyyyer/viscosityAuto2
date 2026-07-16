@@ -150,6 +150,7 @@ fun TestPage(vm: TestVM = viewModel()) {
     }
 
     LaunchedEffect(Unit) {
+        vm.addListener()
         delay(200)
         isReady = true
     }

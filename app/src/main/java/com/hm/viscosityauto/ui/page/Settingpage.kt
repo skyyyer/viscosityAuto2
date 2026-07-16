@@ -138,17 +138,9 @@ fun SettingPage(vm: MainVM) {
         mutableStateOf(false)
     }
 
-
-    DisposableEffect(Unit) {
-        vm.getApp()
-        onDispose {
-            settingVm.closeSerialPort()
-        }
-    }
-
     LaunchedEffect(Unit) {
-        delay(1000)
-        settingVm.initDevicePort()
+        vm.getApp()
+        settingVm.addListener()
     }
 
 

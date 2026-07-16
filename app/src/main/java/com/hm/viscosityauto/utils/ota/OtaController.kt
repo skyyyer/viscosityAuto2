@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.hm.viscosityauto.utils.SerialManager
-import com.hm.viscosityauto.utils.SerialPortManager
 
 interface OtaCallback {
 

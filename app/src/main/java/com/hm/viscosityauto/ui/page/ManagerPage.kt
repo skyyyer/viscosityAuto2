@@ -92,19 +92,10 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
         mutableStateOf(false)
     }
 
-
-    DisposableEffect(Unit) {
-        vm.initDevicePort()
-        scope.launch {
-            vm.initDevicePort()
-            delay(500)
-            vm.getPumpMotorVer()
-        }
-
-        onDispose {
-            vm.closeSerialPort()
-        }
+    LaunchedEffect(Unit){
+        vm.getPumpMotorVer()
     }
+
 
     Box {
         Column(
@@ -137,7 +128,7 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
             }
 
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
 
             Row(
@@ -153,7 +144,7 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
             }
 
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             BaseButton(title = "保存当前多点校准数据为默认数据") {
 
@@ -169,7 +160,7 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
                 Nav.to(DebugPageRoute.route)
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically

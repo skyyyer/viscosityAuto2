@@ -26,10 +26,7 @@ import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.SerialManager
-import com.hm.viscosityauto.utils.SerialPortManager
-import com.hm.viscosityauto.utils.SerialPortManager.A_CMD
-import com.hm.viscosityauto.utils.SerialPortManager.B_CMD
-import com.hm.viscosityauto.utils.SerialPortManager.CRC
+import com.hm.viscosityauto.utils.SerialManager.Companion.CRC
 import com.hm.viscosityauto.utils.ota.OtaController
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
@@ -45,9 +42,7 @@ import java.text.DecimalFormat
 class SettingVM : ViewModel() {
 
     //设备串口通信
-    private var serialPortManager: SerialPortManager? = null
-
-    public val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
+    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
 
     //温度
     var setTemperature: String by mutableStateOf(
@@ -143,7 +138,73 @@ class SettingVM : ViewModel() {
     var pumpMotro = mutableIntStateOf(0)
 
 
-    /**
+    private val listener = object :SerialManager.OnDataReceivedListener{
+
+        override fun onTemperatureReceived(temperature: String) {
+            viewModelScope.launch {
+                rawTemperature = temperature
+                curTemperature = getTemperature(temperature)
+            }
+        }
+
+        override fun onLightStateReceived(state: Boolean) {
+            viewModelScope.launch {
+                    lightState.value = state
+            }
+        }
+
+        override fun onHeatingState(state: Int) {
+            viewModelScope.launch {
+                if (heatingState!=state){
+                    heatingState = state
+                }
+
+            }
+        }
+
+        override fun onADeviceState(state: Int,dur:Double) {
+            if (stateA!=state){
+
+
+                stateA = state
+            }
+
+        }
+
+        override fun onBDeviceState(state: Int,dur:Double) {
+            if (stateB!=state){
+                stateB = state
+            }
+        }
+
+        override fun onADetectedValue(valueUp: Int, valueDown: Int) {
+            DeviceParamModel = DeviceParamModel.copy(aUp = valueUp.toString(), aDown = valueDown.toString())
+        }
+
+        override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
+            DeviceParamModel = DeviceParamModel.copy(bUp = valueUp.toString(), bDown = valueDown.toString())
+
+        }
+
+        override fun onSensorLightValue(
+            AvalueUp: Int,
+            AvalueDown: Int,
+            BvalueUp: Int,
+            BvalueDown: Int
+        ) {
+            DeviceParamModel = DeviceParamModel.copy(aUpSensitivity = AvalueUp.toString(), aDownSensitivity = AvalueDown.toString()
+                ,bUpSensitivity = BvalueUp.toString(), bDownSensitivity = BvalueDown.toString())
+
+        }
+
+        override fun onPumpMotor(version: Int) {
+            pumpMotro.intValue = version
+        }
+
+    }
+
+
+        /**
      * 初始化
      * -数据库
      * -打印串口
@@ -158,7 +219,6 @@ class SettingVM : ViewModel() {
         super.onCleared()
         Log.e("SettingVM", "onCleared"+this)
         stopTemperature()
-        closeSerialPort()
     }
 
     /**
@@ -235,96 +295,19 @@ class SettingVM : ViewModel() {
 
         if (!GlobalState.isSetAdvParam) {
             viewModelScope.launch {
-                while (serialPortManager==null){
-                    delay(500)
-                }
                 setAdvParam(advParamModel)
                 setMedium(mediumList.find {
                     it.isSel
                 }?.p!!.toInt())
-
                 GlobalState.isSetAdvParam = true
             }
         }
     }
 
 
-    /**
-     * 初始化 设备串口
-     */
-    fun initDevicePort() {
 
-        serialPortManager =
-            SerialPortManager(PATH, 9600, object :
-                SerialPortManager.OnDataReceivedListener {
-
-                override fun onTemperatureReceived(temperature: String?) {
-                    viewModelScope.launch {
-                        rawTemperature = temperature.toString()
-                        curTemperature = getTemperature(temperature.toString())
-                    }
-                }
-
-                override fun onLightStateReceived(state: Boolean?) {
-                    viewModelScope.launch {
-                        if (state != null) {
-                            lightState.value = state
-                        }
-                    }
-                }
-
-                override fun onHeatingState(state: Int) {
-                    viewModelScope.launch {
-                        if (heatingState!=state){
-                            heatingState = state
-                        }
-
-                    }
-                }
-
-                override fun onADeviceState(state: Int,dur:Double) {
-                    if (stateA!=state){
-
-
-                        stateA = state
-                    }
-
-                }
-
-                override fun onBDeviceState(state: Int,dur:Double) {
-                    if (stateB!=state){
-                        stateB = state
-                    }
-                }
-
-                override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp.toString(), aDown = valueDown.toString())
-                }
-
-                override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp.toString(), bDown = valueDown.toString())
-
-                }
-
-                override fun onSensorLightValue(
-                    AvalueUp: Int,
-                    AvalueDown: Int,
-                    BvalueUp: Int,
-                    BvalueDown: Int
-                ) {
-                    DeviceParamModel = DeviceParamModel.copy(aUpSensitivity = AvalueUp.toString(), aDownSensitivity = AvalueDown.toString()
-                    ,bUpSensitivity = BvalueUp.toString(), bDownSensitivity = BvalueDown.toString())
-
-                }
-
-                override fun onPumpmotor(version: Int) {
-                    pumpMotro.intValue = version
-                }
-
-
-            })
-
-
+    fun addListener() {
+        serialManager.addListener(listener)
     }
 
     /**
@@ -333,9 +316,9 @@ class SettingVM : ViewModel() {
     fun startABValueUp(state: Boolean) {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.AB_VALUE_UP + (if (state) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.AB_VALUE_UP + (if (state) "01" else "00") + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -345,9 +328,9 @@ class SettingVM : ViewModel() {
     fun getSensorLight() {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.SENSOR_LIGHT +"AA" + "000000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.SENSOR_LIGHT +"AA" + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -357,9 +340,9 @@ class SettingVM : ViewModel() {
     fun getPumpMotorVer() {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.PUMP_MOTOR_VER + "AA" + "000000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.PUMP_MOTOR_VER + "AA" + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -369,9 +352,9 @@ class SettingVM : ViewModel() {
     fun setPumpMotorVer(isNew:Boolean) {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.PUMP_MOTOR_VER +( if (isNew) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.PUMP_MOTOR_VER +( if (isNew) "01" else "00") + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -384,11 +367,11 @@ class SettingVM : ViewModel() {
         val cleanB = (if(cleanDurationB.toIntOrNull()==null) 0 else cleanDurationB.toInt())
 
         var byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_SET_CLEAN_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_SET_CLEAN_DURATION + ByteUtil.intToHex4(
                 cleanA
-            ) + ByteUtil.intToHex4(cleanB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(cleanB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
         delay(50)
 
@@ -397,11 +380,11 @@ class SettingVM : ViewModel() {
         val addB = (if(addDurationB.toIntOrNull()==null) 0 else addDurationB.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_LIQUID_ENTER_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_LIQUID_ENTER_DURATION + ByteUtil.intToHex4(
                 addA
-            ) + ByteUtil.intToHex4(addB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(addB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
     }
 
@@ -411,49 +394,49 @@ class SettingVM : ViewModel() {
     suspend fun setAdvParam(advParamModel:AdvParamModel) {
         //排空电机速度
         var byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_MOTOR_SPEED + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.EMPTY_MOTOR_SPEED + ByteUtil.intToHex(
                 moterSpeedConvert(advParamModel.emptySpeed.toInt())
-            ) + "000000" + CRC + SerialPortManager.FOOT
+            ) + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空抽提时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(advParamModel.emptyExtractDuration.toInt())  + "0000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(advParamModel.emptyExtractDuration.toInt())  + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空抽提间隔
        byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(advParamModel.emptyExtractInterval.toInt())  + "0000"  + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(advParamModel.emptyExtractInterval.toInt())  + "0000"  + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空烘干时间
          byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_DRYING_DURATION +  ByteUtil.intToHex4(advParamModel.emptyDryingDuration.toInt())+ "0000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.EMPTY_DRYING_DURATION +  ByteUtil.intToHex4(advParamModel.emptyDryingDuration.toInt())+ "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //清洗电机速度
        byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex( moterSpeedConvert(advParamModel.cleanSpeed.toInt()))  + "000000"  + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex( moterSpeedConvert(advParamModel.cleanSpeed.toInt()))  + "000000"  + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //清洗烘干时间
          byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(advParamModel.cleanDryingDuration.toInt())  + "0000"  + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(advParamModel.cleanDryingDuration.toInt())  + "0000"  + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //泄压时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.DECOM_P_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.DECOM_P_DURATION + ByteUtil.intToHex4(
                 advParamModel.decompDuration.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -464,28 +447,28 @@ class SettingVM : ViewModel() {
     suspend fun setExtractParam(extractDurA:String,extractIntA:String,speedA:String,extractDurB:String,extractIntB:String,speedB:String) {
         //抽提时间
         var byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
                 extractDurA.toInt()
-            ) + ByteUtil.intToHex4(extractDurB.toInt()) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(extractDurB.toInt()) + CRC + SerialManager.FOOT
         )
 
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //抽提间隔
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_INTERVAL + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_EXTRACT_INTERVAL + ByteUtil.intToHex4(
                 extractIntA.toInt()
-            ) + ByteUtil.intToHex4(extractIntB.toInt()) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(extractIntB.toInt()) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //电机速度
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.MOTOR_SPEED + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.MOTOR_SPEED + ByteUtil.intToHex(
                 moterSpeedConvert(speedA.toInt())
-            ) + "00" + ByteUtil.intToHex(moterSpeedConvert(speedB.toInt())) + "00" + CRC + SerialPortManager.FOOT
+            ) + "00" + ByteUtil.intToHex(moterSpeedConvert(speedB.toInt())) + "00" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
     /**
@@ -493,18 +476,18 @@ class SettingVM : ViewModel() {
      */
     fun setValueAndSen(channelPosition: Int, setValue: Int, sensitivity: Int) {
         val cmd = when (channelPosition) {
-            1 -> SerialPortManager.A_UP_SET
-            2 -> SerialPortManager.A_DOWN_SET
-            3 -> SerialPortManager.B_UP_SET
-            else -> SerialPortManager.B_DOWN_SET
+            1 -> SerialManager.A_UP_SET
+            2 -> SerialManager.A_DOWN_SET
+            3 -> SerialManager.B_UP_SET
+            else -> SerialManager.B_DOWN_SET
         }
 
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + cmd + ByteUtil.intToHex4(setValue) + ByteUtil.intToHex4(
+            SerialManager.HEAD + cmd + ByteUtil.intToHex4(setValue) + ByteUtil.intToHex4(
                 sensitivity
-            ) + CRC + SerialPortManager.FOOT
+            ) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -513,11 +496,11 @@ class SettingVM : ViewModel() {
      */
     fun solenoidValveSetting(state1: Boolean, state2: Boolean, state3: Boolean, state4: Boolean) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.SV_TEST + ByteUtil.intToHex(if (state1) 1 else 0) + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.SV_TEST + ByteUtil.intToHex(if (state1) 1 else 0) + ByteUtil.intToHex(
                 if (state2) 1 else 0
-            ) + ByteUtil.intToHex(if (state3) 1 else 0) + ByteUtil.intToHex(if (state4) 1 else 0) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex(if (state3) 1 else 0) + ByteUtil.intToHex(if (state4) 1 else 0) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -526,10 +509,10 @@ class SettingVM : ViewModel() {
      */
     fun motorSetting(enable: Boolean, mode: Int, speed: Int) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.MOTOR_SEN + ByteUtil.intToHex(mode) +
-                    ByteUtil.intToHex(speed) + "00" + ByteUtil.intToHex(if (enable) 1 else 0) + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.MOTOR_SEN + ByteUtil.intToHex(mode) +
+                    ByteUtil.intToHex(speed) + "00" + ByteUtil.intToHex(if (enable) 1 else 0) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -538,11 +521,11 @@ class SettingVM : ViewModel() {
      */
     fun debugMode(state: Boolean) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.DEBUG_MODE + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.DEBUG_MODE + ByteUtil.intToHex(
                 if (state) 1 else 0
-            ) + "000000" + CRC + SerialPortManager.FOOT
+            ) + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
     /**
@@ -550,11 +533,11 @@ class SettingVM : ViewModel() {
      */
     fun setState(channel:Int,state: Int) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD +  (if (channel==1) A_CMD else B_CMD) + ByteUtil.intToHex(
+            SerialManager.HEAD +  (if (channel==1)  SerialManager.A_CMD else  SerialManager.B_CMD) + ByteUtil.intToHex(
                 state
-            ) +  "000000" + CRC + SerialPortManager.FOOT
+            ) +  "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -733,20 +716,20 @@ class SettingVM : ViewModel() {
             // 取小数点后的数字
             afterDecimal = writeTemperature.substring(writeTemperature.indexOf('.') + 1)
             byteArray = ByteUtil.hexStringToByteArray(
-                SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + ByteUtil.intToHex(
+                SerialManager.HEAD + SerialManager.CMD_SET_T + ByteUtil.intToHex(
                     beforeDecimal.toInt()
-                ) + ByteUtil.intToHex(afterDecimal.toInt()) + "010000" + SerialPortManager.FOOT
+                ) + ByteUtil.intToHex(afterDecimal.toInt()) + "010000" + SerialManager.FOOT
             )
         } else {
             beforeDecimal = writeTemperature
             byteArray = ByteUtil.hexStringToByteArray(
-                SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + ByteUtil.intToHex(
+                SerialManager.HEAD + SerialManager.CMD_SET_T + ByteUtil.intToHex(
                     beforeDecimal.toInt()
-                ) + "00" + "010000" + SerialPortManager.FOOT
+                ) + "00" + "010000" + SerialManager.FOOT
             )
         }
 
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -764,9 +747,9 @@ class SettingVM : ViewModel() {
             return
         }
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + "00" + "00" + "000000" + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CMD_SET_T + "00" + "00" + "000000" + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -776,11 +759,11 @@ class SettingVM : ViewModel() {
      */
     fun setMedium(model: Int) {
         val byteArrayP: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.MEDIUM_VALUE + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.MEDIUM_VALUE + ByteUtil.intToHex(
                 model
-            ) + "00" + "000000" + SerialPortManager.FOOT
+            ) + "00" + "000000" + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArrayP)
+        serialManager.write(byteArrayP)
 
         SPUtils.getInstance().put("mediumInfo", Gson().toJson(mediumList))
     }
@@ -848,15 +831,6 @@ class SettingVM : ViewModel() {
     fun stopDecomPTimer() {
         timerDecomP?.onFinish()
     }
-
-
-    fun closeSerialPort() {
-        serialPortManager?.close()
-        serialPortManager = null // 重要！解除引用
-    }
-
-
-
 
 
     var otaController: OtaController? = null

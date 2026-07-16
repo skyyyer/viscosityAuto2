@@ -32,8 +32,8 @@ import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.CountTimer
 import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
-import com.hm.viscosityauto.utils.SerialPortManager
-import com.hm.viscosityauto.utils.SerialPortManager.CRC
+import com.hm.viscosityauto.utils.SerialManager
+import com.hm.viscosityauto.utils.SerialManager.Companion.CRC
 import com.hm.viscosityauto.utils.StringUtils
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.TimeUtils.splitDateTime
@@ -124,7 +124,7 @@ class TestVM : ViewModel() {
         )
 
     //设备串口通信
-    private var serialPortManager: SerialPortManager? = null
+    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
 
     //通道计时器
     var timerA: CountTimer = CountTimer(intervalMillis = 1)
@@ -247,6 +247,279 @@ class TestVM : ViewModel() {
 
     var configList: MutableList<PassageModel> = mutableStateListOf()
 
+
+    private val listener = object : SerialManager.OnDataReceivedListener {
+
+        override fun onTemperatureReceived(temperature: String) {
+            viewModelScope.launch {
+                rawTemperature = temperature
+                curTemperature = getTemperature(temperature)
+            }
+        }
+
+        override fun onLightStateReceived(state: Boolean) {
+            viewModelScope.launch {
+                lightState.value = state
+                GlobalState.lightState = state
+            }
+        }
+
+        override fun onHeatingState(state: Int) {
+            viewModelScope.launch {
+                if (heatingState != state) {
+                    heatingState = state
+                }
+
+            }
+        }
+
+        override fun onADeviceState(state: Int, dur: Double) {
+            viewModelScope.launch {
+
+                if (passageModelA.state != state) {
+
+                    when (state) {
+                        Running -> {
+                            passageModelA = passageModelA.copy(state = Running)
+                        }
+
+                        Start -> {
+                            timerA.start()
+                            passageModelA = passageModelA.copy(
+                                state = Start,
+                                curNum = passageModelA.curNum + 1
+                            )
+                        }
+
+                        Finish -> {
+                            timerA.stop()
+                            passageModelA.durationArray.add(
+                                DurationModel(
+                                    dur
+                                )
+                            )
+                            ATimekeeping = 0.0000f
+
+                            if (passageModelA.curNum == passageModelA.testCount.toInt()) {
+                                if (!dataOpt.value) {
+                                    passageModelA = passageModelA.copy(
+                                        time = TimeUtils.timestampToString(),
+                                        temperature = setTemperature
+                                    )
+                                    val success = passageModelA.computeViscosity()
+                                    if (success) {
+                                        saveDate(passageModelA)
+                                    }
+
+                                } else {
+                                    showDataOptA = true
+                                }
+
+                                if (autoEmpty.value) {
+                                    delay(5000)
+                                    passageModelA = passageModelA.copy(state = CleanEmpty)
+                                    setTestState(passageModelA.id, CMD_CleanEmpty)
+                                } else {//没有排空 直接完成
+                                    passageModelA = passageModelA.copy(
+                                        state = FinishAll,
+                                    )
+
+                                }
+                            } else {
+                                delay(5000)
+                                passageModelA =
+                                    passageModelA.copy(
+                                        state = Running
+                                    )
+                                setTestState(passageModelA.id, CMD_Running)
+                            }
+                        }
+
+                        CleanEmpty -> {
+                            passageModelA = passageModelA.copy(state = CleanEmpty)
+                        }
+
+
+                        TestState.Empty -> {
+                            when (passageModelA.state) {
+
+                                Clean -> {
+                                    if (passageModelA.curCleanNum == passageModelA.cleanTimes.toInt()) {
+                                        passageModelA = passageModelA.copy(
+                                            state = FinishAll,
+                                            time = TimeUtils.timestampToString(),
+                                            temperature = setTemperature
+                                        )
+                                    } else {
+                                        passageModelA = passageModelA.copy(
+                                            state = Clean,
+                                            curCleanNum = passageModelA.curCleanNum + 1
+                                        )
+                                        delay(5000)
+                                        setTestState(passageModelA.id, CMD_Clean)
+                                    }
+                                }
+
+                                CleanEmpty -> {
+                                    if (passageModelA.cleanTimes.toInt() > 0 && autoClean.value) {
+                                        delay(5000)
+                                        passageModelA = passageModelA.copy(
+                                            state = Clean,
+                                            curCleanNum = passageModelA.curCleanNum + 1
+                                        )
+                                        setTestState(passageModelA.id, CMD_Clean)
+                                    } else {//没有清洗 直接完成
+                                        passageModelA = passageModelA.copy(
+                                            state = FinishAll,
+                                        )
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+        override fun onBDeviceState(state: Int, dur: Double) {
+            viewModelScope.launch {
+                if (passageModelB.state != state) {
+
+                    when (state) {
+                        Running -> {
+                            passageModelB = passageModelB.copy(state = Running)
+                        }
+
+                        Start -> {
+                            timerB.start()
+
+                            passageModelB = passageModelB.copy(
+                                state = Start,
+                                curNum = passageModelB.curNum + 1
+                            )
+
+                        }
+
+                        Finish -> {
+                            timerB.stop()
+                            passageModelB.durationArray.add(
+                                DurationModel(
+                                    dur
+                                )
+                            )
+                            BTimekeeping = 0.0000f
+
+                            if (passageModelB.curNum == passageModelB.testCount.toInt()) {
+                                if (!dataOpt.value) {
+                                    passageModelB = passageModelB.copy(
+                                        time = TimeUtils.timestampToString(),
+                                        temperature = setTemperature
+                                    )
+                                    val success = passageModelB.computeViscosity()
+                                    if (success) {
+                                        saveDate(passageModelB)
+                                    }
+
+                                } else {
+                                    showDataOptB = true
+                                }
+                                if (autoEmpty.value) {
+                                    delay(5000)
+                                    passageModelB = passageModelB.copy(state = CleanEmpty)
+
+                                    setTestState(passageModelB.id, CMD_CleanEmpty)
+                                } else {//没有排空 直接完成
+                                    passageModelB = passageModelB.copy(
+                                        state = FinishAll,
+                                    )
+                                }
+
+                            } else {
+                                delay(5000)
+                                passageModelB =
+                                    passageModelB.copy(
+                                        state = Running
+                                    )
+                                setTestState(passageModelB.id, CMD_Running)
+                            }
+                        }
+
+                        CleanEmpty -> {
+                            passageModelB = passageModelB.copy(state = CleanEmpty)
+                        }
+
+                        Empty -> {
+                            when (passageModelB.state) {
+                                Clean -> {
+                                    if (passageModelB.curCleanNum == passageModelB.cleanTimes.toInt()) {
+                                        passageModelB = passageModelB.copy(
+                                            state = FinishAll,
+                                            time = TimeUtils.timestampToString(),
+                                            temperature = setTemperature
+                                        )
+                                    } else {
+                                        delay(5000)
+                                        passageModelB = passageModelB.copy(
+                                            state = Clean,
+                                            curCleanNum = passageModelB.curCleanNum + 1
+                                        )
+                                        setTestState(passageModelB.id, CMD_Clean)
+                                    }
+                                }
+
+                                CleanEmpty -> {//排空后  清洗
+                                    if (passageModelB.cleanTimes.toInt() > 0 && autoClean.value) {
+                                        delay(5000)
+                                        passageModelB = passageModelB.copy(
+                                            state = Clean,
+                                            curCleanNum = passageModelB.curCleanNum + 1
+                                        )
+                                        setTestState(passageModelB.id, CMD_Clean)
+                                    } else {//没有清洗 直接完成
+                                        passageModelB = passageModelB.copy(
+                                            state = FinishAll,
+                                            time = TimeUtils.timestampToString(),
+                                            temperature = setTemperature
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onADetectedValue(valueUp: Int, valueDown: Int) {
+//                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp, aDown = valueDown)
+        }
+
+        override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
+//                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
+
+
+        }
+
+        override fun onSensorLightValue(
+            AvalueUp: Int,
+            AvalueDown: Int,
+            BvalueUp: Int,
+            BvalueDown: Int
+        ) {
+        }
+
+        override fun onPumpMotor(version: Int) {
+        }
+
+
+    }
+
     /**
      * 初始化
      * -数据库
@@ -257,21 +530,19 @@ class TestVM : ViewModel() {
         Log.e("TestVM", "init")
 
         viewModelScope.launch {
-            launch { initDevicePort() }
             delay(100)
             getLocalSetting()
-
             launch { initPrintPort() }
 
         }
 
         timerA.onTimeUpdate = {
-            ATimekeeping = divideAndFormat4((it.toFloat()+(1..9).random()*0.1f),1000)
+            ATimekeeping = divideAndFormat4((it.toFloat() + (1..9).random() * 0.1f), 1000)
 
         }
 
         timerB.onTimeUpdate = {
-            BTimekeeping = divideAndFormat4((it.toFloat()+(1..9).random()*0.1f),1000)
+            BTimekeeping = divideAndFormat4((it.toFloat() + (1..9).random() * 0.1f), 1000)
         }
 
     }
@@ -282,7 +553,6 @@ class TestVM : ViewModel() {
 
         stopTemperature()
 
-        closeSerialPort()
         closeTimer()
         stopKeepTTimer(1)
         stopKeepTTimer(2)
@@ -366,9 +636,6 @@ class TestVM : ViewModel() {
 
         if (!GlobalState.isSetAdvParam) {
             viewModelScope.launch {
-                while (serialPortManager == null) {
-                    delay(500)
-                }
                 setAdvParam(advParamModel)
                 setMedium(mediumList.find {
                     it.isSel
@@ -382,290 +649,9 @@ class TestVM : ViewModel() {
     }
 
 
-    /**
-     * 初始化 设备串口
-     */
-    private fun initDevicePort() {
-
-        serialPortManager =
-            SerialPortManager(PATH, 9600, object :
-                SerialPortManager.OnDataReceivedListener {
-
-                override fun onTemperatureReceived(temperature: String?) {
-                    viewModelScope.launch {
-                        rawTemperature = temperature.toString()
-                        curTemperature = getTemperature(temperature.toString())
-                    }
-                }
-
-                override fun onLightStateReceived(state: Boolean?) {
-                    viewModelScope.launch {
-                        if (state != null) {
-                            lightState.value = state
-                            GlobalState.lightState = state
-                        }
-                    }
-                }
-
-                override fun onHeatingState(state: Int) {
-                    viewModelScope.launch {
-                        if (heatingState != state) {
-                            heatingState = state
-                        }
-
-                    }
-                }
-
-                override fun onADeviceState(state: Int,dur:Double) {
-                    viewModelScope.launch {
-
-                        if (passageModelA.state != state) {
-
-                            when (state) {
-                                Running -> {
-                                    passageModelA = passageModelA.copy(state = Running)
-                                }
-
-                                Start -> {
-                                    timerA.start()
-                                    passageModelA = passageModelA.copy(
-                                        state = Start,
-                                        curNum = passageModelA.curNum + 1
-                                    )
-                                }
-
-                                Finish -> {
-                                    timerA.stop()
-                                    passageModelA.durationArray.add(
-                                        DurationModel(
-                                            dur
-                                        )
-                                    )
-                                    ATimekeeping = 0.0000f
-
-                                    if (passageModelA.curNum == passageModelA.testCount.toInt()) {
-                                        if (!dataOpt.value) {
-                                            passageModelA = passageModelA.copy(
-                                                time = TimeUtils.timestampToString(),
-                                                temperature = setTemperature
-                                            )
-                                            val success = passageModelA.computeViscosity()
-                                            if (success){
-                                                saveDate(passageModelA)
-                                            }
-
-                                        } else {
-                                            showDataOptA = true
-                                        }
-
-                                        if (autoEmpty.value) {
-                                            delay(5000)
-                                            passageModelA = passageModelA.copy(state = CleanEmpty)
-                                            setTestState(passageModelA.id, CMD_CleanEmpty)
-                                        } else {//没有排空 直接完成
-                                            passageModelA = passageModelA.copy(
-                                                state = FinishAll,
-                                            )
-
-                                        }
-                                    } else {
-                                        delay(5000)
-                                        passageModelA =
-                                            passageModelA.copy(
-                                                state = Running
-                                            )
-                                        setTestState(passageModelA.id, CMD_Running)
-                                    }
-                                }
-
-                                CleanEmpty -> {
-                                    passageModelA = passageModelA.copy(state = CleanEmpty)
-                                }
-
-
-                                TestState.Empty -> {
-                                    when (passageModelA.state) {
-
-                                        Clean -> {
-                                            if (passageModelA.curCleanNum == passageModelA.cleanTimes.toInt()) {
-                                                passageModelA = passageModelA.copy(
-                                                    state = FinishAll,
-                                                    time = TimeUtils.timestampToString(),
-                                                    temperature = setTemperature
-                                                )
-                                            } else {
-                                                passageModelA = passageModelA.copy(
-                                                    state = Clean,
-                                                    curCleanNum = passageModelA.curCleanNum + 1
-                                                )
-                                                delay(5000)
-                                                setTestState(passageModelA.id, CMD_Clean)
-                                            }
-                                        }
-
-                                        CleanEmpty -> {
-                                            if (passageModelA.cleanTimes.toInt() > 0 && autoClean.value) {
-                                                delay(5000)
-                                                passageModelA = passageModelA.copy(
-                                                    state = Clean,
-                                                    curCleanNum = passageModelA.curCleanNum + 1
-                                                )
-                                                setTestState(passageModelA.id, CMD_Clean)
-                                            } else {//没有清洗 直接完成
-                                                passageModelA = passageModelA.copy(
-                                                    state = FinishAll,
-                                                )
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                override fun onBDeviceState(state: Int,dur:Double) {
-                    viewModelScope.launch {
-                        if (passageModelB.state != state) {
-
-                            when (state) {
-                                Running -> {
-                                    passageModelB = passageModelB.copy(state = Running)
-                                }
-
-                                Start -> {
-                                    timerB.start()
-
-                                    passageModelB = passageModelB.copy(
-                                        state = Start,
-                                        curNum = passageModelB.curNum + 1
-                                    )
-
-                                }
-
-                                Finish -> {
-                                    timerB.stop()
-                                    passageModelB.durationArray.add(
-                                        DurationModel(
-                                            dur
-                                        )
-                                    )
-                                    BTimekeeping = 0.0000f
-
-                                    if (passageModelB.curNum == passageModelB.testCount.toInt()) {
-                                        if (!dataOpt.value) {
-                                            passageModelB = passageModelB.copy(
-                                                time = TimeUtils.timestampToString(),
-                                                temperature = setTemperature
-                                            )
-                                            val success = passageModelB.computeViscosity()
-                                            if (success){
-                                                saveDate(passageModelB)
-                                            }
-
-                                        } else {
-                                            showDataOptB = true
-                                        }
-                                        if (autoEmpty.value) {
-                                            delay(5000)
-                                            passageModelB = passageModelB.copy(state = CleanEmpty)
-
-                                            setTestState(passageModelB.id, CMD_CleanEmpty)
-                                        } else {//没有排空 直接完成
-                                            passageModelB = passageModelB.copy(
-                                                state = FinishAll,
-                                            )
-                                        }
-
-                                    } else {
-                                        delay(5000)
-                                        passageModelB =
-                                            passageModelB.copy(
-                                                state = Running
-                                            )
-                                        setTestState(passageModelB.id, CMD_Running)
-                                    }
-                                }
-
-                                CleanEmpty -> {
-                                    passageModelB = passageModelB.copy(state = CleanEmpty)
-                                }
-
-                                Empty -> {
-                                    when (passageModelB.state) {
-                                        Clean -> {
-                                            if (passageModelB.curCleanNum == passageModelB.cleanTimes.toInt()) {
-                                                passageModelB = passageModelB.copy(
-                                                    state = FinishAll,
-                                                    time = TimeUtils.timestampToString(),
-                                                    temperature = setTemperature
-                                                )
-                                            } else {
-                                                delay(5000)
-                                                passageModelB = passageModelB.copy(
-                                                    state = Clean,
-                                                    curCleanNum = passageModelB.curCleanNum + 1
-                                                )
-                                                setTestState(passageModelB.id, CMD_Clean)
-                                            }
-                                        }
-
-                                        CleanEmpty -> {//排空后  清洗
-                                            if (passageModelB.cleanTimes.toInt() > 0 && autoClean.value) {
-                                                delay(5000)
-                                                passageModelB = passageModelB.copy(
-                                                    state = Clean,
-                                                    curCleanNum = passageModelB.curCleanNum + 1
-                                                )
-                                                setTestState(passageModelB.id, CMD_Clean)
-                                            } else {//没有清洗 直接完成
-                                                passageModelB = passageModelB.copy(
-                                                    state = FinishAll,
-                                                    time = TimeUtils.timestampToString(),
-                                                    temperature = setTemperature
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-//                    DeviceParamModel = DeviceParamModel.copy(aUp = valueUp, aDown = valueDown)
-                }
-
-                override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-//                    DeviceParamModel = DeviceParamModel.copy(bUp = valueUp, bDown = valueDown)
-
-
-                }
-
-                override fun onSensorLightValue(
-                    AvalueUp: Int,
-                    AvalueDown: Int,
-                    BvalueUp: Int,
-                    BvalueDown: Int
-                ) {
-                }
-
-                override fun onPumpmotor(version: Int) {
-                }
-
-
-            })
-
-
+    fun addListener() {
+        serialManager.addListener(listener)
     }
-
     /**
      * 初始化 打印串口
      */
@@ -806,11 +792,11 @@ class TestVM : ViewModel() {
      */
     fun setTestState(channel: Int, state: Int) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + (if (channel == 1) SerialPortManager.A_CMD else SerialPortManager.B_CMD) + ByteUtil.intToHex(
+            SerialManager.HEAD + (if (channel == 1) SerialManager.A_CMD else SerialManager.B_CMD) + ByteUtil.intToHex(
                 state
-            ) + "010000" + CRC + SerialPortManager.FOOT
+            ) + "010000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -825,11 +811,11 @@ class TestVM : ViewModel() {
             (if (passageModelB.cleanDuration.toIntOrNull() == null) 0 else passageModelB.cleanDuration.toInt())
 
         var byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_SET_CLEAN_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_SET_CLEAN_DURATION + ByteUtil.intToHex4(
                 cleanDurationA
-            ) + ByteUtil.intToHex4(cleanDurationB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(cleanDurationB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
         delay(50)
 
@@ -840,11 +826,11 @@ class TestVM : ViewModel() {
             (if (passageModelB.addDuration.toIntOrNull() == null) 0 else passageModelB.addDuration.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_LIQUID_ENTER_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_LIQUID_ENTER_DURATION + ByteUtil.intToHex4(
                 addDurationA
-            ) + ByteUtil.intToHex4(addDurationB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(addDurationB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
 
         //抽提时间
@@ -854,11 +840,11 @@ class TestVM : ViewModel() {
             (if (passageModelB.extractDuration.toIntOrNull() == null) 0 else passageModelB.extractDuration.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
                 extractDurationA
-            ) + ByteUtil.intToHex4(extractDurationB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(extractDurationB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
         delay(50)
 
@@ -869,11 +855,11 @@ class TestVM : ViewModel() {
             (if (passageModelB.extractInterval.toIntOrNull() == null) 0 else passageModelB.extractInterval.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_EXTRACT_INTERVAL + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CMD_EXTRACT_INTERVAL + ByteUtil.intToHex4(
                 extractIntervalA
-            ) + ByteUtil.intToHex4(extractIntervalB) + CRC + SerialPortManager.FOOT
+            ) + ByteUtil.intToHex4(extractIntervalB) + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
 
         //电机速度
@@ -883,11 +869,11 @@ class TestVM : ViewModel() {
             (if (passageModelB.motorSpeed.toIntOrNull() == null) 0 else passageModelB.motorSpeed.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.MOTOR_SPEED + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.MOTOR_SPEED + ByteUtil.intToHex(
                 moterSpeedConvert(motorSpeedA)
-            ) + "00" + ByteUtil.intToHex(moterSpeedConvert(motorSpeedB)) + "00" + CRC + SerialPortManager.FOOT
+            ) + "00" + ByteUtil.intToHex(moterSpeedConvert(motorSpeedB)) + "00" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -898,58 +884,58 @@ class TestVM : ViewModel() {
     suspend fun setAdvParam(advParamModel: AdvParamModel) {
         //排空电机速度
         var byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_MOTOR_SPEED + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.EMPTY_MOTOR_SPEED + ByteUtil.intToHex(
                 advParamModel.emptySpeed.toInt()
-            ) + "000000" + CRC + SerialPortManager.FOOT
+            ) + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空抽提时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(
                 advParamModel.emptyExtractDuration.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空抽提间隔
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(
                 advParamModel.emptyExtractInterval.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //排空烘干时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.EMPTY_DRYING_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.EMPTY_DRYING_DURATION + ByteUtil.intToHex4(
                 advParamModel.emptyDryingDuration.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //清洗电机速度
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex(
                 advParamModel.cleanSpeed.toInt()
-            ) + "000000" + CRC + SerialPortManager.FOOT
+            ) + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         delay(50)
         //清洗烘干时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(
                 advParamModel.cleanDryingDuration.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
         //泄压时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.DECOM_P_DURATION + ByteUtil.intToHex4(
+            SerialManager.HEAD + SerialManager.DECOM_P_DURATION + ByteUtil.intToHex4(
                 advParamModel.decompDuration.toInt()
-            ) + "0000" + CRC + SerialPortManager.FOOT
+            ) + "0000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -960,9 +946,9 @@ class TestVM : ViewModel() {
     fun setLightState(state: Boolean) {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -1130,20 +1116,20 @@ class TestVM : ViewModel() {
             // 取小数点后的数字
             afterDecimal = writeTemperature.substring(writeTemperature.indexOf('.') + 1)
             byteArray = ByteUtil.hexStringToByteArray(
-                SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + ByteUtil.intToHex(
+                SerialManager.HEAD + SerialManager.CMD_SET_T + ByteUtil.intToHex(
                     beforeDecimal.toInt()
-                ) + ByteUtil.intToHex(afterDecimal.toInt()) + "010000" + SerialPortManager.FOOT
+                ) + ByteUtil.intToHex(afterDecimal.toInt()) + "010000" + SerialManager.FOOT
             )
         } else {
             beforeDecimal = writeTemperature
             byteArray = ByteUtil.hexStringToByteArray(
-                SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + ByteUtil.intToHex(
+                SerialManager.HEAD + SerialManager.CMD_SET_T + ByteUtil.intToHex(
                     beforeDecimal.toInt()
-                ) + "00" + "010000" + SerialPortManager.FOOT
+                ) + "00" + "010000" + SerialManager.FOOT
             )
         }
 
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -1161,9 +1147,9 @@ class TestVM : ViewModel() {
             return
         }
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_SET_T + "00" + "00" + "000000" + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CMD_SET_T + "00" + "00" + "000000" + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
 
@@ -1173,11 +1159,11 @@ class TestVM : ViewModel() {
      */
     fun setMedium(model: Int) {
         val byteArrayP: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.MEDIUM_VALUE + ByteUtil.intToHex(
+            SerialManager.HEAD + SerialManager.MEDIUM_VALUE + ByteUtil.intToHex(
                 model
-            ) + "00" + "000000" + SerialPortManager.FOOT
+            ) + "00" + "000000" + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArrayP)
+        serialManager.write(byteArrayP)
 
         SPUtils.getInstance().put("mediumInfo", Gson().toJson(mediumList))
     }
@@ -1344,10 +1330,6 @@ class TestVM : ViewModel() {
     }
 
 
-    fun closeSerialPort() {
-        serialPortManager?.close()
-        serialPortManager = null // 重要！解除引用
-    }
 
     fun closeTimer() {
         if (timerA.isTimerRun()) {

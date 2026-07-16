@@ -78,14 +78,6 @@ fun CleanPage(vm: SettingVM = viewModel()) {
         mutableStateOf("5")
     }
 
-    DisposableEffect(Unit) {
-        vm.initDevicePort()
-        onDispose {
-            vm.closeSerialPort()
-        }
-    }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()

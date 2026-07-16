@@ -18,6 +18,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Arrays
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -28,7 +29,7 @@ class SerialManager private constructor(
 ) {
 
     companion object {
-        private const val TAG = "SerialPortManager"
+        private const val TAG = "SerialManager"
         private const val BUFFER_SIZE = 64
         private const val SEND_INTERVAL = 50L
 
@@ -200,6 +201,8 @@ class SerialManager private constructor(
 
 
     fun addListener(listener: OnDataReceivedListener) {
+        clearListener()
+
         if (!listeners.contains(listener)) listeners.add(listener)
     }
 
@@ -274,7 +277,7 @@ class SerialManager private constructor(
         while (running.get()) {
             try {
                 val data = sendChannel.receive()
-
+                ByteUtil.printByteArray(data)
                 outputStream?.apply {
                     write(data)
                     flush()
@@ -305,7 +308,6 @@ class SerialManager private constructor(
         synchronized(this) {
             try {
                 val data = ByteUtil.hexStringToByteArray(dataStr)
-
                 outputStream?.let { stream ->
                     stream.write(data)
                     stream.flush()
@@ -626,7 +628,7 @@ class SerialManager private constructor(
 
 
     private fun processOtaReceived(buffer: ByteArray, len: Int) {
-
+        Log.d(TAG, "OTA: ${Arrays.toString(buffer)}")
         for (i in 0 until len) {
 
             when (buffer[i].toInt() and 0xFF) {

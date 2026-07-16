@@ -37,8 +37,7 @@ import com.hm.viscosityauto.ui.view.LoadingDialog
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.NetworkUtil
 import com.hm.viscosityauto.utils.SPUtils
-import com.hm.viscosityauto.utils.SerialPortManager
-import com.hm.viscosityauto.utils.SerialPortManager.listSerialPorts
+import com.hm.viscosityauto.utils.SerialManager
 import com.hm.viscosityauto.utils.TimeUtils
 import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityped.utils.QRCodeUtil
@@ -83,10 +82,6 @@ class MainVM : ViewModel() {
     var adminList = mutableStateListOf<AdminRecords>()
 
 
-    //初始化串口 用于打印的 后续可以将Act中的输出流对象换成这里的输出流对象
-    private lateinit var mSerialPort: SerialPort //串口对象
-    private var mOutputStream: OutputStream? = null //串口的输出流对象 用于发送指令
-
     //语言
     var language = mutableStateOf(SPUtils.getInstance().getString("language", LANGUAGE_ZH))
 
@@ -102,8 +97,7 @@ class MainVM : ViewModel() {
     var autoEmpty = mutableStateOf(SPUtils.getInstance().getBoolean("autoEmpty", true))
 
     //设备串口通信
-    private var serialPortManager: SerialPortManager? = null
-
+    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
 
     private lateinit var wifiManager: IWifiManager
 
@@ -171,9 +165,8 @@ class MainVM : ViewModel() {
 
         }
 
-        listSerialPorts()
         initWifi(context)
-
+        serialManager.initialize()
         viewModelScope.launch {
             launch { initSerialPort() }
         }
@@ -182,49 +175,10 @@ class MainVM : ViewModel() {
 
 
     private suspend fun initSerialPort(){
-        serialPortManager =
-            SerialPortManager(PATH, 9600, object :SerialPortManager.OnDataReceivedListener{
-                override fun onTemperatureReceived(temperature: String?) {
-                }
-
-                override fun onLightStateReceived(state: Boolean?) {
-                }
-
-                override fun onHeatingState(state: Int) {
-                }
-
-                override fun onADeviceState(state: Int,dur:Double) {
-                }
-
-                override fun onBDeviceState(state: Int,dur:Double) {
-                }
-
-                override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-                }
-
-                override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-                }
-
-                override fun onSensorLightValue(
-                    AvalueUp: Int,
-                    AvalueDown: Int,
-                    BvalueUp: Int,
-                    BvalueDown: Int
-                ) {
-                }
-
-                override fun onPumpmotor(version: Int) {
-                }
-            })
-
         delay(100)
         setLightState(true)
         delay(100)
         setParamDiffValue()
-        delay(1000)
-        serialPortManager?.close()
-        serialPortManager = null // 重要！解除引用
-
     }
 
     /**
@@ -678,9 +632,9 @@ class MainVM : ViewModel() {
     fun setLightState(state: Boolean) {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + SerialPortManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + SerialPortManager.CRC + SerialPortManager.FOOT
+            SerialManager.HEAD + SerialManager.CMD_LIGHT + (if (state) "01" else "00") + "000000" + SerialManager.CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
 
     }
 
@@ -707,18 +661,18 @@ class MainVM : ViewModel() {
      */
     fun setValueAndSen(channelPosition: Int, setValue: Int, sensitivity: Int) {
         val cmd = when (channelPosition) {
-            1 -> SerialPortManager.A_UP_SET
-            2 -> SerialPortManager.A_DOWN_SET
-            3 -> SerialPortManager.B_UP_SET
-            else -> SerialPortManager.B_DOWN_SET
+            1 -> SerialManager.A_UP_SET
+            2 -> SerialManager.A_DOWN_SET
+            3 -> SerialManager.B_UP_SET
+            else -> SerialManager.B_DOWN_SET
         }
 
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialPortManager.HEAD + cmd + ByteUtil.intToHex4(setValue) + ByteUtil.intToHex4(
+            SerialManager.HEAD + cmd + ByteUtil.intToHex4(setValue) + ByteUtil.intToHex4(
                 sensitivity
-            ) + SerialPortManager.CRC + SerialPortManager.FOOT
+            ) + SerialManager.CRC + SerialManager.FOOT
         )
-        serialPortManager?.write(byteArray)
+        serialManager.write(byteArray)
     }
 
     fun installApk(activity: Activity) {

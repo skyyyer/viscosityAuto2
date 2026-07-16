@@ -106,10 +106,8 @@ fun ParamPage(vm: SettingVM = viewModel()) {
         mutableStateOf(false)
     }
 
-
     DisposableEffect(Unit) {
         scope.launch {
-            vm.initDevicePort()
             delay(500)
             vm.startABValueUp(true)
             delay(500)
@@ -118,7 +116,6 @@ fun ParamPage(vm: SettingVM = viewModel()) {
 
         onDispose {
             vm.startABValueUp(false)
-            vm.closeSerialPort()
         }
     }
 
