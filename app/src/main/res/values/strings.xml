@@ -89,7 +89,7 @@
 
     <string name="test_detail">实验详情</string>
     <string name="test_result">实验结果</string>
-    <string name="del_tip">确定删除选中条数据吗？</string>
+    <string name="del_tip">确定删除选中的数据吗？</string>
     <string name="del_all_tip">确定删除全部数据吗？</string>
     <string name="export">导出</string>
     <string name="exporting">导出中</string>

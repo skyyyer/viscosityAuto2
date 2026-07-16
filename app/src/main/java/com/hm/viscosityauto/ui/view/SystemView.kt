@@ -41,6 +41,7 @@ import com.aay.compose.lineChart.model.LineParameters
 import com.aay.compose.lineChart.model.LineType
 import com.asi.nav.Nav
 import com.hm.viscosityauto.ManagerPageRoute
+import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgBlue
@@ -50,6 +51,7 @@ import com.hm.viscosityauto.ui.theme.textColor
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.view.click.doubleClick
 import com.hm.viscosityauto.utils.FileUtil
+import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.LANGUAGE_EN
 import com.hm.viscosityauto.vm.LANGUAGE_ZH
 import java.io.File

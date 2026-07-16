@@ -25,10 +25,12 @@ import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
+import com.hm.viscosityauto.utils.SerialManager
 import com.hm.viscosityauto.utils.SerialPortManager
 import com.hm.viscosityauto.utils.SerialPortManager.A_CMD
 import com.hm.viscosityauto.utils.SerialPortManager.B_CMD
 import com.hm.viscosityauto.utils.SerialPortManager.CRC
+import com.hm.viscosityauto.utils.ota.OtaController
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
 import com.hm.viscosityauto.vm.CalibrationState.Single
@@ -36,6 +38,7 @@ import com.hm.viscosityauto.vm.HeatState.Empty
 import com.hm.viscosityauto.vm.TestCMD.CMD_Stop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 import java.text.DecimalFormat
 
 
@@ -44,6 +47,7 @@ class SettingVM : ViewModel() {
     //设备串口通信
     private var serialPortManager: SerialPortManager? = null
 
+    public val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
 
     //温度
     var setTemperature: String by mutableStateOf(
@@ -851,6 +855,20 @@ class SettingVM : ViewModel() {
         serialPortManager = null // 重要！解除引用
     }
 
+
+
+
+
+    var otaController: OtaController? = null
+
+    fun setFirmControl(path: String){
+        otaController =  OtaController(
+            serial = serialManager,
+            firmware = File(path).readBytes(),
+            fileName = "app.bin"
+        )
+
+    }
 }
 
 

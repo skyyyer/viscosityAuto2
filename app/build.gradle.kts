@@ -12,8 +12,8 @@ android {
         applicationId = "com.hm.viscosityauto"
         minSdk = 24
         targetSdk = 28
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -125,5 +125,8 @@ dependencies {
     implementation ("io.github.azhon:appupdate:4.3.6")
 
     implementation("com.google.zxing:core:3.5.4")
+
+    implementation("me.rosuh:AndroidFilePicker:1.0.1")
+
 
 }

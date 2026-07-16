@@ -63,6 +63,7 @@ import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.SettingVM
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.rosuh.filepicker.config.FilePickerManager
 import java.lang.reflect.Method
 
 
@@ -167,6 +168,36 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
             BaseButton(title = stringResource(id = R.string.debug_mode)) {
                 Nav.to(DebugPageRoute.route)
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                BaseButton(title = "选择文件") {
+                    FilePickerManager
+                        .from(context as Activity)
+                        .forResult(FilePickerManager.REQUEST_CODE)
+                }
+
+                Text(text = "文件地址: ${mainVM.firmPath.value}")
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                BaseButton(title = "开始升级") {
+                    vm.setFirmControl(mainVM.firmPath.value)
+
+                    vm.otaController?.start()
+                }
+
+                Text(text = "状态: ${ vm.otaController?.state}")
+            }
+
+
 
             Spacer(modifier = Modifier.weight(1f))
 

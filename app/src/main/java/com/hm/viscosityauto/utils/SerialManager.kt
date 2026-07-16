@@ -2,6 +2,7 @@ package com.hm.viscosityauto.utils
 
 import android.serialport.SerialPort
 import android.util.Log
+import com.hm.viscosityauto.utils.ota.OtaCallback
 import com.hm.viscosityauto.vm.TestState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.concurrent.CopyOnWriteArrayList
@@ -247,8 +249,10 @@ class SerialManager private constructor(
                 if (len > 0) {
                     if (transferMode == TransferMode.OTA) {
                         otaStreamBuffer.write(buffer, 0, len)
-                        processOtaReceived(otaStreamBuffer.toByteArray())
+                        // ✅ 2. 解析完整流
+                        val data = otaStreamBuffer.toByteArray()
                         otaStreamBuffer.reset()
+                        processOtaReceived(data, data.size)
                     } else {
                         processReceivedData(buffer, len)
                     }
@@ -294,6 +298,52 @@ class SerialManager private constructor(
     }
 
 
+    /**
+     * 发送数据（立即发送，不排队）
+     */
+     fun writeImmediately(dataStr: String) {
+        synchronized(this) {
+            try {
+                val data = ByteUtil.hexStringToByteArray(dataStr)
+
+                outputStream?.let { stream ->
+                    stream.write(data)
+                    stream.flush()
+
+                    Log.d(TAG, "Data sent successfully: $dataStr")
+                } ?: run {
+                    Log.e(TAG, "OutputStream is null, cannot send data")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Error writing to OutputStream", e)
+            }
+        }
+    }
+
+
+    /**
+     * 发送原始数据
+     */
+    fun sendRawDataWithOutHeadFoot(dataStr: String) {
+        synchronized(this) {
+            try {
+                val data = ByteUtil.hexStringToByteArray(dataStr)
+
+                outputStream?.let { stream ->
+                    stream.write(data)
+                    stream.flush()
+
+                    Log.d(TAG, "sendRawDataWithOutHeadFoot Data sent successfully: $dataStr")
+                } ?: run {
+                    Log.e(TAG, "sendRawDataWithOutHeadFoot OutputStream is null, cannot send data")
+                }
+            } catch (e: IOException) {
+                Log.e(TAG, "Error writing to OutputStream", e)
+            }
+        }
+    }
+
+
     fun writeImmediately(data: ByteArray) {
         try {
             outputStream?.write(data)
@@ -313,16 +363,12 @@ class SerialManager private constructor(
 
 
         // 当前协议固定12字节
-        if (len != 12) {
-            return
-        }
-
-        if (hex.length != 24) {
+        if (len != 10) {
             return
         }
 
         val head = hex.substring(0, 4)
-        val foot = hex.substring(20, 24)
+        val foot = hex.substring(16,20)
 
         if (head != HEAD || foot != FOOT) {
             return
@@ -330,8 +376,7 @@ class SerialManager private constructor(
 
 
         val cmd = hex.substring(4, 6)
-        val data = hex.substring(6, 18)
-
+        val data = hex.substring(6, 14)
         Log.d(TAG, "cmd=$cmd data=$data")
 
         processCommand(cmd, data, hex)
@@ -565,80 +610,77 @@ class SerialManager private constructor(
      * OTA
      **********************/
 
+    private val otaStreamBuffer = ByteArrayOutputStream()
+
+    @Volatile
+    private var transferMode: TransferMode = TransferMode.NORMAL
+
+    @Volatile
+    private var otaCallback: OtaCallback? = null
+
+
     enum class TransferMode {
         NORMAL,
         OTA
     }
 
 
-    @Volatile
-    private var transferMode = TransferMode.NORMAL
+    private fun processOtaReceived(buffer: ByteArray, len: Int) {
 
+        for (i in 0 until len) {
 
-    private val otaStreamBuffer = ByteArrayOutputStream()
+            when (buffer[i].toInt() and 0xFF) {
 
-
-    interface OtaListener {
-        fun onStart()
-        fun onAck()
-        fun onNak()
-        fun onCancel()
-        fun onData(data: ByteArray) {}
-    }
-
-
-    private var otaListener: OtaListener? = null
-
-
-    fun setOtaListener(listener: OtaListener?) {
-        otaListener = listener
-    }
-
-
-    fun enterOtaMode() {
-        Log.d(TAG, "enter ota mode")
-        transferMode = TransferMode.OTA
-        otaStreamBuffer.reset()
-    }
-
-
-    fun exitOtaMode() {
-        Log.d(TAG, "exit ota mode")
-        transferMode = TransferMode.NORMAL
-        otaListener = null
-        otaStreamBuffer.reset()
-    }
-
-
-    private fun processOtaReceived(data: ByteArray) {
-        if (data.isEmpty()) return
-
-        data.forEach { byte ->
-            when (byte.toInt() and 0xff) {
-
-                0x43 -> {
-                    otaListener?.onStart()
+                0x43 -> { // 'C'
+                    Log.d(TAG, "OTA: C received")
+                    otaCallback?.onC()
                 }
 
-                0x06 -> {
-                    otaListener?.onAck()
+                0x06 -> { // ACK
+                    Log.d(TAG, "OTA: ACK received")
+                    otaCallback?.onAck()
                 }
 
-                0x15 -> {
-                    otaListener?.onNak()
+                0x15 -> { // NAK
+                    Log.d(TAG, "OTA: NAK received")
+                    otaCallback?.onNak()
                 }
 
-                0x18 -> {
-                    otaListener?.onCancel()
-                }
-
-                else -> {
-                    otaListener?.onData(byteArrayOf(byte))
+                0x18 -> { // CAN（可选）
+                    Log.d(TAG, "OTA: CANCEL")
+                    otaCallback?.onCancel()
                 }
             }
         }
     }
 
+    fun setOtaCallback(callback: OtaCallback) {
+        otaCallback = callback
+    }
+
+
+    fun enterOtaMode() {
+        Log.i(TAG, ">>> ENTER OTA MODE")
+
+        transferMode = TransferMode.OTA
+
+    }
+    fun exitOtaMode() {
+        Log.i(TAG, ">>> EXIT OTA MODE")
+
+        transferMode = TransferMode.NORMAL
+
+        otaCallback = null
+    }
+
+    fun writeBytes(bytes: ByteArray) {
+        try {
+            outputStream?.write(bytes)
+            outputStream?.flush()
+        } catch (e: Exception) {
+            Log.e(TAG, "writeBytes error", e)
+        }
+    }
 
 
     /**********************
@@ -671,7 +713,7 @@ class SerialManager private constructor(
 
 
         listeners.clear()
-        otaListener = null
+        otaCallback = null
 
         _connectionState.value =
             ConnectionState.DISCONNECTED

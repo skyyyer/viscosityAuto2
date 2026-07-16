@@ -2,6 +2,7 @@ package com.hm.viscosityauto
 
 import android.content.Context
 import android.content.pm.PackageInfo
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import com.hm.viscosityauto.ui.page.ParamPage
 import com.hm.viscosityauto.ui.page.SettingPage
 import com.hm.viscosityauto.ui.page.SplashPage
 import com.hm.viscosityauto.ui.page.TestPage
+import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.LANGUAGE_ZH
 import com.hm.viscosityauto.vm.MainVM
 import com.hm.viscosityauto.vm.TestVM
@@ -95,6 +97,7 @@ fun NavGraph(vm: MainVM = viewModel()) {
     val startPage = SplashPageRoute.route
 
     SetLanguage(vm.language.value)
+
     NavigationEffect(
         startDestination = startPage,
     ) {
@@ -167,14 +170,33 @@ fun NavGraph(vm: MainVM = viewModel()) {
 
 }
 
+//
+//
+//@Composable
+//fun SetLanguage(language: String) {
+//    val locale = Locale(language)
+//    val configuration = LocalConfiguration.current
+//    configuration.setLocale(locale)
+//    val resources = LocalContext.current.resources
+//    resources.updateConfiguration(configuration, resources.displayMetrics)
+//}
 
 @Composable
 fun SetLanguage(language: String) {
+    val context = LocalContext.current
     val locale = Locale(language)
-    val configuration = LocalConfiguration.current
+
+    // 更新 Application 级别的 Configuration
+    val appContext = context.applicationContext
+    val resources = appContext.resources
+    val configuration = Configuration(resources.configuration)
     configuration.setLocale(locale)
-    val resources = LocalContext.current.resources
     resources.updateConfiguration(configuration, resources.displayMetrics)
+
+    // 同时更新当前 Activity 的 Configuration
+    val activityConfig = Configuration(context.resources.configuration)
+    activityConfig.setLocale(locale)
+    context.resources.updateConfiguration(activityConfig, context.resources.displayMetrics)
 }
 
 @Throws(Exception::class)

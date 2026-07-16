@@ -149,6 +149,9 @@ class MainVM : ViewModel() {
     //设备参数
     var DeviceParamModel by mutableStateOf(DeviceParamModel())
 
+    ///固件升级文件地址
+    var firmPath = mutableStateOf("")
+
 
     /**
      * 初始化
@@ -738,10 +741,10 @@ class MainVM : ViewModel() {
             .apkName("app.apk")
             .smallIcon(R.mipmap.ic_launcher) //设置了此参数，那么内部会自动判断是否需要显示更新对话框，否则需要自己判断是否需要更新
             .apkVersionCode(versionCode) //同时下面三个参数也必须要设置
-            .apkVersionName("$versionCode.0")
+            .apkVersionName("$versionCode")
             .apkSize("47")
             .apkDescription(activity.getString(R.string.new_version)) //省略一些非必须参数...
-            .forcedUpgrade(true)
+            .forcedUpgrade(false)
             .build()
         manager.download()
     }

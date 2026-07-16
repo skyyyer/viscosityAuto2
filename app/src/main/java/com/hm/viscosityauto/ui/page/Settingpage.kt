@@ -53,6 +53,7 @@ import com.hm.viscosityauto.AvdParamPageRoute
 import com.hm.viscosityauto.CleanPageRoute
 import com.hm.viscosityauto.DeviceParamPageRoute
 import com.hm.viscosityauto.ManagerPageRoute
+import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.ui.theme.cardBg
 import com.hm.viscosityauto.ui.theme.cardBgWhite
@@ -73,6 +74,7 @@ import com.hm.viscosityauto.ui.view.UploadView
 import com.hm.viscosityauto.ui.view.WlanView
 import com.hm.viscosityauto.ui.view.click.doubleClick
 import com.hm.viscosityauto.utils.SPUtils
+import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.CalibrationState
 import com.hm.viscosityauto.vm.LANGUAGE_EN
 import com.hm.viscosityauto.vm.LANGUAGE_ZH

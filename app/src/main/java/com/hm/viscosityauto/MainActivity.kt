@@ -2,6 +2,7 @@ package com.hm.viscosityauto
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import com.hm.viscosityauto.ui.theme.ViscosityAutoTheme
 import com.hm.viscosityauto.ui.view.ErrorView
 import com.hm.viscosityauto.ui.view.LoadingDialog
 import com.hm.viscosityauto.utils.SerialManager
+import com.hm.viscosityauto.vm.MainVM
+import me.rosuh.filepicker.config.FilePickerManager
 
 
 object GlobalState {
@@ -27,6 +30,7 @@ object GlobalState {
 }
 
 class MainActivity : ComponentActivity() {
+    val mainVM: MainVM = MainVM()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -55,7 +59,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavGraph()
+                    NavGraph(mainVM)
                     LoadingDialog.Content()
 //                    ErrorView.Content()
                 }
@@ -63,6 +67,20 @@ class MainActivity : ComponentActivity() {
         }
 
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == FilePickerManager.REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                val list = FilePickerManager.obtainData()
+
+                mainVM.firmPath.value = list[0]
+
+            }
+        }
     }
 
 

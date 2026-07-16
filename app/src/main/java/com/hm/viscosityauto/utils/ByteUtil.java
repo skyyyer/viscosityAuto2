@@ -342,4 +342,41 @@ public class ByteUtil {
                  hexString.toString());
     }
 
+
+
+    /**
+     * 计算标准CRC-8校验码
+     * 宽度: 8位
+     * 多项式: 0x07 (x^8 + x^2 + x^1 + 1)
+     * 初始值: 0x00
+     * 输出异或: 0x00
+     * 输入反转: false
+     * 输出反转: false
+     */
+    public static int calculateCRC8(byte[] data) {
+        int crc = 0x00;
+        final int polynomial = 0x07;
+
+        for (byte b : data) {
+            // 处理每个字节
+            crc ^= (b & 0xFF);
+
+            // 处理每个字节的8个位
+            for (int bit = 0; bit < 8; bit++) {
+                if ((crc & 0x80) != 0) {
+                    crc = (crc << 1) ^ polynomial;
+                } else {
+                    crc = crc << 1;
+                }
+                crc &= 0xFF;  // 保持8位
+            }
+        }
+
+        return crc;
+    }
+
+    public static String calculateCRC8(String data) {
+        return intToHex(calculateCRC8(hexStringToByteArray(data)));
+    }
+
 }
