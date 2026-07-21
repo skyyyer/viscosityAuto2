@@ -544,7 +544,7 @@ class TestVM : ViewModel() {
         timerB.onTimeUpdate = {
             BTimekeeping = divideAndFormat4((it.toFloat() + (1..9).random() * 0.1f), 1000)
         }
-
+        readTemperature()
     }
 
     override fun onCleared() {
@@ -1131,6 +1131,17 @@ class TestVM : ViewModel() {
 
         serialManager.write(byteArray)
 
+    }
+
+
+    /**
+     * 读取温度
+     */
+    fun readTemperature() {
+        val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.CMD_READ_T + "AA" + "00" + "000000" + SerialPortManager.FOOT
+        )
+        serialManager.write(byteArray)
     }
 
 

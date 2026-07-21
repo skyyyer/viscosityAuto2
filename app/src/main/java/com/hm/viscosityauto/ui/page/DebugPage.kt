@@ -66,8 +66,8 @@ fun DebugPage(vm: SettingVM = viewModel()) {
 
     //  电机 速度
     var motorSpeed by remember {
-        mutableIntStateOf(
-            0
+        mutableStateOf(
+            "0"
         )
     }
 
@@ -100,6 +100,12 @@ fun DebugPage(vm: SettingVM = viewModel()) {
         mutableStateOf(
             false
         )
+    }
+    DisposableEffect(Unit) {
+        vm.initDevicePort()
+        onDispose {
+            vm.closeSerialPort()
+        }
     }
 
 
@@ -228,7 +234,7 @@ fun DebugPage(vm: SettingVM = viewModel()) {
                     ),
                     onCheckedChange = {
                         motorTest = it
-                        vm.motorSetting(motorTest, motorDirection, motorSpeed)
+                        vm.motorSetting(motorTest, motorDirection, motorSpeed.toInt())
                     })
 
             }
@@ -242,7 +248,7 @@ fun DebugPage(vm: SettingVM = viewModel()) {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     BasicTextField(
-                        value = motorSpeed.toString(),
+                        value = motorSpeed,
                         textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
@@ -252,18 +258,23 @@ fun DebugPage(vm: SettingVM = viewModel()) {
                             .wrapContentSize(Alignment.Center)
                             .padding(horizontal = 8.dp, vertical = 4.dp),
                         onValueChange = {
-                            motorSpeed = it.toInt()
+                            motorSpeed = it
                         })
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     BaseButton {
-                        if (motorSpeed<0||motorSpeed>100){
+                        if (motorSpeed.toIntOrNull()==null){
+                            ToastUtil.show(context,context.getString(R.string.data_error))
+                            return@BaseButton
+                        }
+
+                        if (motorSpeed.toInt()<0||motorSpeed.toInt()>100){
                             ToastUtil.show(context,context.getString(R.string.over_limit))
                             return@BaseButton
                         }
 
-                        vm.motorSetting(motorTest, motorDirection, motorSpeed)
+                        vm.motorSetting(motorTest, motorDirection, motorSpeed.toInt())
                     }
 
                 }
@@ -278,7 +289,7 @@ fun DebugPage(vm: SettingVM = viewModel()) {
 
                     RadioButton(selected = motorDirection == 0, onClick = {
                         motorDirection = 0
-                        vm.motorSetting(motorTest, motorDirection, motorSpeed)
+                        vm.motorSetting(motorTest, motorDirection, motorSpeed.toInt())
                     })
                     Text(
                         text = stringResource(id = R.string.forward),
@@ -289,7 +300,7 @@ fun DebugPage(vm: SettingVM = viewModel()) {
 
                     RadioButton(selected = motorDirection == 1, onClick = {
                         motorDirection = 1
-                        vm.motorSetting(motorTest, motorDirection, motorSpeed)
+                        vm.motorSetting(motorTest, motorDirection, motorSpeed.toInt())
                     })
                     Text(
                         text = stringResource(id = R.string.reverse),

@@ -615,7 +615,13 @@ class MainVM : ViewModel() {
                         if (versionCode.intValue < model.data!!.apkRevision.toInt()) {
                             newApkUrl.value = model.data!!.apkOssUrl
                             newApkVersionCode.intValue = model.data!!.apkRevision.toInt()
+                        }else{
+                            newApkUrl.value = ""
+                            newApkVersionCode.intValue = 1
                         }
+                    }else{
+                        newApkUrl.value = ""
+                        newApkVersionCode.intValue = 1
                     }
                 }catch (e:Exception){
                     Log.e("getApp","网络错误")

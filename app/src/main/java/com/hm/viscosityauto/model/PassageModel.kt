@@ -87,10 +87,18 @@ data class PassageModel(
         return true
     }
 
-    fun isReady(): Boolean {
-        return !(testCount.toIntOrNull() == null || testCount.toInt() <= 0 || constant.toFloatOrNull() == null || constant.toFloat() <= 0
-                || cleanTimes.toIntOrNull() == null || cleanTimes.toInt() < 0 || cleanDuration.toIntOrNull() == null || cleanDuration.toInt() < 0 || addDuration.toIntOrNull() == null || addDuration.toInt() <= 0 || extractDuration.toIntOrNull() == null || extractDuration.toInt() <= 0
-                || extractInterval.toIntOrNull() == null || extractInterval.toInt() <= 0 || motorSpeed.toFloatOrNull() == null || motorSpeed.toInt() <= 0 || motorSpeed.toInt() > 60 || keepTDuration.toIntOrNull() == null || keepTDuration.toInt() < 0)
+    fun isReady(autoClean:Boolean): Boolean {
+        return if (autoClean){
+            !(testCount.toIntOrNull() == null || testCount.toInt() <= 0 || constant.toFloatOrNull() == null || constant.toFloat() <= 0
+                    || cleanTimes.toIntOrNull() == null || cleanTimes.toInt() < 0 || cleanDuration.toIntOrNull() == null || cleanDuration.toInt() < 0 || addDuration.toIntOrNull() == null || addDuration.toInt() <= 0 || extractDuration.toIntOrNull() == null || extractDuration.toInt() <= 0
+                    || extractInterval.toIntOrNull() == null || extractInterval.toInt() <= 0 || motorSpeed.toFloatOrNull() == null || motorSpeed.toInt() <= 0 || motorSpeed.toInt() > 60 || keepTDuration.toIntOrNull() == null || keepTDuration.toInt() < 0)
+
+        }else{
+            !(testCount.toIntOrNull() == null || testCount.toInt() <= 0 || constant.toFloatOrNull() == null || constant.toFloat() <= 0
+                    || extractDuration.toIntOrNull() == null || extractDuration.toInt() <= 0
+                    || extractInterval.toIntOrNull() == null || extractInterval.toInt() <= 0 || motorSpeed.toFloatOrNull() == null || motorSpeed.toInt() <= 0 || motorSpeed.toInt() > 60 || keepTDuration.toIntOrNull() == null || keepTDuration.toInt() < 0)
+
+        }
     }
 
 }
