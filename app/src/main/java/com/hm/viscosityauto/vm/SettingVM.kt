@@ -47,7 +47,7 @@ class SettingVM : ViewModel() {
     //设备串口通信
     private var serialPortManager: SerialPortManager? = null
 
-    public val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
+//    public val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
 
     //温度
     var setTemperature: String by mutableStateOf(
@@ -859,16 +859,16 @@ class SettingVM : ViewModel() {
 
 
 
-    var otaController: OtaController? = null
+//    var otaController: OtaController? = null
 
-    fun setFirmControl(path: String){
-        otaController =  OtaController(
-            serial = serialManager,
-            firmware = File(path).readBytes(),
-            fileName = "app.bin"
-        )
-
-    }
+//    fun setFirmControl(path: String){
+//        otaController =  OtaController(
+//            serial = serialManager,
+//            firmware = File(path).readBytes(),
+//            fileName = "app.bin"
+//        )
+//
+//    }
 }
 
 

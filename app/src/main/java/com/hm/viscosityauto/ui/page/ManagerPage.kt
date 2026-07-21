@@ -169,34 +169,34 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
                 Nav.to(DebugPageRoute.route)
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                BaseButton(title = "选择文件") {
-                    FilePickerManager
-                        .from(context as Activity)
-                        .forResult(FilePickerManager.REQUEST_CODE)
-                }
-
-                Text(text = "文件地址: ${mainVM.firmPath.value}")
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                BaseButton(title = "开始升级") {
-                    vm.setFirmControl(mainVM.firmPath.value)
-
-                    vm.otaController?.start()
-                }
-
-                Text(text = "状态: ${ vm.otaController?.state}")
-            }
-
+//            Spacer(modifier = Modifier.height(40.dp))
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//
+//                BaseButton(title = "选择文件") {
+//                    FilePickerManager
+//                        .from(context as Activity)
+//                        .forResult(FilePickerManager.REQUEST_CODE)
+//                }
+//
+//                Text(text = "文件地址: ${mainVM.firmPath.value}")
+//            }
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//
+//                BaseButton(title = "开始升级") {
+//                    vm.setFirmControl(mainVM.firmPath.value)
+//
+//                    vm.otaController?.start()
+//                }
+//
+//                Text(text = "状态: ${ vm.otaController?.state}")
+//            }
+//
 
 
             Spacer(modifier = Modifier.weight(1f))

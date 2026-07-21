@@ -229,7 +229,11 @@ fun TestPage(vm: TestVM = viewModel()) {
                             vm.printData(context, vm.passageModelA)
                         },
                         onStart = {
-                            vm.startPassage(context, vm.passageModelA.id)
+                            if ( vm.passageModelA.isReady(vm.autoClean.value)) {
+                                vm.startPassage(context, vm.passageModelA.id)
+                            } else {
+                                ToastUtil.show(context, context.getString(R.string.input_error))
+                            }
                         },
                         onFinish = {
                             vm.endPassage(vm.passageModelA.id)
@@ -583,7 +587,11 @@ fun TestPage(vm: TestVM = viewModel()) {
                             vm.printData(context, vm.passageModelB)
                         },
                         onStart = {
-                            vm.startPassage(context, vm.passageModelB.id)
+                            if ( vm.passageModelB.isReady(vm.autoClean.value)) {
+                                vm.startPassage(context, vm.passageModelB.id)
+                            } else {
+                                ToastUtil.show(context, context.getString(R.string.input_error))
+                            }
                         },
                         onFinish = {
                             vm.endPassage(vm.passageModelB.id)
@@ -903,7 +911,7 @@ private fun ConfigItemView(
                     BaseButton(stringResource(id = R.string.save),style  = MaterialTheme.typography.titleSmall.copy(
                         color = Color.White,
                     ), isPaddingV = false) {
-                        if (passageModel.isReady()) {
+                        if (passageModel.isReady(true)) {
                             isEdit = false
                             onSave(passageModel)
                         } else {

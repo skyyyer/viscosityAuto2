@@ -328,11 +328,7 @@ fun PassageCard(
                 ) {
                     when (model.state) {
                         Empty -> {
-                            if (model.isReady()) {
-                                onStart()
-                            } else {
-                                ToastUtil.show(context, context.getString(R.string.input_error))
-                            }
+                            onStart()
                         }
 
                         FinishAll -> {

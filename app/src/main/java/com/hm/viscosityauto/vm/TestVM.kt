@@ -663,6 +663,7 @@ class TestVM : ViewModel() {
 
             })
 
+        readTemperature()
 
     }
 
@@ -1145,6 +1146,17 @@ class TestVM : ViewModel() {
 
         serialPortManager?.write(byteArray)
 
+    }
+
+
+    /**
+     * 读取温度
+     */
+    fun readTemperature() {
+        val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
+            SerialPortManager.HEAD + SerialPortManager.CMD_READ_T + "AA" + "00" + "000000" + SerialPortManager.FOOT
+        )
+        serialPortManager?.write(byteArray)
     }
 
 
