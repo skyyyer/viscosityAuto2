@@ -101,13 +101,6 @@ fun DebugPage(vm: SettingVM = viewModel()) {
             false
         )
     }
-    DisposableEffect(Unit) {
-        vm.initDevicePort()
-        onDispose {
-            vm.closeSerialPort()
-        }
-    }
-
 
     Column(
         modifier = Modifier

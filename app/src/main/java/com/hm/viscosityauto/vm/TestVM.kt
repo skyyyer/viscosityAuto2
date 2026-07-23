@@ -517,7 +517,8 @@ class TestVM : ViewModel() {
         override fun onPumpMotor(version: Int) {
         }
 
-
+        override fun onError(code: Int) {
+        }
     }
 
     /**

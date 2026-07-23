@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.core.view.WindowCompat;
 
 import com.hm.viscosityauto.utils.BaseApplication;
+import com.hm.viscosityauto.utils.SerialManager;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class MyApp extends BaseApplication implements Thread.UncaughtExceptionHa
     @Override
     public void onCreate() {
         super.onCreate();
-
+        SerialManager.Companion.getInstance("/dev/ttyS1", 9600).initialize();
         CrashReport.initCrashReport(getApplicationContext(), "6ceb1d5c67", false);
 
         Thread.setDefaultUncaughtExceptionHandler(this);

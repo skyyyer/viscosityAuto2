@@ -20,6 +20,7 @@ import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.AdvParamModel
 import com.hm.viscosityauto.model.DeviceParamModel
 import com.hm.viscosityauto.model.ExtractModel
+import com.hm.viscosityauto.ui.view.ErrorView
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
@@ -199,6 +200,9 @@ class SettingVM : ViewModel() {
 
         override fun onPumpMotor(version: Int) {
             pumpMotro.intValue = version
+        }
+
+        override fun onError(code: Int) {
         }
 
     }

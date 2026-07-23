@@ -145,6 +145,7 @@ class SerialManager private constructor(
         //    51	查询	固件版本号	D0=AA	D0=主版本，D1=次版本，D2=修订，D3:D4=build
         const val FIRMWARW_VER = "51"
 
+        const val ERROR = "3A"
 
         @Volatile
         private var INSTANCE: SerialManager? = null
@@ -176,7 +177,6 @@ class SerialManager private constructor(
     private val listeners = CopyOnWriteArrayList<OnDataReceivedListener>()
 
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
-    val connectionState: StateFlow<ConnectionState> = _connectionState
 
 
     enum class ConnectionState {
@@ -197,6 +197,7 @@ class SerialManager private constructor(
         fun onBDetectedValue(up: Int, down: Int) {}
         fun onSensorLightValue(aUp: Int, aDown: Int, bUp: Int, bDown: Int) {}
         fun onPumpMotor(version: Int) {}
+        fun onError(code: Int) {}
     }
 
 
@@ -244,6 +245,7 @@ class SerialManager private constructor(
     }
     private fun startReadingCoroutine() = scope.launch {
         val buffer = ByteArray(BUFFER_SIZE)
+        Log.d(TAG, "startReadingCoroutine")
 
         while (running.get()) {
             try {
@@ -430,6 +432,10 @@ class SerialManager private constructor(
                     processPumpVersion(data)
                 }
 
+                ERROR -> {
+                    processError(data)
+                }
+
                 else -> {
                     Log.d(TAG, "unknown cmd=$cmd")
                 }
@@ -437,6 +443,18 @@ class SerialManager private constructor(
 
         } catch (e: Exception) {
             Log.e(TAG, "parse error cmd=$cmd", e)
+        }
+    }
+    private fun processError(data: String) {
+        try {
+            val code = data.substring(0, 2).toInt(16)
+
+            listeners.forEach {
+                it.onError(code)
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error error", e)
         }
     }
 

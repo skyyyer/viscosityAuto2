@@ -58,6 +58,11 @@ const val LANGUAGE_EN = "en"
 
 const val MaxT = 150 //最大温度
 
+object AlertState {
+    const val NO_ALERT = 0   // 无警告
+    const val LOW_BATTERY = 1       // 低电量警告
+    const val TIMEOUT = 2        // 检测超时警告
+}
 
 class MainVM : ViewModel() {
 
@@ -166,7 +171,6 @@ class MainVM : ViewModel() {
         }
 
         initWifi(context)
-        serialManager.initialize()
         viewModelScope.launch {
             launch { initSerialPort() }
         }
