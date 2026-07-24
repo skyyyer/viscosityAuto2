@@ -130,6 +130,12 @@
     <string name="file_no_found">File Not Found</string>
     <string name="version">Version</string>
     <string name="update">Update</string>
+    <string name="firmware_version">Firmware version</string>
+    <string name="firmware_update">Firmware upgrade</string>
+    <string name="sel_file">Select the file</string>
+    <string name="update_state">Upgrade status</string>
+    <string name="pls_sel_file">Please select the upgrade file first</string>
+    <string name="updating">Upgraded</string>
 
     <!-- Weekdays -->
     <string name="Sunday">Sunday</string>
@@ -293,5 +299,27 @@
     <string name="i_get_it">Got it</string>
     <string name="low_battery_tip">The battery is too low and the device is about to shut down. Please charge it immediately.</string>
     <string name="timeout_tip">The command times out, please check the equipment</string>
+
+
+
+
+    <string name="ota_state_idle">Idle</string>
+
+    <string name="ota_state_enter_ota">Entering OTA</string>
+    <string name="ota_state_wait_boot">Waiting for Bootloader</string>
+    <string name="ota_state_send_header">Sending Header</string>
+    <string name="ota_state_send_data">Sending Firmware</string>
+    <string name="ota_state_send_eot">Finishing Transfer</string>
+    <string name="ota_state_send_empty">Sending Final Packet</string>
+    <string name="ota_state_wait_reboot">Waiting for Device Reboot</string>
+    <string name="ota_state_query_version">Verifying Firmware Version</string>
+
+    <string name="ota_state_success">Upgrade Successful</string>
+
+    <string name="ota_state_fail">Upgrade Failed</string>
+    <string name="ota_state_fail_retry">Retry Limit Exceeded</string>
+    <string name="ota_state_fail_cancel">Upgrade Canceled</string>
+
+    <string name="dont_operate_in_upgrade">Do not operate during the upgrade process</string>
 
 </resources>

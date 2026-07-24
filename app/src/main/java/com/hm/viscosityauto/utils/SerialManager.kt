@@ -23,6 +23,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicBoolean
 
 
+const val PATH = "/dev/ttyS1"
+
+
 class SerialManager private constructor(
     private val devicePath: String,
     private val baudRate: Int
@@ -178,7 +181,6 @@ class SerialManager private constructor(
 
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
 
-
     enum class ConnectionState {
         DISCONNECTED,
         CONNECTING,
@@ -197,6 +199,7 @@ class SerialManager private constructor(
         fun onBDetectedValue(up: Int, down: Int) {}
         fun onSensorLightValue(aUp: Int, aDown: Int, bUp: Int, bDown: Int) {}
         fun onPumpMotor(version: Int) {}
+        fun onFirmVersion(version: String,code: Int) {}
         fun onError(code: Int) {}
     }
 
@@ -245,7 +248,6 @@ class SerialManager private constructor(
     }
     private fun startReadingCoroutine() = scope.launch {
         val buffer = ByteArray(BUFFER_SIZE)
-        Log.d(TAG, "startReadingCoroutine")
 
         while (running.get()) {
             try {
@@ -431,7 +433,9 @@ class SerialManager private constructor(
                 PUMP_MOTOR_VER -> {
                     processPumpVersion(data)
                 }
-
+                FIRMWARW_VER -> {
+                    processFirmVersion(data)
+                }
                 ERROR -> {
                     processError(data)
                 }
@@ -611,7 +615,19 @@ class SerialManager private constructor(
             Log.e(TAG, "sensor light error", e)
         }
     }
+    private fun processFirmVersion(data: String) {
+        try {
+            val version = data.substring(0, 2).toInt(16).toString() + "."+data.substring(2,4).toInt(16)+"."+data.substring(4,6).toInt(16)
+            val code = data.substring(6,8).toInt(16)
 
+            listeners.forEach {
+                it.onFirmVersion(version,code)
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "pump version error", e)
+        }
+    }
 
     private fun processPumpVersion(data: String) {
         try {
@@ -626,7 +642,7 @@ class SerialManager private constructor(
         }
     }
 
-    /**********************
+    /******************************************************************************************************************************************************
      * OTA
      **********************/
 
@@ -637,7 +653,6 @@ class SerialManager private constructor(
 
     @Volatile
     private var otaCallback: OtaCallback? = null
-
 
     enum class TransferMode {
         NORMAL,
@@ -674,7 +689,7 @@ class SerialManager private constructor(
         }
     }
 
-    fun setOtaCallback(callback: OtaCallback) {
+    fun setOtaCallback(callback: OtaCallback?) {
         otaCallback = callback
     }
 

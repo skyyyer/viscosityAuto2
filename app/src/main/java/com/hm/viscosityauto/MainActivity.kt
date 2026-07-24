@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
 
 //        SerialManager
 //            .getInstance(
-//                "/dev/ttyS1",
+//                "/dev/ttyS2",
 //                9600
 //            )
 //            .initialize()

@@ -22,6 +22,7 @@ import com.hm.viscosityauto.ui.page.AdvParamPage
 import com.hm.viscosityauto.ui.page.AuditPage
 import com.hm.viscosityauto.ui.page.CleanPage
 import com.hm.viscosityauto.ui.page.DebugPage
+import com.hm.viscosityauto.ui.page.FirmUpdatePage
 import com.hm.viscosityauto.ui.page.HelpPage
 import com.hm.viscosityauto.ui.page.HistoryPage
 import com.hm.viscosityauto.ui.page.HomePage
@@ -61,6 +62,7 @@ object AvdParamPageRoute : Destination("avdParamPage")
 
 object CleanPageRoute : Destination("cleanPage")
 
+object FirmUpdatePageRoute : Destination("firmUpdate")
 
 
 @Composable
@@ -163,6 +165,9 @@ fun NavGraph(vm: MainVM = viewModel()) {
 
         composable(CleanPageRoute.route) {
             CleanPage()
+        }
+        composable(FirmUpdatePageRoute.route) {
+            FirmUpdatePage(vm)
         }
 
 

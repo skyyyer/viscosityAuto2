@@ -2,6 +2,7 @@ package com.hm.viscosityauto.utils.ota
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.hm.viscosityauto.utils.SerialManager
@@ -30,201 +31,297 @@ interface OtaCallback {
     fun onCancel()
 }
 
+//对外暴露状态
+object OtaStatus {
 
+    const val IDLE = 0
+
+    const val ENTER_OTA = 1
+    const val WAIT_BOOT = 2
+    const val SEND_HEADER = 3
+    const val SEND_DATA = 4
+    const val SEND_EOT = 5
+    const val SEND_EMPTY = 6
+    const val WAIT_REBOOT = 7
+    const val QUERY_VERSION = 8
+
+    const val SUCCESS = 100
+
+    const val FAIL = -1
+    const val FAIL_RETRY = -2
+    const val FAIL_CANCEL = -3
+}
 
 class OtaController(
     private val serial: SerialManager,
     private val firmware: ByteArray,
     private val fileName: String = "app.bin"
-) {
+) : OtaCallback {
 
-    private val TAG = "OTAController"
+    companion object {
+        private const val TAG = "OtaController"
+        private const val CMD_ENTER_OTA = 0x50
+        private const val CMD_GET_VERSION = 0x51
+    }
 
-    public var state by mutableStateOf(State.IDLE)
-    private var index = 0
 
-    private val ymodem = YModemEngine(serial)
+
+    private val ymodem = YModemEngine()
+
+    private var state = State.IDLE
+    private var offset = 0
+    private var retryCount = 0
+    private var currentPacket: ByteArray? = null
+
+
+    //对外暴露状态
+    var otaStatus by mutableIntStateOf(OtaStatus.IDLE)
+        private set
+    var progress by mutableIntStateOf(0)
+        private set
+
+    private fun updateProgress(value: Int) {
+        progress = value.coerceIn(0, 100)
+    }
+
 
     enum class State {
         IDLE,
-        ENTER_OTA,
-        WAIT_C,
-        SEND_HEADER,
-        SEND_DATA,
-        SEND_EOT,
-        WAIT_EMPTY,
-        FINISH,
+        WAIT_ENTER_ACK,
+        WAIT_FIRST_C,
+        WAIT_HEADER_ACK,
+        WAIT_SECOND_C,
+        WAIT_DATA_ACK,
+        WAIT_EOT_NAK,
+        WAIT_EOT_ACK,
+        WAIT_EMPTY_C,
+        WAIT_EMPTY_ACK,
+        WAIT_REBOOT,
+        WAIT_VERSION,
+        SUCCESS,
         FAILED
     }
-
-    init {
-        serial.setOtaCallback(object : OtaCallback {
-
-            override fun onC() {
-                handleC()
-            }
-
-            override fun onAck() {
-//                handleAck()
-            }
-
-            override fun onNak() {
-                retry()
-            }
-
-            override fun onCancel() {
-            }
-        })
+    private fun updateStatus(status: Int) {
+        otaStatus = status
     }
-
-    // -------------------------
-    // 启动OTA
-    // -------------------------
     fun start() {
-        Log.e(TAG, "start OTA")
-
-        state = State.ENTER_OTA
-
+        if (firmware.isEmpty()) {
+            fail("firmware empty")
+            return
+        }
+        ymodem.reset()
+        serial.setOtaCallback(this)
         serial.enterOtaMode()
+        sendEnterOta()
+        onEnterOtaAck()
 
-        sendEnterOtaCmd()
+        updateStatus(OtaStatus.ENTER_OTA)
+
     }
 
-    private fun sendEnterOtaCmd() {
-        val cmd = "FAAF50A500000000EAAE"
-
-        serial.writeImmediately(cmd)
-        state = State.WAIT_C
+    private fun sendEnterOta() {
+        val cmd = byteArrayOf(
+            0xFA.toByte(), 0xAF.toByte(),
+            0x50,
+            0xA5.toByte(),
+            0x00, 0x00, 0x00, 0x00,
+            0xEA.toByte(), 0xAE.toByte()
+        )
+        state = State.WAIT_ENTER_ACK
+        serial.writeBytes(cmd)
+        Log.d(TAG, "send enter ota")
     }
 
-    // -------------------------
-    // Bootloader 'C'
-    // -------------------------
-    private fun handleC() {
+    /**
+     * APP阶段返回：
+     * FA AF 50 A5 00 00 00 00 EA AE
+     */
+    fun onEnterOtaAck() {
+        if (state != State.WAIT_ENTER_ACK) return
+        state = State.WAIT_FIRST_C
+        updateStatus(OtaStatus.WAIT_BOOT)
+
+        Log.d(TAG, "wait bootloader C")
+    }
+
+    override fun onC() {
         Log.d(TAG, "recv C state=$state")
-
         when (state) {
-
-            State.WAIT_C, State.ENTER_OTA -> {
+            State.WAIT_FIRST_C -> {
                 sendHeader()
             }
-
-            State.SEND_HEADER -> {
-              sendData()
+            State.WAIT_SECOND_C -> {
+                sendNextPacket()
             }
-
-            State.SEND_DATA -> {
-                sendEot()
+            State.WAIT_EMPTY_C -> {
+                sendEmptyPacket()
             }
-
-            State.SEND_EOT -> {
-                sendEmptyHeader()
-            }
-
             else -> {}
         }
     }
 
-    // -------------------------
-    // ACK处理
-    // -------------------------
-    private fun handleAck() {
-
-        Log.d(TAG, "ACK state=$state")
-
-        when (state) {
-
-            State.SEND_HEADER -> {
-                sendData()
-            }
-
-            State.SEND_DATA -> {
-                sendEot()
-            }
-
-            State.SEND_EOT -> {
-                state = State.WAIT_EMPTY
-            }
-
-            State.WAIT_EMPTY -> {
-                finish()
-            }
-
-            else -> {}
-        }
-    }
-
-    private fun retry() {
-        Log.e(TAG, "NAK retry state=$state")
-
-        when (state) {
-            State.SEND_HEADER -> sendHeader()
-            State.SEND_DATA -> sendData()
-            State.SEND_EOT -> sendEot()
-            else -> {}
-        }
-    }
-
-    // -------------------------
-    // Header
-    // -------------------------
     private fun sendHeader() {
-        Log.e(TAG, "send header")
+        currentPacket = ymodem.createHeaderPacket(fileName, firmware.size)
+        state = State.WAIT_HEADER_ACK
+        updateStatus(OtaStatus.SEND_HEADER)
+        serial.writeBytes(currentPacket!!)
+        Log.d(TAG, "send header")
+    }
 
-        state = State.SEND_HEADER
+    override fun onAck() {
+        Log.d(TAG, "recv ACK state=$state")
 
-        ymodem.sendHeader(fileName, firmware.size)
+        when (state) {
 
+            State.WAIT_HEADER_ACK -> {
+                // 文件头ACK后，等待Bootloader第二个C
+                state = State.WAIT_SECOND_C
+            }
+
+            State.WAIT_DATA_ACK -> {
+                retryCount = 0
+
+                if (offset >= firmware.size) {
+                    sendEot()
+                } else {
+                    sendNextPacket()
+                }
+            }
+
+            State.WAIT_EOT_ACK -> {
+                state = State.WAIT_EMPTY_C
+            }
+
+            State.WAIT_EMPTY_ACK -> {
+                state = State.WAIT_REBOOT
+                waitDeviceRestart()
+            }
+
+            else -> {}
+        }
+    }
+
+    override fun onNak() {
+        Log.d(TAG, "recv NAK state=$state")
+
+        when (state) {
+
+            State.WAIT_DATA_ACK -> {
+                retrySend()
+            }
+
+            State.WAIT_EOT_NAK -> {
+                sendSecondEot()
+            }
+
+            else -> {}
+        }
+    }
+
+    override fun onCancel() {
+        fail("bootloader cancel")
+        updateStatus(OtaStatus.FAIL_CANCEL)
 
     }
 
-    // -------------------------
-    // Data
-    // -------------------------
-    private fun sendData() {
-        Log.e(TAG, "send data")
+    private fun sendNextPacket() {
+        if (offset >= firmware.size) {
+            sendEot()
+            return
+        }
+        updateStatus(OtaStatus.SEND_DATA)
+        val totalPacket = (firmware.size + 1023) / 1024
+        val packetIndex = offset / 1024 + 1
 
-        state = State.SEND_DATA
+        updateProgress(packetIndex * 100 / totalPacket)
 
-        index = ymodem.sendData(firmware)
+        currentPacket = ymodem.createDataPacket(firmware, offset)
 
+        offset += minOf(
+            1024,
+            firmware.size - offset
+        )
+
+        state = State.WAIT_DATA_ACK
+        serial.writeBytes(currentPacket!!)
+        Log.d(TAG, "send data offset=$offset")
     }
 
-    // -------------------------
-    // EOT
-    // -------------------------
+    private fun retrySend() {
+        if (++retryCount > 10) {
+            fail("retry over")
+            return
+        }
+        currentPacket?.let {
+            serial.writeBytes(it)
+        }
+    }
+
+    /**
+     * 第一次EOT
+     */
     private fun sendEot() {
-        Log.e(TAG, "send EOT")
-
-        state = State.SEND_EOT
-
-        serial.writeImmediately("04")
+        state = State.WAIT_EOT_NAK
+        serial.writeBytes(byteArrayOf(0x04))
+        Log.d(TAG, "send EOT 1")
     }
 
-    // -------------------------
-    // 空包
-    // -------------------------
-    private fun sendEmptyHeader() {
-        Log.e(TAG, "send empty header")
-
-        ymodem.sendEmptyHeader()
-
-        finish()
+    /**
+     * 第二次EOT
+     */
+    private fun sendSecondEot() {
+        state = State.WAIT_EOT_ACK
+        serial.writeBytes(byteArrayOf(0x04))
+        Log.d(TAG, "send EOT 2")
     }
 
-    // -------------------------
-    // 完成
-    // -------------------------
-    private fun finish() {
-        Log.e(TAG, "OTA FINISH")
+    private fun sendEmptyPacket() {
+        currentPacket = ymodem.createEmptyPacket()
+        state = State.WAIT_EMPTY_ACK
+        serial.writeBytes(currentPacket!!)
+        Log.d(TAG, "send empty packet")
+    }
 
-        state = State.FINISH
+    private fun waitDeviceRestart() {
+        Thread {
+            try {
+                Thread.sleep(2000)
+                queryVersion()
+            } catch (e: Exception) {
+                fail(e.message ?: "wait restart error")
+            }
+        }.start()
+    }
 
+    private fun queryVersion() {
+        val cmd = byteArrayOf(
+            0xFA.toByte(), 0xAF.toByte(),
+            CMD_GET_VERSION.toByte(),
+            0xAA.toByte(),
+            0x00, 0x00, 0x00, 0x00,
+            0xEA.toByte(), 0xAE.toByte()
+        )
+
+        state = State.WAIT_VERSION
+        serial.exitOtaMode()
+        serial.writeBytes(cmd)
+        updateStatus(OtaStatus.SUCCESS)
+
+        Log.d(TAG, "query version")
+    }
+
+    private fun fail(msg: String) {
+        Log.e(TAG, msg)
+        state = State.FAILED
+        updateStatus(OtaStatus.FAIL)
+
+        serial.setOtaCallback(null)
         serial.exitOtaMode()
     }
 
     fun stop() {
-        state = State.FAILED
-        serial.exitOtaMode()
+        fail("manual stop")
     }
+
+    fun getState(): State = state
 }

@@ -31,6 +31,7 @@ import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat4
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.CountTimer
 import com.hm.viscosityauto.utils.LimitUtil
+import com.hm.viscosityauto.utils.PATH
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.SerialManager
 import com.hm.viscosityauto.utils.SerialManager.Companion.CRC
@@ -73,8 +74,6 @@ object CalibrationState {
 const val CHANNEL_A = "channel_A"
 const val CHANNEL_B = "channel_B"
 
-
-const val PATH = "/dev/ttyS1"
 
 object TestCMD {
     const val CMD_Stop = 0
@@ -124,7 +123,7 @@ class TestVM : ViewModel() {
         )
 
     //设备串口通信
-    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
+    private val serialManager = SerialManager.getInstance(PATH, 9600)
 
     //通道计时器
     var timerA: CountTimer = CountTimer(intervalMillis = 1)

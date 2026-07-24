@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -93,6 +94,8 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
     }
 
     LaunchedEffect(Unit){
+        Log.e("ManagerPage","ManagerPage")
+        vm.addListener()
         vm.getPumpMotorVer()
     }
 
@@ -161,34 +164,6 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                BaseButton(title = "选择文件") {
-                    FilePickerManager
-                        .from(context as Activity)
-                        .forResult(FilePickerManager.REQUEST_CODE)
-                }
-
-                Text(text = "文件地址: ${mainVM.firmPath.value}")
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                BaseButton(title = "开始升级") {
-                    vm.setFirmControl(mainVM.firmPath.value)
-
-                    vm.otaController?.start()
-                }
-
-                Text(text = "状态: ${ vm.otaController?.state}")
-            }
-
-
 
             Spacer(modifier = Modifier.weight(1f))
 

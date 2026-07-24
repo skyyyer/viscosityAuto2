@@ -2,98 +2,250 @@ package com.hm.viscosityauto.utils.ota
 
 import android.util.Log
 import com.hm.viscosityauto.utils.SerialManager
+import kotlinx.coroutines.delay
+class YModemEngine {
 
-class YModemEngine(
-    private val serial: SerialManager
-) {
-
-    private val TAG = "YModemEngine"
-
-    private val PACKET_1024 = 1024
-    private val PACKET_128 = 128
-
-    // -------------------------
-    // Header包
-    // -------------------------
-    fun sendHeader(fileName: String, fileSize: Int) {
-
-        val name = fileName.toByteArray()
-        val size = fileSize.toString().toByteArray()
-
-        val data = ByteArray(PACKET_128) { 0x00 }
-
-        var p = 0
-
-        name.copyInto(data, p)
-        p += name.size
-        data[p++] = 0x00
-
-        size.copyInto(data, p)
-        p += size.size
-        data[p] = 0x00
-
-        sendPacket(0x01, 0, data)
+    companion object {
+        private const val SOH = 0x01
+        private const val STX = 0x02
+        private const val PACKET_128 = 128
+        private const val PACKET_1024 = 1024
+        private const val FILL = 0x1A
     }
 
-    // -------------------------
-    // 数据包
-    // -------------------------
-    fun sendData(firmware: ByteArray): Int {
+    private var sequence = 1
 
-        var offset = 0
-        var index = 1
+    fun reset() {
+        sequence = 1
+    }
 
-        Log.e("sYModemEngine  endData",firmware.size.toString())
+    /**
+     * 文件头包
+     *
+     * data:
+     * filename\0filesize\0
+     */
+    fun createHeaderPacket(
+        fileName: String,
+        fileSize: Int
+    ): ByteArray {
 
-        while (offset < firmware.size) {
+        val data = ByteArray(PACKET_128)
 
-            val end = minOf(offset + PACKET_1024, firmware.size)
-            val chunk = firmware.copyOfRange(offset, end)
+        val nameBytes =
+            fileName.toByteArray(Charsets.US_ASCII)
 
-            val data = ByteArray(PACKET_1024) { 0x1A }
-            chunk.copyInto(data)
+        val sizeBytes =
+            fileSize.toString()
+                .toByteArray(Charsets.US_ASCII)
 
-            sendPacket(0x02, index, data)
+        var index = 0
 
-            offset = end
-            index++
+        System.arraycopy(
+            nameBytes,
+            0,
+            data,
+            index,
+            nameBytes.size
+        )
+
+        index += nameBytes.size
+
+        data[index++] = 0x00
+
+        System.arraycopy(
+            sizeBytes,
+            0,
+            data,
+            index,
+            sizeBytes.size
+        )
+
+        index += sizeBytes.size
+
+        data[index] = 0x00
+
+        return createPacket(
+            SOH,
+            0,
+            data
+        )
+    }
+
+
+    /**
+     * 创建1024数据包
+     *
+     * 最后一包不足1024
+     * 使用0x1A填充
+     */
+    fun createDataPacket(
+        firmware: ByteArray,
+        offset: Int
+    ): ByteArray {
+
+        val data =
+            ByteArray(PACKET_1024) {
+                FILL.toByte()
+            }
+
+        val remain =
+            firmware.size - offset
+
+        val length =
+            minOf(
+                PACKET_1024,
+                remain
+            )
+
+        if (length > 0) {
+            System.arraycopy(
+                firmware,
+                offset,
+                data,
+                0,
+                length
+            )
         }
 
-        return index
+        val packet =
+            createPacket(
+                STX,
+                sequence,
+                data
+            )
+
+        sequence++
+
+        if (sequence > 0xFF) {
+            sequence = 0
+        }
+
+        return packet
     }
 
-    // -------------------------
-    // 空header（结束）
-    // -------------------------
-    fun sendEmptyHeader() {
 
-        val data = ByteArray(PACKET_128) { 0x00 }
+    /**
+     * 空结束包
+     *
+     * SOH
+     * 00
+     * FF
+     * 128*00
+     * CRC16
+     */
+    fun createEmptyPacket(): ByteArray {
 
-        sendPacket(0x01, 0, data)
+        val data =
+            ByteArray(PACKET_128) {
+                0x00
+            }
+
+        return createPacket(
+            SOH,
+            0,
+            data
+        )
     }
 
-    // -------------------------
-    // YMODEM packet
-    // -------------------------
-    @OptIn(ExperimentalStdlibApi::class)
-    private fun sendPacket(type: Int, index: Int, data: ByteArray) {
 
-        val seq = index and 0xFF
-        val inv = 0xFF - seq
+    /**
+     * 生成YMODEM包
+     *
+     * type:
+     * SOH=128
+     * STX=1024
+     */
+    private fun createPacket(
+        type: Int,
+        seq: Int,
+        data: ByteArray
+    ): ByteArray {
 
-        val crc = Crc16.calc(data)
+        val packet =
+            ByteArray(
+                3 + data.size + 2
+            )
 
-        val packet = ByteArray(3 + data.size + 2)
+        val number =
+            seq and 0xFF
 
-        packet[0] = type.toByte()
-        packet[1] = seq.toByte()
-        packet[2] = inv.toByte()
+        packet[0] =
+            type.toByte()
 
-        System.arraycopy(data, 0, packet, 3, data.size)
+        packet[1] =
+            number.toByte()
 
-        packet[packet.size - 2] = (crc shr 8).toByte()
-        packet[packet.size - 1] = (crc and 0xFF).toByte()
+        packet[2] =
+            (number xor 0xFF).toByte()
 
-        serial.sendRawDataWithOutHeadFoot(packet.toHexString())
+
+        System.arraycopy(
+            data,
+            0,
+            packet,
+            3,
+            data.size
+        )
+
+
+        val crc =
+            Crc16Xmodem.calc(data)
+
+
+        packet[packet.size - 2] =
+            (crc shr 8).toByte()
+
+        packet[packet.size - 1] =
+            (crc and 0xFF).toByte()
+
+
+        return packet
+    }
+}
+
+
+/**
+ * CRC16-CCITT/XMODEM
+ *
+ * polynomial:
+ * 0x1021
+ *
+ * initial:
+ * 0x0000
+ */
+object Crc16Xmodem {
+
+    fun calc(
+        data: ByteArray
+    ): Int {
+
+        var crc = 0x0000
+
+        for (b in data) {
+
+            crc =
+                crc xor
+                        ((b.toInt() and 0xFF) shl 8)
+
+
+            repeat(8) {
+
+                crc =
+                    if ((crc and 0x8000) != 0) {
+
+                        (crc shl 1) xor 0x1021
+
+                    } else {
+
+                        crc shl 1
+                    }
+
+                crc =
+                    crc and 0xFFFF
+            }
+        }
+
+        return crc
     }
 }

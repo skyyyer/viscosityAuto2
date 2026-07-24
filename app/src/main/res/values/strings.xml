@@ -144,6 +144,12 @@
 
     <string name="version">版本号</string>
     <string name="update">升级</string>
+    <string name="firmware_version">固件版本</string>
+    <string name="firmware_update">固件升级</string>
+    <string name="sel_file">选择文件</string>
+    <string name="update_state">升级状态</string>
+    <string name="pls_sel_file">请先选择升级文件</string>
+    <string name="updating">升级中</string>
 
 
     <string name="Sunday">星期日</string>
@@ -322,5 +328,26 @@
 
     <string name="timeout_tip">指令超时，请检查设备</string>
 
+
+
+
+    <string name="ota_state_idle">空闲</string>
+
+    <string name="ota_state_enter_ota">进入升级模式</string>
+    <string name="ota_state_wait_boot">等待Bootloader</string>
+    <string name="ota_state_send_header">发送文件头</string>
+    <string name="ota_state_send_data">发送固件数据</string>
+    <string name="ota_state_send_eot">结束数据传输</string>
+    <string name="ota_state_send_empty">发送结束包</string>
+    <string name="ota_state_wait_reboot">等待设备重启</string>
+    <string name="ota_state_query_version">验证固件版本</string>
+
+    <string name="ota_state_success">升级成功</string>
+
+    <string name="ota_state_fail">升级失败</string>
+    <string name="ota_state_fail_retry">重试次数超过限制</string>
+    <string name="ota_state_fail_cancel">升级已取消</string>
+
+    <string name="dont_operate_in_upgrade">升级过程中请勿操作</string>
 
 </resources>

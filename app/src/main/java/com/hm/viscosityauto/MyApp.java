@@ -1,5 +1,7 @@
 package com.hm.viscosityauto;
 
+import static com.hm.viscosityauto.utils.SerialManagerKt.PATH;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Environment;
@@ -29,8 +31,7 @@ public class MyApp extends BaseApplication implements Thread.UncaughtExceptionHa
     @Override
     public void onCreate() {
         super.onCreate();
-        SerialManager.Companion.getInstance("/dev/ttyS1", 9600).initialize();
-        CrashReport.initCrashReport(getApplicationContext(), "6ceb1d5c67", false);
+        SerialManager.Companion.getInstance(PATH, 9600).initialize();
 
         Thread.setDefaultUncaughtExceptionHandler(this);
 

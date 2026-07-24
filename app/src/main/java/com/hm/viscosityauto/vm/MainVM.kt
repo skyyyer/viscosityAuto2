@@ -36,6 +36,7 @@ import com.hm.viscosityauto.room.audit.AuditRecords
 import com.hm.viscosityauto.ui.view.LoadingDialog
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.NetworkUtil
+import com.hm.viscosityauto.utils.PATH
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.SerialManager
 import com.hm.viscosityauto.utils.TimeUtils
@@ -102,7 +103,7 @@ class MainVM : ViewModel() {
     var autoEmpty = mutableStateOf(SPUtils.getInstance().getBoolean("autoEmpty", true))
 
     //设备串口通信
-    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
+    private val serialManager = SerialManager.getInstance(PATH, 9600)
 
     private lateinit var wifiManager: IWifiManager
 

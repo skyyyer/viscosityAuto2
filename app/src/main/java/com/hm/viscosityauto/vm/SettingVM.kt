@@ -25,10 +25,12 @@ import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
 import com.hm.viscosityauto.utils.ComputeUtils.moterSpeedConvert
 import com.hm.viscosityauto.utils.LimitUtil
+import com.hm.viscosityauto.utils.PATH
 import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.SerialManager
 import com.hm.viscosityauto.utils.SerialManager.Companion.CRC
 import com.hm.viscosityauto.utils.ota.OtaController
+import com.hm.viscosityauto.utils.ota.OtaStatus
 import com.hm.viscosityauto.vm.CalibrationState.Mul
 import com.hm.viscosityauto.vm.CalibrationState.None
 import com.hm.viscosityauto.vm.CalibrationState.Single
@@ -43,7 +45,7 @@ import java.text.DecimalFormat
 class SettingVM : ViewModel() {
 
     //设备串口通信
-    private val serialManager = SerialManager.getInstance("/dev/ttyS1", 9600)
+    private val serialManager = SerialManager.getInstance(PATH, 9600)
 
     //温度
     var setTemperature: String by mutableStateOf(
@@ -79,7 +81,7 @@ class SettingVM : ViewModel() {
 
 
     var stateA: Int by mutableIntStateOf(
-       Empty
+        Empty
     )
 
     var stateB: Int by mutableIntStateOf(
@@ -124,22 +126,25 @@ class SettingVM : ViewModel() {
 
     //泄压计时器
     var timerDecomP: CountDownTimer? = null
+
     //烘干计时器
     var timerDrying: CountDownTimer? = null
 
     var advParamModel by
-        mutableStateOf(
-            Gson().fromJson(
-                SPUtils.getInstance().getString("advParamModel", Gson().toJson(AdvParamModel())),
-                AdvParamModel::class.java
-            )
+    mutableStateOf(
+        Gson().fromJson(
+            SPUtils.getInstance().getString("advParamModel", Gson().toJson(AdvParamModel())),
+            AdvParamModel::class.java
         )
+    )
 
     ///泵机 版本型号
     var pumpMotro = mutableIntStateOf(0)
 
+    ///固件 版本型号
+    var firmVersion = mutableStateOf("1.0.0")
 
-    private val listener = object :SerialManager.OnDataReceivedListener{
+    private val listener = object : SerialManager.OnDataReceivedListener {
 
         override fun onTemperatureReceived(temperature: String) {
             viewModelScope.launch {
@@ -150,21 +155,21 @@ class SettingVM : ViewModel() {
 
         override fun onLightStateReceived(state: Boolean) {
             viewModelScope.launch {
-                    lightState.value = state
+                lightState.value = state
             }
         }
 
         override fun onHeatingState(state: Int) {
             viewModelScope.launch {
-                if (heatingState!=state){
+                if (heatingState != state) {
                     heatingState = state
                 }
 
             }
         }
 
-        override fun onADeviceState(state: Int,dur:Double) {
-            if (stateA!=state){
+        override fun onADeviceState(state: Int, dur: Double) {
+            if (stateA != state) {
 
 
                 stateA = state
@@ -172,18 +177,20 @@ class SettingVM : ViewModel() {
 
         }
 
-        override fun onBDeviceState(state: Int,dur:Double) {
-            if (stateB!=state){
+        override fun onBDeviceState(state: Int, dur: Double) {
+            if (stateB != state) {
                 stateB = state
             }
         }
 
         override fun onADetectedValue(valueUp: Int, valueDown: Int) {
-            DeviceParamModel = DeviceParamModel.copy(aUp = valueUp.toString(), aDown = valueDown.toString())
+            DeviceParamModel =
+                DeviceParamModel.copy(aUp = valueUp.toString(), aDown = valueDown.toString())
         }
 
         override fun onBDetectedValue(valueUp: Int, valueDown: Int) {
-            DeviceParamModel = DeviceParamModel.copy(bUp = valueUp.toString(), bDown = valueDown.toString())
+            DeviceParamModel =
+                DeviceParamModel.copy(bUp = valueUp.toString(), bDown = valueDown.toString())
 
         }
 
@@ -193,13 +200,21 @@ class SettingVM : ViewModel() {
             BvalueUp: Int,
             BvalueDown: Int
         ) {
-            DeviceParamModel = DeviceParamModel.copy(aUpSensitivity = AvalueUp.toString(), aDownSensitivity = AvalueDown.toString()
-                ,bUpSensitivity = BvalueUp.toString(), bDownSensitivity = BvalueDown.toString())
+            DeviceParamModel = DeviceParamModel.copy(
+                aUpSensitivity = AvalueUp.toString(),
+                aDownSensitivity = AvalueDown.toString(),
+                bUpSensitivity = BvalueUp.toString(),
+                bDownSensitivity = BvalueDown.toString()
+            )
 
         }
 
         override fun onPumpMotor(version: Int) {
             pumpMotro.intValue = version
+        }
+
+        override fun onFirmVersion(version: String, code: Int) {
+            firmVersion.value = version
         }
 
         override fun onError(code: Int) {
@@ -208,20 +223,22 @@ class SettingVM : ViewModel() {
     }
 
 
-        /**
+    /**
      * 初始化
      * -数据库
      * -打印串口
      * -通道计时器
      */
     init {
-        Log.e("SettingVM", "init"+this)
+        Log.e("SettingVM", "init" + this)
         getLocalSetting()
+
+        addListener()
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("SettingVM", "onCleared"+this)
+        Log.e("SettingVM", "onCleared" + this)
         stopTemperature()
     }
 
@@ -276,7 +293,8 @@ class SettingVM : ViewModel() {
             for (i in 0 until 10) {
                 deviceParamModelConfigList.add(DeviceParamModel())
             }
-            SPUtils.getInstance().put("deviceParamConfigInfo", Gson().toJson(deviceParamModelConfigList))
+            SPUtils.getInstance()
+                .put("deviceParamConfigInfo", Gson().toJson(deviceParamModelConfigList))
         } else {
             val listType = object : TypeToken<List<DeviceParamModel>>() {}.type
             deviceParamModelConfigList.clear()
@@ -284,17 +302,17 @@ class SettingVM : ViewModel() {
         }
 
         val deviceParam = SPUtils.getInstance().getString("deviceParamInfo", "")
-        if (deviceParam.isNotEmpty()){
-            DeviceParamModel = Gson().fromJson(deviceParam,DeviceParamModel::class.java)
+        if (deviceParam.isNotEmpty()) {
+            DeviceParamModel = Gson().fromJson(deviceParam, DeviceParamModel::class.java)
         }
 
         val extractModelA = SPUtils.getInstance().getString("extractModelA", "")
-        if (extractModelA.isNotEmpty()){
+        if (extractModelA.isNotEmpty()) {
             ExtractModelA = Gson().fromJson(extractModelA, ExtractModel::class.java)
         }
         val extractModelB = SPUtils.getInstance().getString("extractModelB", "")
-        if (extractModelB.isNotEmpty()){
-            ExtractModelB = Gson().fromJson(extractModelB,ExtractModel::class.java)
+        if (extractModelB.isNotEmpty()) {
+            ExtractModelB = Gson().fromJson(extractModelB, ExtractModel::class.java)
         }
 
         if (!GlobalState.isSetAdvParam) {
@@ -306,8 +324,8 @@ class SettingVM : ViewModel() {
                 GlobalState.isSetAdvParam = true
             }
         }
-    }
 
+    }
 
 
     fun addListener() {
@@ -332,7 +350,7 @@ class SettingVM : ViewModel() {
     fun getSensorLight() {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.SENSOR_LIGHT +"AA" + "000000" + CRC + SerialManager.FOOT
+            SerialManager.HEAD + SerialManager.SENSOR_LIGHT + "AA" + "000000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
 
@@ -353,10 +371,10 @@ class SettingVM : ViewModel() {
     /**
      * 设置崩机  版本
      */
-    fun setPumpMotorVer(isNew:Boolean) {
+    fun setPumpMotorVer(isNew: Boolean) {
 
         val byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.PUMP_MOTOR_VER +( if (isNew) "01" else "00") + "000000" + CRC + SerialManager.FOOT
+            SerialManager.HEAD + SerialManager.PUMP_MOTOR_VER + (if (isNew) "01" else "00") + "000000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
 
@@ -365,10 +383,15 @@ class SettingVM : ViewModel() {
     /**
      * 设置参数(手动调试)
      */
-    suspend fun setParam(cleanDurationA:String,cleanDurationB:String,addDurationA: String,addDurationB: String) {
+    suspend fun setParam(
+        cleanDurationA: String,
+        cleanDurationB: String,
+        addDurationA: String,
+        addDurationB: String
+    ) {
         //清洗时间
-        val cleanA = (if(cleanDurationA.toIntOrNull()==null) 0 else cleanDurationA.toInt())
-        val cleanB = (if(cleanDurationB.toIntOrNull()==null) 0 else cleanDurationB.toInt())
+        val cleanA = (if (cleanDurationA.toIntOrNull() == null) 0 else cleanDurationA.toInt())
+        val cleanB = (if (cleanDurationB.toIntOrNull() == null) 0 else cleanDurationB.toInt())
 
         var byteArray = ByteUtil.hexStringToByteArray(
             SerialManager.HEAD + SerialManager.CMD_SET_CLEAN_DURATION + ByteUtil.intToHex4(
@@ -380,8 +403,8 @@ class SettingVM : ViewModel() {
         delay(50)
 
         //进清洗液时间
-        val addA = (if(addDurationA.toIntOrNull()==null) 0 else addDurationA.toInt())
-        val addB = (if(addDurationB.toIntOrNull()==null) 0 else addDurationB.toInt())
+        val addA = (if (addDurationA.toIntOrNull() == null) 0 else addDurationA.toInt())
+        val addB = (if (addDurationB.toIntOrNull() == null) 0 else addDurationB.toInt())
 
         byteArray = ByteUtil.hexStringToByteArray(
             SerialManager.HEAD + SerialManager.CMD_LIQUID_ENTER_DURATION + ByteUtil.intToHex4(
@@ -395,7 +418,7 @@ class SettingVM : ViewModel() {
     /**
      * 设置 高级参数
      */
-    suspend fun setAdvParam(advParamModel:AdvParamModel) {
+    suspend fun setAdvParam(advParamModel: AdvParamModel) {
         //排空电机速度
         var byteArray = ByteUtil.hexStringToByteArray(
             SerialManager.HEAD + SerialManager.EMPTY_MOTOR_SPEED + ByteUtil.intToHex(
@@ -406,31 +429,41 @@ class SettingVM : ViewModel() {
         delay(50)
         //排空抽提时间
         byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(advParamModel.emptyExtractDuration.toInt())  + "0000" + CRC + SerialManager.FOOT
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_DURATION + ByteUtil.intToHex4(
+                advParamModel.emptyExtractDuration.toInt()
+            ) + "0000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
         delay(50)
         //排空抽提间隔
-       byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(advParamModel.emptyExtractInterval.toInt())  + "0000"  + CRC + SerialManager.FOOT
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.EMPTY_EXTRACT_INTERVAL + ByteUtil.intToHex4(
+                advParamModel.emptyExtractInterval.toInt()
+            ) + "0000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
         delay(50)
         //排空烘干时间
-         byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.EMPTY_DRYING_DURATION +  ByteUtil.intToHex4(advParamModel.emptyDryingDuration.toInt())+ "0000" + CRC + SerialManager.FOOT
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.EMPTY_DRYING_DURATION + ByteUtil.intToHex4(
+                advParamModel.emptyDryingDuration.toInt()
+            ) + "0000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
         delay(50)
         //清洗电机速度
-       byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex( moterSpeedConvert(advParamModel.cleanSpeed.toInt()))  + "000000"  + CRC + SerialManager.FOOT
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.CLEAN_MOTOR_SPEED + ByteUtil.intToHex(
+                moterSpeedConvert(advParamModel.cleanSpeed.toInt())
+            ) + "000000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
         delay(50)
         //清洗烘干时间
-         byteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD + SerialManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(advParamModel.cleanDryingDuration.toInt())  + "0000"  + CRC + SerialManager.FOOT
+        byteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.CLEAN_DRYING_DURATION + ByteUtil.intToHex4(
+                advParamModel.cleanDryingDuration.toInt()
+            ) + "0000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
         delay(50)
@@ -448,7 +481,14 @@ class SettingVM : ViewModel() {
     /**
      * 设置 抽提参数 （设备参数页面 使用）
      */
-    suspend fun setExtractParam(extractDurA:String,extractIntA:String,speedA:String,extractDurB:String,extractIntB:String,speedB:String) {
+    suspend fun setExtractParam(
+        extractDurA: String,
+        extractIntA: String,
+        speedA: String,
+        extractDurB: String,
+        extractIntB: String,
+        speedB: String
+    ) {
         //抽提时间
         var byteArray = ByteUtil.hexStringToByteArray(
             SerialManager.HEAD + SerialManager.CMD_EXTRACT_DURATION + ByteUtil.intToHex4(
@@ -535,15 +575,24 @@ class SettingVM : ViewModel() {
     /**
      * 设置状态
      */
-    fun setState(channel:Int,state: Int) {
+    fun setState(channel: Int, state: Int) {
         val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
-            SerialManager.HEAD +  (if (channel==1)  SerialManager.A_CMD else  SerialManager.B_CMD) + ByteUtil.intToHex(
+            SerialManager.HEAD + (if (channel == 1) SerialManager.A_CMD else SerialManager.B_CMD) + ByteUtil.intToHex(
                 state
-            ) +  "000000" + CRC + SerialManager.FOOT
+            ) + "000000" + CRC + SerialManager.FOOT
         )
         serialManager.write(byteArray)
     }
 
+    /**
+     * 读取固件版本
+     */
+    fun getFirmVersion() {
+        val byteArray: ByteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.FIRMWARW_VER + "AA000000" + CRC + SerialManager.FOOT
+        )
+        serialManager.write(byteArray)
+    }
 
     /**
      * 校准 模式
@@ -675,7 +724,7 @@ class SettingVM : ViewModel() {
         if (LimitUtil.isOverLimit(MyApp.getInstance(), setTemperature)) {
             return
         }
-        if (stateA!= Empty || stateB!= Empty) {
+        if (stateA != Empty || stateB != Empty) {
             Toast.makeText(
                 MyApp.getInstance(),
                 MyApp.getInstance().getString(R.string.edit_t_tip),
@@ -742,7 +791,7 @@ class SettingVM : ViewModel() {
      * 停止  控制温度
      */
     fun stopTemperature() {
-        if (stateA!= Empty || stateB!= Empty) {
+        if (stateA != Empty || stateB != Empty) {
             Toast.makeText(
                 MyApp.getInstance(),
                 MyApp.getInstance().getString(R.string.edit_t_tip),
@@ -773,7 +822,7 @@ class SettingVM : ViewModel() {
     }
 
 
-    fun startDryingTimer(channel: Int){
+    fun startDryingTimer(channel: Int) {
         // 安全停止现有计时器
         stopDryingTimer()
 
@@ -784,19 +833,19 @@ class SettingVM : ViewModel() {
             override fun onFinish() {
                 cancel()
                 // 完成操作
-                timerDrying= null  // 清除引用
-                if (channel==1){
+                timerDrying = null  // 清除引用
+                if (channel == 1) {
                     stateA = TestState.Empty
 
-                }else{
+                } else {
                     stateB = TestState.Empty
 
                 }
                 viewModelScope.launch {
-                    if (channel==1){
-                        setState(1,CMD_Stop)
-                    }else{
-                        setState(2,CMD_Stop)
+                    if (channel == 1) {
+                        setState(1, CMD_Stop)
+                    } else {
+                        setState(2, CMD_Stop)
                     }
                 }
             }
@@ -804,6 +853,7 @@ class SettingVM : ViewModel() {
 
 
     }
+
     fun stopDryingTimer() {
         timerDrying?.onFinish()
     }
@@ -819,33 +869,34 @@ class SettingVM : ViewModel() {
             override fun onFinish() {
                 cancel()
                 // 完成操作
-                timerDecomP= null  // 清除引用
+                timerDecomP = null  // 清除引用
                 stateA = TestState.Empty
                 stateB = TestState.Empty
                 viewModelScope.launch {
-                    setState(1,CMD_Stop)
+                    setState(1, CMD_Stop)
                     delay(50)
-                    setState(2,CMD_Stop)
+                    setState(2, CMD_Stop)
                 }
             }
         }.start()
 
 
     }
+
     fun stopDecomPTimer() {
         timerDecomP?.onFinish()
     }
 
 
-    var otaController: OtaController? = null
+    var otaController by mutableStateOf<OtaController?>(null)
+        public set
 
-    fun setFirmControl(path: String){
-        otaController =  OtaController(
+    fun setFirmControl(path: String) {
+        otaController = OtaController(
             serial = serialManager,
             firmware = File(path).readBytes(),
             fileName = "app.bin"
         )
-
     }
 }
 

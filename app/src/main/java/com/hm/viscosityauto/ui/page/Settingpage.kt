@@ -2,6 +2,7 @@ package com.hm.viscosityauto.ui.page
 
 import NoPressStateClick
 import android.app.Activity
+import android.app.role.RoleManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,6 +54,7 @@ import com.hm.viscosityauto.AdminPageRoute
 import com.hm.viscosityauto.AvdParamPageRoute
 import com.hm.viscosityauto.CleanPageRoute
 import com.hm.viscosityauto.DeviceParamPageRoute
+import com.hm.viscosityauto.FirmUpdatePageRoute
 import com.hm.viscosityauto.ManagerPageRoute
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
@@ -141,6 +144,7 @@ fun SettingPage(vm: MainVM) {
     LaunchedEffect(Unit) {
         vm.getApp()
         settingVm.addListener()
+        settingVm.getFirmVersion()
     }
 
 
@@ -288,22 +292,28 @@ fun SettingPage(vm: MainVM) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 30.dp)
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.version),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.width(120.dp)
-                        )
 
 
-                        Text(
-                            text = "VERSION ${vm.versionName.value}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.doubleClick {
-                                managerDialog.value = true
-                            }
-                        )
-                        Spacer(modifier = Modifier.width(20.dp))
-                        if (vm.newApkUrl.value.isNotEmpty()) {
+                        Row(
+                            Modifier.width(528.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.version),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.width(120.dp)
+                            )
+
+
+                            Text(
+                                text = vm.versionName.value,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.doubleClick {
+                                    managerDialog.value = true
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            if (vm.newApkUrl.value.isNotEmpty()) {
                                 BaseButton(
                                     isBrush = false,
                                     title = stringResource(id = R.string.update),
@@ -311,7 +321,26 @@ fun SettingPage(vm: MainVM) {
                                 ) {
                                     vm.installApk(context as Activity)
                                 }
+                            }
                         }
+
+                        if (vm.adminInfo.value.role==AdminRole.admin){
+                            Row (modifier = Modifier.clickable {
+                                Nav.to(FirmUpdatePageRoute.route)
+                            }, verticalAlignment = Alignment.CenterVertically){
+                                Text(
+                                    text = stringResource(id = R.string.firmware_version),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.width(if (vm.language.value == LANGUAGE_ZH) 120.dp else 240.dp)
+                                )
+
+                                Text(
+                                    text = settingVm.firmVersion.value,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+
 
                     }
 
