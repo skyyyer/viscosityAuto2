@@ -264,10 +264,7 @@ fun SystemView(
 
 
                 if (newApkPath.isNotEmpty()) {
-                    if (File(newApkPath).exists() && FileUtil.extractVersionCodeFromApk(
-                            context,
-                            File(newApkPath)
-                        ) > versionCode
+                    if (File(newApkPath).exists()
                     ) {
                         BaseButton(isBrush = false, title = stringResource(id = R.string.update)) {
                             onUpdate()

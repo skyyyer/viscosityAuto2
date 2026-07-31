@@ -100,6 +100,20 @@ class HistoryVM : ViewModel() {
 //                tester = "admin"
 //            )
 //        )
+//        viewModelScope.launch {
+//            DB.testDao().insert(TestRecords(
+//                testNum = "555",
+//                duration = "200",
+//                temperature = "55",
+//                constant = "0.22",
+//                viscosity = "23",
+//                date = "2025-05-23",
+//                time = "12-05-23",
+//                durationArray = Gson().toJson(durationArray),
+//                tester = "admin"
+//            ))
+//        }
+
 
     }
 

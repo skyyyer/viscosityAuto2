@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.SerialManager
 
 interface OtaCallback {
@@ -287,6 +288,7 @@ class OtaController(
             try {
                 Thread.sleep(2000)
                 queryVersion()
+                setLightState()
             } catch (e: Exception) {
                 fail(e.message ?: "wait restart error")
             }
@@ -309,6 +311,16 @@ class OtaController(
 
         Log.d(TAG, "query version")
     }
+
+    private fun setLightState() {
+        val byteArray = ByteUtil.hexStringToByteArray(
+            SerialManager.HEAD + SerialManager.CMD_LIGHT + "01" + "000000" + SerialManager.CRC + SerialManager.FOOT
+        )
+        serial.write(byteArray)
+
+        Log.d(TAG, "setLightState  on")
+    }
+
 
     private fun fail(msg: String) {
         Log.e(TAG, msg)

@@ -46,16 +46,26 @@ fun SplashPage(vm: MainVM = viewModel()) {
     }
 
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.Transparent)){
+
+        Box(modifier = Modifier.size(1.dp)){
+            TestPage()
+        }
 
         Image(
             painter = painterResource(id = R.mipmap.home_bg),
             contentDescription = null,
-            modifier = Modifier.size(446.dp,290.dp).align(Alignment.TopEnd)
+            modifier = Modifier
+                .size(446.dp, 290.dp)
+                .align(Alignment.TopEnd)
         )
-        Box(modifier = Modifier.size(40.dp, 40.dp).clickable {
-            exitProcess(0)
-        })
+        Box(modifier = Modifier
+            .size(40.dp, 40.dp)
+            .clickable {
+                exitProcess(0)
+            })
 
 
     }

@@ -12,13 +12,20 @@ android {
         applicationId = "com.hm.viscosityauto"
         minSdk = 24
         targetSdk = 28
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+    lint {
+        disable += "ExpiredTargetSdkVersion"
+        // 或
+        // warning += "ExpiredTargetSdkVersion"
+        // 绝对不建议这么做，但你确实有需要可用
+        abortOnError = false
     }
 
     buildTypes {

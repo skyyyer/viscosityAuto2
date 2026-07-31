@@ -81,12 +81,11 @@ fun FirmUpdatePage(mainVM: MainVM, vm: SettingVM = viewModel()) {
                         ToastUtil.show(context, context.getString(R.string.updating))
                         return@BaseButton
                     }
-
-
                     vm.otaController = null
 
                     FilePickerManager
                         .from(context as Activity)
+                        .setCustomRootPath( "/storage")
                         .maxSelectable(1)
                         .filter(object : AbstractFileFilter() {
                             override fun doFilter(listData: ArrayList<FileItemBeanImpl>): ArrayList<FileItemBeanImpl> {
