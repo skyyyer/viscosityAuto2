@@ -11,7 +11,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -467,7 +466,13 @@ class SerialManager private constructor(
         try {
             val integer = data.substring(0, 2).toInt(16)
             val decimal = data.substring(2, 4).toInt(16)
-            val value = "$integer.$decimal"
+            val decimalSr = if (decimal >= 10) {
+                decimal.toString()
+            } else {
+                "0$decimal"
+            }
+
+            val value = "$integer.$decimalSr"
 
             listeners.forEach {
                 it.onTemperatureReceived(value)
