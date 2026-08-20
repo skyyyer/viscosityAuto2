@@ -125,11 +125,7 @@ fun NavGraph(vm: MainVM = viewModel()) {
         }
 
         composable(HelpPageRoute.route) {
-            if (vm.language.value== LANGUAGE_ZH){
-                HelpPage(vm.helpVideoPath)
-            }else{
-                HelpPage(vm.helpVideoENPath)
-            }
+            HelpPage(vm)
         }
 
         composable(LoginPageRoute.route) {

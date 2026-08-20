@@ -350,4 +350,8 @@
 
     <string name="dont_operate_in_upgrade">升级过程中请勿操作</string>
 
+
+    <string name="service_support_tip">扫码查看产品配置清单、说明书、操作指南及相关技术资料</string>
+
+    <string name="device_model">设备型号</string>
 </resources>

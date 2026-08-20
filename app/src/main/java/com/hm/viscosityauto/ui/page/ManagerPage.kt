@@ -209,7 +209,7 @@ fun ModelDialogView(
             .shadow(
                 elevation = 16.dp, shape = RoundedCornerShape(10.dp),
             )
-            .background(color = cardBgWhite.copy(alpha = 0.9f))
+            .background(color = cardBgWhite)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -219,7 +219,7 @@ fun ModelDialogView(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "设备型号",
+                text = stringResource(id = R.string.device_model),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
 

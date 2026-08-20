@@ -26,6 +26,7 @@ object QRCodeUtil {
      */
     fun generate(
         model: String = DEFAULT_PRODUCT_MODEL,
+        language:String = "EN",
         size: Int = 512,
         margin: Int = 4
     ): Bitmap? {
@@ -35,19 +36,19 @@ object QRCodeUtil {
                 EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H, // 纠错等级 H（最高）
                 EncodeHintType.MARGIN to margin
             )
-            
+
             val writer = QRCodeWriter()
-            val bitMatrix = writer.encode(SUPPORT_URL_PREFIX+model, BarcodeFormat.QR_CODE, size, size, hints)
-            
+            val bitMatrix = writer.encode("$SUPPORT_URL_PREFIX$model/$language", BarcodeFormat.QR_CODE, size, size, hints)
+
             val bitmap = createBitmap(size, size, Bitmap.Config.RGB_565)
-            
+
             for (x in 0 until size) {
                 for (y in 0 until size) {
                     bitmap[x, y] = if (bitMatrix[x, y]) android.graphics.Color.BLACK
                     else android.graphics.Color.WHITE
                 }
             }
-            
+
             bitmap
         } catch (e: Exception) {
             e.printStackTrace()

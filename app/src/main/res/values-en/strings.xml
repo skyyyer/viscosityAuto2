@@ -322,4 +322,10 @@
 
     <string name="dont_operate_in_upgrade">Do not operate during the upgrade process</string>
 
+
+
+
+    <string name="service_support_tip">Scan the QR code to view the product configuration list, manual, operation guide, and related technical documents</string>
+
+    <string name="device_model">Model</string>
 </resources>
