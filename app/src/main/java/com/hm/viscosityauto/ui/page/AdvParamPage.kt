@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -318,9 +320,9 @@ fun AdvParamPage(vm: SettingVM = viewModel()) {
     }
 }
 
-
 @Composable
 fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boolean = true,onlyNum:Boolean = true, onValueChange:(String)->Unit){
+    // 记录文本是否超出可视区域，超出时改为左对齐，避免居中模式下首尾都看不见
     Box(
         modifier = Modifier
             .size(width, height)
@@ -329,28 +331,25 @@ fun InputView(value:String, width: Dp = 90.dp, height: Dp = 36.dp, enabled:Boole
                 color = cardBgGray,
                 shape = RoundedCornerShape(5.dp)
             )
-            .background(color = cardBgWhite, shape =  RoundedCornerShape(5.dp))
+            .background(color = cardBgWhite, shape =  RoundedCornerShape(5.dp)),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 14.dp)
-                .fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
             BasicTextField(
                 value = value,
-                textStyle = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center),
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    textAlign  = TextAlign.Center
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = if (onlyNum) KeyboardType.Number else KeyboardType.Text),
                 singleLine = true,
                 enabled = enabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = Color.Transparent)
+                    .wrapContentSize(Alignment.Center)
                     .padding(horizontal = 8.dp),
                 onValueChange = {
                     onValueChange(it)
                 })
-        }
 
     }
 

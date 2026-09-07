@@ -64,6 +64,7 @@ import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.view.click.noMulClick
 import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
+import com.hm.viscosityauto.utils.ToastUtil
 
 import com.hm.viscosityauto.vm.CalibrationState
 import com.hm.viscosityauto.vm.SettingVM
@@ -198,7 +199,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = setT, height = 24.dp,enabled = singleEditState.value,onValueChange = {
+            InputView(value = setT,  width = 100.dp, height = 24.dp,enabled = singleEditState.value,onValueChange = {
                 setT = it
             })
 
@@ -210,7 +211,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
             )
 
 
-            InputView(value = realT,height = 24.dp,enabled = singleEditState.value, onValueChange = {
+            InputView(value = realT,  width = 100.dp,height = 24.dp,enabled = singleEditState.value, onValueChange = {
                 realT = it
             })
 
@@ -238,14 +239,14 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
                     color = Color.White,
                 ), isPaddingV = false) {
 
-                    if (LimitUtil.isOverLimit(context, setT) || LimitUtil.isOverLimit(
-                            context,
-                            realT
-                        )
-                    ) {
+                    if (LimitUtil.isOverLimit(context, setT)) {
                         return@BaseButton
                     }
-
+                    if (realT.toFloatOrNull() == null
+                    ) {
+                        ToastUtil.show(context, context.getString(R.string.input_error))
+                        return@BaseButton
+                    }
 
                     singleEditState.value = false
                     vm.offsetSetT = setT

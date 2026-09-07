@@ -64,13 +64,14 @@ import com.hm.viscosityauto.ui.theme.textColorGray
 import com.hm.viscosityauto.ui.view.click.noMulClick
 import com.hm.viscosityauto.utils.LimitUtil
 import com.hm.viscosityauto.utils.SPUtils
+import com.hm.viscosityauto.utils.ToastUtil
 
 import com.hm.viscosityauto.vm.CalibrationState
 import com.hm.viscosityauto.vm.SettingVM
 import com.hm.viscosityauto.vm.TestVM
 
 /**
- * 温度校准 单点校准页面
+ * 温度校准 多点校准页面
  */
 @Composable
 fun CalibrationMulView(vm: SettingVM = viewModel()) {
@@ -224,6 +225,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                     InputView(
                         value = items.testT,
                         height = 24.dp,
+                        width = 100.dp,
                         enabled = multipleEditState.value,
                         onValueChange = {
                             pointTList[index] = pointTList[index].copy(testT = it)
@@ -238,6 +240,7 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                     InputView(
                         value = items.realT,
                         height = 24.dp,
+                        width = 100.dp,
                         enabled = multipleEditState.value,
                         onValueChange = {
                             pointTList[index] = pointTList[index].copy(realT = it)
@@ -310,10 +313,17 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                         if (LimitUtil.isOverLimit(
                                 context,
                                 it.testT
-                            ) || LimitUtil.isOverLimit(context, it.realT)
+                            )
                         ) {
                             return@BaseButton
                         }
+
+                        if (it.realT.toFloatOrNull() == null
+                        ) {
+                            ToastUtil.show(context, context.getString(R.string.input_error))
+                            return@BaseButton
+                        }
+
                     }
 
 
