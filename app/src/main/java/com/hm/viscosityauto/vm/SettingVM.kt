@@ -20,6 +20,7 @@ import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.AdvParamModel
 import com.hm.viscosityauto.model.DeviceParamModel
 import com.hm.viscosityauto.model.ExtractModel
+import com.hm.viscosityauto.model.TemperatureModel
 import com.hm.viscosityauto.ui.view.ErrorView
 import com.hm.viscosityauto.utils.ByteUtil
 import com.hm.viscosityauto.utils.ComputeUtils.divideAndFormat
@@ -143,6 +144,10 @@ class SettingVM : ViewModel() {
 
     ///固件 版本型号
     var firmVersion = mutableStateOf("1.0.0")
+
+
+    var temperatureList = mutableStateListOf<TemperatureModel>()//温度调试 列表
+
 
     private val listener = object : SerialManager.OnDataReceivedListener {
 

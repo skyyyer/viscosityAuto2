@@ -31,6 +31,7 @@ import com.hm.viscosityauto.ui.page.ManagerPage
 import com.hm.viscosityauto.ui.page.ParamPage
 import com.hm.viscosityauto.ui.page.SettingPage
 import com.hm.viscosityauto.ui.page.SplashPage
+import com.hm.viscosityauto.ui.page.TemperatureDebugPage
 import com.hm.viscosityauto.ui.page.TestPage
 import com.hm.viscosityauto.utils.ToastUtil
 import com.hm.viscosityauto.vm.LANGUAGE_ZH
@@ -64,6 +65,7 @@ object CleanPageRoute : Destination("cleanPage")
 
 object FirmUpdatePageRoute : Destination("firmUpdate")
 
+object TemperatureDebugPageRoute : Destination("temperatureDebugPage")
 
 @Composable
 fun NavGraph(vm: MainVM = viewModel()) {
@@ -166,7 +168,9 @@ fun NavGraph(vm: MainVM = viewModel()) {
             FirmUpdatePage(vm)
         }
 
-
+        composable(TemperatureDebugPageRoute.route){
+            TemperatureDebugPage()
+        }
     }
 
 }

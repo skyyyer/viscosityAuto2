@@ -52,6 +52,7 @@ import com.google.gson.Gson
 import com.hm.viscosityauto.DebugPageRoute
 import com.hm.viscosityauto.MyApp
 import com.hm.viscosityauto.R
+import com.hm.viscosityauto.TemperatureDebugPageRoute
 import com.hm.viscosityauto.ui.theme.cardBgWhite
 import com.hm.viscosityauto.ui.theme.textColorBlue
 import com.hm.viscosityauto.ui.theme.underLine
@@ -163,7 +164,11 @@ fun ManagerPage(mainVM: MainVM, vm:SettingVM = viewModel()) {
                 Nav.to(DebugPageRoute.route)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(40.dp))
+
+            BaseButton(title = "温度调试") {
+                Nav.to(TemperatureDebugPageRoute.route)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

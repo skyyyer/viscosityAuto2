@@ -330,4 +330,12 @@
     <string name="service_support_tip">Scan the QR code for instructions</string>
 
     <string name="device_model">Model</string>
+
+    <string name="temperature_debug">Temperature Debug</string>
+
+    <string name="temperature_debug_export">Temperature Debug Data</string>
+
+    <string name="temperature_point">Point</string>
+    <string name="add">Add</string>
+
 </resources>

@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.hm.viscosityauto.R
 import com.hm.viscosityauto.model.DurationModel
+import com.hm.viscosityauto.model.TemperatureModel
 import com.hm.viscosityauto.room.test.TestRecords
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.io.File
@@ -184,6 +185,107 @@ class ExportDataUtil {
             e.printStackTrace()
             return false
         }
+
+    }
+
+
+
+    fun downloadTemperature(context: Context,usbDrivePath: String, deviceId:String,list: List<TemperatureModel>): Boolean {
+        val wb = HSSFWorkbook()
+
+        // 按 temperaturePoint 分组
+        val grouped = list.groupBy { it.temperaturePoint }
+
+        // 为每个分组创建一个 sheet
+        grouped.forEach { (point, groupList) ->
+            // sheet 名去除非法字符，长度限制 31
+            val safeSheetName = point
+                .replace("[\\\\/?*\\[\\]:]", "_")
+                .take(31)
+                .ifEmpty { "Sheet${grouped.keys.indexOf(point) + 1}" }
+
+            val sheet = wb.createSheet(safeSheetName)
+
+            //设置列宽
+            sheet.setColumnWidth(0, 2000)
+            sheet.setColumnWidth(1, 7000)
+            sheet.setColumnWidth(2, 7000)
+            sheet.setColumnWidth(3, 7000)
+
+            //====================================写入数据===============================================
+            for (k in 0 until groupList.size + 1) {
+                val row = sheet.createRow(k)
+                if (k == 0) {
+                    val cell0 = row.createCell(0)
+                    val cell1 = row.createCell(1)
+                    val cell2 = row.createCell(2)
+                    val cell3 = row.createCell(3)
+                    row.height = 500.toShort()
+                    cell0.setCellValue(context.getString(R.string.number))
+                    cell1.setCellValue(context.getString(R.string.cur_temperature))
+                    cell2.setCellValue(context.getString(R.string.state))
+                    cell3.setCellValue(context.getString(R.string.time))
+
+                } else {
+                    val cell0 = row.createCell(0)
+                    val cell1 = row.createCell(1)
+                    val cell2 = row.createCell(2)
+                    val cell3 = row.createCell(3)
+
+                    row.height = 500.toShort()
+                    cell0.setCellValue(k.toString())
+                    cell1.setCellValue(groupList[k - 1].temperature)
+                    cell2.setCellValue("" + if (groupList[k - 1].state==1) "加热" else if (groupList[k - 1].state==2) "恒温" else "空闲")
+                    cell3.setCellValue(groupList[k - 1].time)
+                }
+            }
+        }
+
+
+
+        val fileName =
+            "/" + context.getString(R.string.temperature_debug_export)+"("+deviceId+")" + TimeUtils.timestampToCusString() + ".xls"
+        val resultPath = Environment.getExternalStorageDirectory().path + fileName
+        try {
+            val file = File(resultPath)
+            val fileOutputStream = FileOutputStream(file)
+            wb.write(fileOutputStream)
+            fileOutputStream.close()
+
+
+            return try {
+                val fis = FileInputStream(
+                    resultPath
+                )
+                val usbFile = File(usbDrivePath + fileName)
+                val fos = FileOutputStream(usbFile)
+                var len: Int
+                val buff = ByteArray(1024)
+                while (fis.read(buff).also { len = it } != -1) {
+                    fos.write(buff, 0, len)
+                }
+                fos.fd.sync()
+                fos.close()
+                fis.close()
+                true
+            } catch (e: Exception) {
+                Log.e("fxHou1", "Download Fail FileNotFoundException$e")
+                e.printStackTrace()
+                false
+            }
+
+
+        } catch (e: FileNotFoundException) {
+            Log.e("fxHou2", "Download Fail FileNotFoundException$e")
+            e.printStackTrace()
+            return false
+        } catch (e: IOException) {
+            Log.e("fxHou3", "Download Fail IOException$e")
+            e.printStackTrace()
+            return false
+        }
+
+
 
     }
 

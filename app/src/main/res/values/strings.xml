@@ -355,4 +355,12 @@
     <string name="service_support_tip">扫码查操作指南</string>
 
     <string name="device_model">设备型号</string>
+
+    <string name="temperature_debug">温度调试</string>
+
+    <string name="temperature_debug_export">温度调试数据</string>
+
+    <string name="temperature_point">温度点</string>
+    <string name="add">添加</string>
+
 </resources>
