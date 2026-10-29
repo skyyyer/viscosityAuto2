@@ -67,6 +67,7 @@ import com.hm.viscosityauto.utils.SPUtils
 import com.hm.viscosityauto.utils.ToastUtil
 
 import com.hm.viscosityauto.vm.CalibrationState
+import com.hm.viscosityauto.vm.MaxT
 import com.hm.viscosityauto.vm.SettingVM
 import com.hm.viscosityauto.vm.TestVM
 
@@ -105,7 +106,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
         Spacer(modifier = Modifier.height(28.dp))
 
         //温度
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
 
             Text(
                 text = stringResource(id = R.string.set_temperature) + ": ",
@@ -137,23 +138,52 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(
-                text = stringResource(id = R.string.cur_temperature) + ":  ",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = vm.curTemperature + " ℃",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            if (vm.heatingState != 0) {
-                Spacer(modifier = Modifier.width(8.dp))
 
-                Image(
-                    painter = painterResource(id = if (vm.heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
+
+            Column() {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(id = R.string.cur_temperature) + ":  ",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = vm.curTemperature + " ℃",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    if (vm.heatingState != 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Image(
+                            painter = painterResource(id = if (vm.heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(id = R.string.raw_temperature) + ":  ",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = vm.rawTemperature + " ℃",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    if (vm.heatingState != 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Image(
+                            painter = painterResource(id = if (vm.heatingState == 1) R.mipmap.heating_icon else R.mipmap.keep_icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+
+                }
             }
 
         }
@@ -244,6 +274,12 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
                         ToastUtil.show(context, context.getString(R.string.input_error))
                         return@BaseButton
                     }
+
+                    if (realT.toFloat() > (MaxT + 10)||setT.toFloat() > (MaxT + 10)) {
+                        ToastUtil.show(context, context.getString(R.string.over_max_value))
+                        return@BaseButton
+                    }
+
 
                     singleEditState.value = false
                     vm.offsetSetT = setT
