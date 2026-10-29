@@ -239,10 +239,7 @@ fun CalibrationSingleView(vm: SettingVM = viewModel()) {
                     color = Color.White,
                 ), isPaddingV = false) {
 
-                    if (LimitUtil.isOverLimit(context, setT)) {
-                        return@BaseButton
-                    }
-                    if (realT.toFloatOrNull() == null
+                    if (realT.toFloatOrNull() == null||setT.toFloatOrNull() == null
                     ) {
                         ToastUtil.show(context, context.getString(R.string.input_error))
                         return@BaseButton

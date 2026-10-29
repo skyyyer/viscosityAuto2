@@ -310,15 +310,8 @@ fun CalibrationMulView(vm: SettingVM = viewModel()) {
                     }
 
                     tempList.forEach {
-                        if (LimitUtil.isOverLimit(
-                                context,
-                                it.testT
-                            )
-                        ) {
-                            return@BaseButton
-                        }
 
-                        if (it.realT.toFloatOrNull() == null
+                        if (it.realT.toFloatOrNull() == null||it.testT.toFloatOrNull() == null
                         ) {
                             ToastUtil.show(context, context.getString(R.string.input_error))
                             return@BaseButton
